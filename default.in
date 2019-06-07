@@ -1,7 +1,7 @@
 ## Input file for mesher
 
 zBot  0
-zTop  3
+zTop  0.5
 
 ## Cylinder
 rCyl     5.02
@@ -17,13 +17,13 @@ nbeads                 99999
 ## Output folder. Always end with '/'. Must exist prior to run.
 outpath    output/
 
-rFactor                0.98                  # Modification to       bead  radius
+rFactor                1.00                  # Modification to       bead  radius
 db_dp                  0.2                   # Bridge       diameter to    bead diameter
 bridgeOffsetFactor     0.95                  # Factor to offset bridge position by proportion of radius of bead. 
-# bridgeTol              0.001                  # Tolerance    to       build bridges
-bridgeTol              -999                  # Tolerance    to       build bridges
+bridgeTol              0.001                  # Tolerance    to       build bridges
+# bridgeTol              -999                  # Tolerance    to       build bridges
 
-fuseBeadsAndBridges     1
+fuseBeadsAndBridges     1           ## Possibly replace these two with one option: booleanOp = 1: fuse | 2: cut | 0: none
 cutBeadsAndBridges      0
 fragment                1 
 
@@ -33,8 +33,8 @@ fragment                1
 # 0.1, 0.95
 
 ## Mesh
-lc        0.15                # Element size
-lc_beads  0.15
+lc        0.08                # Element size
+lc_beads  0.20
 dryRun    off                   # Do not Generate Mesh
 
 # turn on to generate identical meshes at inlet and outlet
@@ -46,7 +46,7 @@ dryRun    off                   # Do not Generate Mesh
 Geometry.OCCParallel            1        # 0: No | 1: Yes
 Mesh.Algorithm                  2        # 1: MeshAdapt | 2: Auto | 5: Delaunay | 6: Frontal | 7: BAMG | 8: DelQuad
 Mesh.Algorithm3D                1        # 1: Delaunay  | 4: Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
-Mesh.OptimizeNetgen             1 
+Mesh.OptimizeNetgen             0 
 Mesh.Generate                   3        # 3: Volumes   | 2: Surfaces
 Mesh.RefineSteps                10      # Default = 10 
 

@@ -34,13 +34,17 @@ int main(int argc, char** argv) {
         Parameters * prm = new Parameters("default.in");
         prm->print();
 
-        gmsh::option::setNumber("General.Terminal", 1);
+        gmsh::option::setNumber("General.Terminal", 5);
         gmsh::option::setNumber("General.NumThreads", 8);
         gmsh::option::setNumber("Geometry.OCCParallel", 1);
+
         gmsh::option::setNumber("Mesh.CharacteristicLengthExtendFromBoundary", 1); //Default = 1 (longest)
         gmsh::option::setNumber("Mesh.CharacteristicLengthMin", 0  ); //Default = 0
         gmsh::option::setNumber("Mesh.CharacteristicLengthFromCurvature", 1); //Default = 0
         gmsh::option::setNumber("Mesh.CharacteristicLengthFromPoints", 1); //Default = 1
+        /* gmsh::option::setNumber("Mesh.MinimumCirclePoints", 7); //Default = 7 */
+        /* gmsh::option::setNumber("Mesh.BoundaryLayerFanPoints", 5); //Default = 5 */
+
         gmsh::option::setNumber("Mesh.OptimizeNetgen", prm->MeshOptimizeNetgen); //Default = 0
         gmsh::option::setNumber("Mesh.RefineSteps", prm->MeshRefineSteps); //Default = 10
 

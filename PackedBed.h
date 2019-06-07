@@ -31,6 +31,7 @@ class PackedBed{
         int contactStrategy;
 
         std::vector<int> tBeads;
+        std::vector<int> tBeadCPs;
         std::vector<std::pair<int, int>> dimTagsBeads;
         std::vector<std::pair<int, int>> dimTagsCyl;
         std::vector<std::pair<int, int>> dimTagsBridges;

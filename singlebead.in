@@ -48,8 +48,8 @@ fragment                1
 # 0.1, 0.95
 
 ## Mesh
-lc        0.90                # Element size
-lc_beads  0.90
+lc        0.20                # Element size
+lc_beads  0.50
 dryRun    off                   # Do not Generate Mesh
 
 # turn on to generate identical meshes at inlet and outlet

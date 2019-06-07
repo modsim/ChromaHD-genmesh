@@ -21,8 +21,14 @@ public:
     double getX() const;
     double getR() const;
     bool neighbour(Bead* bead, double eps, double &dx, double &dy, double &dz) const;
+    void setTag(int tag);
+    void setCTag(int ctag);
+    int getTag();
+    int getCTag();
 private:
     double x, y, z, r;
+    int tag;
+    int ctag;
 };
 
 #endif	/* BEAD_H */

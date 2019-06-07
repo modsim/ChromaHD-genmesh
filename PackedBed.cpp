@@ -45,10 +45,24 @@ void PackedBed::createGeometry()
 
     std::vector<std::pair<int, int> > ov;
 
+    int tag, ctag;
     std::cout << "Creating bead geometries... " << std::flush;
     for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++ )
     {
-        dimTagsBeads.push_back({3, factory::addSphere((*iter)->getX(), (*iter)->getY(), (*iter)->getZ(), this->prm->rFactor * (*iter)->getR())});
+        double x = (*iter)->getX();
+        double y = (*iter)->getY();
+        double z = (*iter)->getZ();
+        double r = (*iter)->getR();
+
+        tag = factory::addSphere(x, y, z, this->prm->rFactor * r);
+        ctag = factory::addPoint(x, y, z, this->prm->lc_beads, -1);
+
+        (*iter)->setTag(tag);
+        (*iter)->setCTag(ctag);
+
+        dimTagsBeads.push_back({3, tag});
+        tBeadCPs.push_back(ctag);
+
     }
     std::cout << "done!" << std::endl;
 
@@ -269,12 +283,45 @@ void PackedBed::mesh(std::string outfile)
 
 
     //Set mesh size globally
-    model::getEntities(cv, 0);
-    model::mesh::setSize(cv, this->prm->lc);
+    /* model::getEntities(cv, 0); */
+    /* model::mesh::setSize(cv, this->prm->lc); */
+
+
+    /* model::getEntitiesInBoundingBox(-0.1,-0.1,7.2, 0.1,0.1,7.8, cv, 0); */
+    /* model::mesh::setSize(cv, this->prm->lc_beads); */
 
     // Set mesh size for beads
-    model::getBoundary(bv, cv, false, false, true);
-    model::mesh::setSize(cv, this->prm->lc_beads);
+    /* model::getBoundary(bv, cv, false, false, true); */
+    /* model::mesh::setSize(cv, this->prm->lc_beads); */
+
+    /* model::mesh::embed(0,{tagCenter}, 3,dimTagsBeads.back().second); */
+
+    if (this->prm->fuseBeadsAndBridges)
+    {
+        for (std::vector<std::pair<int,int>>::iterator iter = bv.begin(); iter != bv.end(); iter++ )
+        {
+            model::mesh::embed(0,tBeadCPs, 3, (*iter).second);
+        }
+    }
+    else
+    {
+        for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++ )
+        {
+            model::mesh::embed(0,{(*iter)->getCTag()}, 3, (*iter)->getTag());
+        }
+
+    }
+
+    // Set mesh size for interstitial
+    model::getBoundary(dimTagsInterstitial, cv, false, false, true);
+    model::mesh::setSize(cv, this->prm->lc);
+
+    //set mesh size on bead surface
+    // maybe use the inside of the interstitial fragment instead?
+    /* model::getBoundary(dimTagsInterstitial, cv, false, false, false); */
+    /* model::getBoundary(bv, cv, false, false, false); */
+    /* model::getBoundary(cv, ov, false, false, true); */
+    /* model::mesh::setSize(ov, this->prm->lc); */
 
     if(!this->prm->dryRun)
     {

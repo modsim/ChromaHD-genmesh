@@ -67,3 +67,22 @@ bool Bead::neighbour(Bead * bead, double eps, double &dx, double &dy, double &dz
 
 }
 
+void Bead::setTag(int tag)
+{
+    this->tag = tag;
+}
+
+void Bead::setCTag(int ctag)
+{
+    this->ctag = ctag;
+}
+
+int Bead::getTag()
+{
+    return this->tag;
+}
+
+int Bead::getCTag()
+{
+    return this->ctag;
+}
