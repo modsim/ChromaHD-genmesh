@@ -66,8 +66,7 @@ public:
 
 
 private:
-void decide(const std::string & key, const std::vector<std::string> & val)
-throw (mixd::MixdException);
+void decide(const std::string & key, const std::vector<std::string> & val);
 
 };
 

@@ -53,9 +53,7 @@ Parameters::~Parameters() {
 }
 
 
-void Parameters::decide
-(const std::string & key, const std::vector<std::string> & val)
-throw (mixd::MixdException)
+void Parameters::decide (const std::string & key, const std::vector<std::string> & val)
 {
 
          if(key == "zBot")                                        zBot                                       = atof(val.at(0).c_str());
