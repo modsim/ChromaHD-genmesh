@@ -34,5 +34,7 @@ Here, the term 'bridges' is used to denote cylindrical geometries between indivi
 This should create the mesh in the required format in the `outpath` directory. Additionally, two vtk files of the two domains are generated to allow easier examination of the mesh. 
 
 ## Todo
-1. Log files can be immediately used to recreate meshes
-2. Use GMSH::logger
+1. cmdline arg to specify input file and output file
+2. Use GMSH::logger.
+3. Improved error handling.
+

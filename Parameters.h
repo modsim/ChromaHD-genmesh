@@ -22,42 +22,47 @@ public:
     void print();
     void write(std::string filename);
 
-    double zBot, zTop, rCyl, xCyl, yCyl;
-    double zCylMin, zCylMax;
-    double inlet, outlet;
-    double radius, rFactor;
-    double lc, lc_beads;
-    double bridgeTol, db_dp;
+    double zBot=0.0, zTop=0.0, rCyl=0.0, xCyl=0.0, yCyl=0.0;
+    double zCylMin=1.0, zCylMax=-1.0;
+    double inlet=-1.0, outlet=-1.0;
+    double radius=0.0, rFactor=0.0;
+    double lc=0.0, lc_beads=0.0;
+    double bridgeTol=-999, db_dp=0.0;
+    double bridgeOffsetFactor=0.0;
 
-    double bridgeOffsetFactor;
+    int GeometryOCCParallel=1;
+    int MeshAlgorithm=2, MeshAlgorithm3D=1;
+    int MeshRefineSteps=10;
+    int MeshOptimize=1;
+    int MeshOptimizeNetgen=1;
+    int MeshGenerate=3;
 
-    int GeometryOCCParallel;
-    int MeshAlgorithm, MeshAlgorithm3D;
-    int MeshRefineSteps;
-    int MeshOptimize;
-    int MeshOptimizeNetgen;
-    int MeshGenerate;
+    int GeneralNumThreads=8;
 
-    int fuseBeadsAndBridges;
-    int cutBeadsAndBridges;
-    int fragment;
+    int MeshCharacteristicLengthExtendFromBoundary=1;
+    int MeshCharacteristicLengthMin=0;
+    int MeshCharacteristicLengthFromCurvature=1;
+    int MeshCharacteristicLengthFromPoints=1;
 
-    int NamedBeadVolume;
-    int NamedInterstitialVolume;
-    int NamedBeadSurface;
+    int fuseBeadsAndBridges=0;
+    int cutBeadsAndBridges=0;
+    int fragment=1;
+
+    int NamedBeadVolume=1;
+    int NamedInterstitialVolume=1;
+    int NamedBeadSurface=1;
     int NamedInlet;
     int NamedOutlet;
     int NamedWall;
-    int NamedOuterSurface;
+    int NamedOuterSurface=1;
 
+    int nBeadsInPack=99999999;
 
-    int nBeadsInPack;
-
-    bool dryRun;
+    bool dryRun=0;
 
     bool copyBeads, periodic;
 
-    std::string packfile, outpath;
+    std::string packfile, outpath="output/";
 
 
 private:

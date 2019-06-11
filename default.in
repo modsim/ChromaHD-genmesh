@@ -46,13 +46,17 @@ dryRun    off                   # Do not Generate Mesh
 
 
 ## GMSH settings
-Geometry.OCCParallel            1        # 0: No | 1: Yes
-Mesh.Algorithm                  2        # 1: MeshAdapt | 2: Auto | 5: Delaunay | 6: Frontal | 7: BAMG | 8: DelQuad
-Mesh.Algorithm3D                1        # 1: Delaunay  | 4: Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
-Mesh.Optimize                   1 
-Mesh.OptimizeNetgen             0 
-Mesh.Generate                   3        # 3: Volumes   | 2: Surfaces
-Mesh.RefineSteps                10      # Default = 10 
+Geometry.OCCParallel                        1        # 0:      No        | 1: Yes
+Mesh.Algorithm                              2        # 1:      MeshAdapt | 2: Auto    | 5: Delaunay |        6: Frontal |       7:  BAMG |  8:    DelQuad
+Mesh.Algorithm3D                            1        # 1:      Delaunay  | 4: Frontal | 5: Frontal  Delaunay |  6:      Frontal Hex |    7: MMG3D | 9: RTree | 10: HXT
+Mesh.Optimize                               1 
+Mesh.OptimizeNetgen                         0 
+Mesh.Generate                               3        # 3:      Volumes   | 2: Surfaces
+Mesh.RefineSteps                            10       # Default =         10 
+Mesh.CharacteristicLengthExtendFromBoundary 1
+Mesh.CharacteristicLengthMin                0
+Mesh.CharacteristicLengthFromCurvature      1
+Mesh.CharacteristicLengthFromPoints         1
 
 # Geometry.Tolerance             1e-6
 # Geometry.ToleranceBoolean      1e-6
