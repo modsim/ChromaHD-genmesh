@@ -4,7 +4,7 @@ zBot  715
 zTop  723.34
 
 ## Cylinder
-rCyl     5.02
+rCyl     5.01
 xCyl     5.0
 yCyl     5.0
 inlet    2.5
@@ -53,7 +53,8 @@ Mesh.Optimize                               1
 Mesh.OptimizeNetgen                         0 
 Mesh.Generate                               3        # 3:      Volumes   | 2: Surfaces
 Mesh.RefineSteps                            10       # Default =         10 
-Mesh.CharacteristicLengthExtendFromBoundary 1
+
+Mesh.CharacteristicLengthExtendFromBoundary 2
 Mesh.CharacteristicLengthMin                0
 Mesh.CharacteristicLengthFromCurvature      1
 Mesh.CharacteristicLengthFromPoints         1
