@@ -3,13 +3,15 @@
 Generate meshes from packing files (xyzd). Depends on OpenCASCADE and GMSH (v 4.2.2). 
 
 ## Installation
+
 1. Install OpenCASCADE (v 7.30 tested)
 2. Install GMSH with OpenCASCADE link (v 4.2.2)
 3. Compile genmesh with GMSH link.
 
-Note: Ensure that $LD_LIBRARY_PATH points to the OpenCASCADE libs.
+Note: Ensure that \$LD_LIBRARY_PATH points to the OpenCASCADE libs.
 
 ## Workflow
+
 A rough concept of execution is as follows:
 
 - Read input file (default.in) for parameters.
@@ -30,3 +32,7 @@ Here, the term 'bridges' is used to denote cylindrical geometries between indivi
 ```
 
 This should create the mesh in the required format in the `outpath` directory. Additionally, two vtk files of the two domains are generated to allow easier examination of the mesh. 
+
+## Todo
+1. Log files can be immediately used to recreate meshes
+2. Use GMSH::logger

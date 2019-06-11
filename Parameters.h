@@ -34,6 +34,7 @@ public:
     int GeometryOCCParallel;
     int MeshAlgorithm, MeshAlgorithm3D;
     int MeshRefineSteps;
+    int MeshOptimize;
     int MeshOptimizeNetgen;
     int MeshGenerate;
 

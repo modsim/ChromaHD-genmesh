@@ -14,7 +14,7 @@ Parameters::Parameters(const std::string& fname) :
   zCylMin(1.0), zCylMax(-1.0), inlet(-1.0), outlet(-1.0), radius(0.0),
   rFactor(0.0), lc(0.0), lc_beads(0.0), nBeadsInPack(0),
   copyBeads(true), periodic(false), packfile(""), outpath(""), bridgeTol(0.0), db_dp(0.0), dryRun(true), bridgeOffsetFactor(0.0),
-  GeometryOCCParallel(1), MeshAlgorithm(2), MeshAlgorithm3D(1), MeshRefineSteps(10), MeshOptimizeNetgen(1), MeshGenerate(3)
+  GeometryOCCParallel(1), MeshAlgorithm(2), MeshAlgorithm3D(1), MeshRefineSteps(10), MeshOptimize(1), MeshOptimizeNetgen(1), MeshGenerate(3)
 {
     using namespace std;
     using namespace mixd;
@@ -91,6 +91,7 @@ throw (mixd::MixdException)
     else if(key == "Geometry.OCCParallel")             GeometryOCCParallel  = atof(val.at(0).c_str());
     else if(key == "Mesh.Algorithm")                   MeshAlgorithm        = atof(val.at(0).c_str());
     else if(key == "Mesh.Algorithm3D")                 MeshAlgorithm3D      = atof(val.at(0).c_str());
+    else if(key == "Mesh.Optimize")                    MeshOptimize         = atof(val.at(0).c_str());
     else if(key == "Mesh.OptimizeNetgen")              MeshOptimizeNetgen   = atof(val.at(0).c_str());
     else if(key == "Mesh.RefineSteps")                 MeshRefineSteps      = atof(val.at(0).c_str());
     else if(key == "Mesh.Generate")                    MeshGenerate         = atof(val.at(0).c_str());
