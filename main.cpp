@@ -15,19 +15,27 @@ int main(int argc, char** argv) {
 
     gmsh::initialize();
 
-    std::string outfile;
+    std::string outfile, infile;
 
-    if (argc != 2)
+    if (argc == 1)
     {
+        infile = "default.in";
         outfile = "output.msh2";
         std::cout << "Will store mesh in output.msh!" << std::endl;
     }
+    else if (argc == 2)
+    {
+        infile = std::string(argv[1]);
+        outfile = "output.msh2";
+    }
     else
-        outfile = std::string(argv[1]);
-
+    {
+        infile = std::string(argv[1]);
+        outfile = std::string(argv[2]);
+    }
     try{
 
-        Parameters * prm = new Parameters("default.in");
+        Parameters * prm = new Parameters(infile);
         prm->print();
 
         gmsh::option::setNumber("General.Terminal", 1);
