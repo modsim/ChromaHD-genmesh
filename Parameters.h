@@ -30,6 +30,13 @@ public:
     double bridgeTol=-999, db_dp=0.0;
     double bridgeOffsetFactor=0.0;
 
+    double GeometryScalingFactor=1.0;
+    double MeshScalingFactor=1.0;
+    double dilateFactor=1.0;
+
+    int MeshSmoothing=1;
+    int MeshSmoothRatio=1.8;
+
     int GeometryOCCParallel=1;
     int MeshAlgorithm=2, MeshAlgorithm3D=1;
     int MeshRefineSteps=10;

@@ -45,8 +45,10 @@ dryRun    off                   # Do not Generate Mesh
 # periodic off  
 
 
-## GMSH settings
+##GMSH     settings
+General.NumThreads                          8
 Geometry.OCCParallel                        1        # 0:      No        | 1: Yes
+Geometry.ScalingFactor                      1
 Mesh.Algorithm                              2        # 1:      MeshAdapt | 2: Auto    | 5: Delaunay |        6: Frontal |       7:  BAMG |  8:    DelQuad
 Mesh.Algorithm3D                            1        # 1:      Delaunay  | 4: Frontal | 5: Frontal  Delaunay |  6:      Frontal Hex |    7: MMG3D | 9: RTree | 10: HXT
 Mesh.Optimize                               1 

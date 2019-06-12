@@ -34,7 +34,14 @@ Here, the term 'bridges' is used to denote cylindrical geometries between indivi
 This should create the mesh in the required format in the `outpath` directory. Additionally, two vtk files of the two domains are generated to allow easier examination of the mesh. 
 
 ## Todo
-1. ~~cmdline arg to specify input file and output file~~
-2. Use GMSH::logger.
-3. Improved error handling.
+1. Use GMSH::logger.
+2. Improved error handling.
+3. Easy switch between cap/bridge/reduce/enlarge
+4. Easy handling of db_dp and offset calculation
+5. Easy handling of nbeads
+
+## Known Issues
+1. After mesh size constraints were applied to only surfaces (and points were used inside beads), the Netgen optimizer crashes randomly.
+2. Geometry.ScalingFactor doesn't work. Use dilateFactor instead.
+3. Large beds either are stuck or crash with errors.
 

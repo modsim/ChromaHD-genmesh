@@ -66,6 +66,74 @@ void PackedBed::createGeometry()
     }
     std::cout << "done!" << std::endl;
 
+    std::vector<Bead *> remBeads = this->beads;
+
+    std::cout << "Creating Bridges... " << std::flush;
+    for(std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
+    {
+        remBeads.erase(remBeads.begin());
+        for(std::vector<Bead *>::iterator riter = remBeads.begin(); riter != remBeads.end(); riter++)
+        {
+            //check pair with tol
+            double dx, dy, dz;
+            double x3, y3, z3;
+            double dx3, dy3, dz3;
+
+            double x1 = (*iter)->getX();
+            double x2 = (*riter)->getX();
+
+            double y1 = (*iter)->getY();
+            double y2 = (*riter)->getY();
+
+            double z1 = (*iter)->getZ();
+            double z2 = (*riter)->getZ();
+
+            double r1 = (*iter)->getR();
+            double r2 = (*riter)->getR();
+
+            dx = x2-x1;
+            dy = y2-y1;
+            dz = z2-z1;
+
+            double dist = sqrt( pow(dx, 2) + pow(dy, 2) + pow(dz, 2) );
+
+            double factor = this->prm->bridgeOffsetFactor;
+
+            /* if ((*iter)->neighbour(*riter, eps, dx, dy, dz)) */
+            if (dist < r1 + r2 + this->prm->bridgeTol)
+            {
+
+                //cylinder radius
+                double rBeadSmallest = (r1 <= r2? r1 : r2);
+                double rBridge = this->prm->db_dp * rBeadSmallest;
+
+                /* this->dimTagsBridges.push_back({3, factory::addCylinder((*iter)->getX(), (*iter)->getY(), (*iter)->getZ(), dx, dy, dz, rBridge) }) ; */
+                /* this->dimTagsBeads.push_back({3, factory::addCylinder((*iter)->getX(), (*iter)->getY(), (*iter)->getZ(), dx, dy, dz, rBridge) }) ; */
+
+                //Cylinder start point
+                x3 = x1 + factor * r1 * dx/dist;
+                y3 = y1 + factor * r1 * dy/dist;
+                z3 = z1 + factor * r1 * dz/dist;
+
+                //cylinder length
+                dx3 = dx * (dist - factor * (r1+r2))/dist;
+                dy3 = dy * (dist - factor * (r1+r2))/dist;
+                dz3 = dz * (dist - factor * (r1+r2))/dist;
+
+                /* this->dimTagsBeads.push_back({3, factory::addCylinder(x3, y3, z3, dx3, dy3, dz3, rBridge) }) ; */
+                this->dimTagsBridges.push_back({3, factory::addCylinder(x3, y3, z3, dx3, dy3, dz3, rBridge) }) ;
+
+            }
+
+        }
+    }
+
+    std::cout << "done!" << std::endl;
+
+    double df = this->prm->dilateFactor;
+    factory::dilate(dimTagsCyl, 0,0,0, df, df, df);
+    factory::dilate(dimTagsBeads, 0,0,0, df, df, df);
+    factory::dilate(dimTagsBridges, 0,0,0, df, df, df);
 
 }
 
@@ -134,8 +202,9 @@ void PackedBed::createBridge(double db_dp, double eps)
     }
 
     std::cout << "done!" << std::endl;
-
+    factory::dilate(dimTagsBridges, 0,0,0, 0.1, 0.1, 0.1);
 }
+
 
 void PackedBed::mesh(std::string outfile)
 {
@@ -183,6 +252,7 @@ void PackedBed::mesh(std::string outfile)
 
     /* // Fragment Cylinder. Newly created interstitial volume is stored after the bead tags. */
     /* factory::fragment(dimTagsCyl, dimTagsBeads, bv, ovv ); */
+
 
 
     // Synchronize gmsh model with geometry kernel.
@@ -243,49 +313,9 @@ void PackedBed::mesh(std::string outfile)
         std::cout << "done!" << std::endl;
     }
 
-    // ============================
-    // shrunk unfused beads
-
-    /* // Store bead volume tags and create physical */
-    /* tBeads.clear(); */
-    /* for ( std::vector<std::pair< int , int>>::iterator it = dimTagsBeads.begin(); it != dimTagsBeads.end(); it++   ) */
-    /* { */
-    /*     tBeads.push_back((*it).second); */
-    /* } */
-    /* model::addPhysicalGroup(3,tBeads,6 ); */
-    /* model::setPhysicalName(3,6,"beadVolume"); */
-
-    /* // Create Bead surfaces */
-    /* model::getBoundary(dimTagsBeads, bv, false, false,false); */
-    /* tBeads.clear(); */
-    /* for ( std::vector<std::pair< int , int>>::iterator it = bv.begin(); it != bv.end(); it++   ) */
-    /* { */
-    /*     tBeads.push_back((*it).second); */
-    /* } */
-    /* model::addPhysicalGroup(2,tBeads,4); */
-    /* model::setPhysicalName(2,4, "beadSurface"); */
-
-    /* // Create physical for interstitial volume */
-    /* // NOTE: we assume that the newly created interstitial volume */
-    /* //      is stored at the end of the ov vector. This may not be */
-    /* //      true if some beads are peeking outside the cylinder */
-    /* model::addPhysicalGroup(3,{ov.back().second},5); */
-    /* model::setPhysicalName(3,5,"interstitialVolume"); */
-
-    /* // Create physical for cylinder surfaces */
-    /* model::getBoundary({{3, ov.back().second}}, bv, false, false,false); */
-    /* model::addPhysicalGroup(2,{bv[0].second},3); */
-    /* model::addPhysicalGroup(2,{bv[1].second},2); */
-    /* model::addPhysicalGroup(2,{bv[2].second},1); */
-    /* model::setPhysicalName(2,1, "inlet"); */
-    /* model::setPhysicalName(2,2, "outlet"); */
-    /* model::setPhysicalName(2,3, "wall"); */
-
-
     //Set mesh size globally
     /* model::getEntities(cv, 0); */
     /* model::mesh::setSize(cv, this->prm->lc); */
-
 
     /* model::getEntitiesInBoundingBox(-0.1,-0.1,7.2, 0.1,0.1,7.8, cv, 0); */
     /* model::mesh::setSize(cv, this->prm->lc_beads); */
@@ -296,6 +326,7 @@ void PackedBed::mesh(std::string outfile)
 
     /* model::mesh::embed(0,{tagCenter}, 3,dimTagsBeads.back().second); */
 
+    //Embed points in beads to control element size within them
     if (this->prm->fuseBeadsAndBridges)
     {
         for (std::vector<std::pair<int,int>>::iterator iter = bv.begin(); iter != bv.end(); iter++ )

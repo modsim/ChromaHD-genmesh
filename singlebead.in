@@ -49,8 +49,10 @@ fragment                1
 
 ## Mesh
 lc        0.20                # Element size
-lc_beads  0.50
+lc_beads  0.20
 dryRun    off                   # Do not Generate Mesh
+
+dilateFactor                    0.5
 
 # turn on to generate identical meshes at inlet and outlet
 # Not implemented!!!
@@ -59,9 +61,11 @@ dryRun    off                   # Do not Generate Mesh
 
 ## GMSH settings
 Geometry.OCCParallel            1        # 0: No | 1: Yes
+Geometry.ScalingFactor          1
+Mesh.ScalingFactor              2
 Mesh.Algorithm                  2        # 1: MeshAdapt | 2: Auto | 5: Delaunay | 6: Frontal | 7: BAMG | 8: DelQuad
 Mesh.Algorithm3D                1        # 1: Delaunay  | 4: Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
-Mesh.OptimizeNetgen             1 
+Mesh.OptimizeNetgen             0 
 Mesh.Generate                   3        # 3: Volumes   | 2: Surfaces
 Mesh.RefineSteps                10      # Default = 10 
 

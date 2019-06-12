@@ -41,6 +41,12 @@ int main(int argc, char** argv) {
         gmsh::option::setNumber("General.Terminal", 1);
         gmsh::option::setNumber("General.NumThreads", prm->GeneralNumThreads);
         gmsh::option::setNumber("Geometry.OCCParallel", prm->GeometryOCCParallel);
+        gmsh::option::setNumber("Geometry.ScalingFactor", prm->GeometryScalingFactor);
+        //gmsh::option::setNumber("Geometry.MatchGeomAndMesh", 1);
+        gmsh::option::setNumber("Mesh.ScalingFactor", prm->MeshScalingFactor);
+        gmsh::option::setNumber("Mesh.Smoothing", prm->MeshSmoothing);
+        gmsh::option::setNumber("Mesh.SmoothRatio", prm->MeshSmoothRatio);
+        gmsh::option::setNumber("Mesh.SaveTopology", 1);
 
         gmsh::option::setNumber("Mesh.CharacteristicLengthExtendFromBoundary", prm->MeshCharacteristicLengthExtendFromBoundary);
         gmsh::option::setNumber("Mesh.CharacteristicLengthMin", prm->MeshCharacteristicLengthMin);
@@ -62,7 +68,7 @@ int main(int argc, char** argv) {
 
         PackedBed * packedBed = new PackedBed(prm);
         packedBed->createGeometry();
-        packedBed->createBridge(prm->db_dp, prm->bridgeTol);
+        //packedBed->createBridge(prm->db_dp, prm->bridgeTol);
         packedBed->mesh(outfile);
         delete prm;
         delete packedBed;
