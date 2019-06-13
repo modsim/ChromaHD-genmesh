@@ -26,6 +26,8 @@ class PackedBed{
         void printPacking();
         void mesh(std::string outfile);
         void createBridge(double db_dp, double eps);
+        void createGMSHSphere(double x, double y, double z, double r, double lc_surface, double lc_center, std::vector<int> &shells, std::vector<int> &volumes);
+        void GMSHGeom(std::string outfile);
 
         int tCyl;
         int contactStrategy;

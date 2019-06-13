@@ -67,9 +67,10 @@ int main(int argc, char** argv) {
         gmsh::option::setNumber("Mesh.Algorithm3D", prm->MeshAlgorithm3D); //Default = 1
 
         PackedBed * packedBed = new PackedBed(prm);
+
         packedBed->createGeometry();
-        //packedBed->createBridge(prm->db_dp, prm->bridgeTol);
         packedBed->mesh(outfile);
+
         delete prm;
         delete packedBed;
 

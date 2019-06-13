@@ -36,11 +36,16 @@ void PackedBed::createGeometry()
 
     double zCylBot = 0, zCylTop = 0;
 
-    zCylBot = this->prm->zBot - this->prm->inlet;
-    zCylTop = this->prm->zTop + this->prm->outlet;
+    double psf  = this->prm->preScalingFactor;
+    zCylBot     = psf * ( this->prm->zBot - this->prm->inlet );
+    zCylTop     = psf * ( this->prm->zTop + this->prm->outlet );
+    double xCyl = psf * this->prm->xCyl;
+    double yCyl = psf * this->prm->yCyl;
+    double rCyl = psf * this->prm->rCyl;
 
     std::cout << "Creating cylinder... " << std::flush;
-    dimTagsCyl.push_back( {3, factory::addCylinder(this->prm->xCyl,this->prm->yCyl, zCylBot, 0,0,zCylTop-zCylBot, this->prm->rCyl) } );
+    /* dimTagsCyl.push_back( {3, factory::addCylinder(this->prm->xCyl,this->prm->yCyl, zCylBot, 0,0,zCylTop-zCylBot, this->prm->rCyl) } ); */
+    dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
     std::cout << "done!" << std::endl;
 
     std::vector<std::pair<int, int> > ov;
@@ -49,10 +54,10 @@ void PackedBed::createGeometry()
     std::cout << "Creating bead geometries... " << std::flush;
     for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++ )
     {
-        double x = (*iter)->getX();
-        double y = (*iter)->getY();
-        double z = (*iter)->getZ();
-        double r = (*iter)->getR();
+        double x = psf * (*iter)->getX();
+        double y = psf * (*iter)->getY();
+        double z = psf * (*iter)->getZ();
+        double r = psf * (*iter)->getR();
 
         tag = factory::addSphere(x, y, z, this->prm->rFactor * r);
         ctag = factory::addPoint(x, y, z, this->prm->lc_beads, -1);
@@ -79,17 +84,17 @@ void PackedBed::createGeometry()
             double x3, y3, z3;
             double dx3, dy3, dz3;
 
-            double x1 = (*iter)->getX();
-            double x2 = (*riter)->getX();
+            double x1 = psf * (*iter)->getX();
+            double x2 = psf * (*riter)->getX();
 
-            double y1 = (*iter)->getY();
-            double y2 = (*riter)->getY();
+            double y1 = psf * (*iter)->getY();
+            double y2 = psf * (*riter)->getY();
 
-            double z1 = (*iter)->getZ();
-            double z2 = (*riter)->getZ();
+            double z1 = psf * (*iter)->getZ();
+            double z2 = psf * (*riter)->getZ();
 
-            double r1 = (*iter)->getR();
-            double r2 = (*riter)->getR();
+            double r1 = psf * (*iter)->getR();
+            double r2 = psf * (*riter)->getR();
 
             dx = x2-x1;
             dy = y2-y1;
@@ -130,85 +135,18 @@ void PackedBed::createGeometry()
 
     std::cout << "done!" << std::endl;
 
-    double df = this->prm->dilateFactor;
-    factory::dilate(dimTagsCyl, 0,0,0, df, df, df);
-    factory::dilate(dimTagsBeads, 0,0,0, df, df, df);
-    factory::dilate(dimTagsBridges, 0,0,0, df, df, df);
+
+    /* std::cout << "Dilating Geometries... " << std::flush; */
+    /* double df = this->prm->dilateFactor; */
+    /* factory::dilate(dimTagsCyl, 0,0,0, df, df, df); */
+    /* factory::dilate(dimTagsBeads, 0,0,0, df, df, df); */
+    /* factory::dilate(dimTagsBridges, 0,0,0, df, df, df); */
+    /* std::cout << "done!" << std::endl; */
 
 }
-
-void PackedBed::createBridge(double db_dp, double eps)
-{
-    std::vector<Bead *> remBeads = this->beads;
-
-    std::cout << "Creating Bridges... " << std::flush;
-    for(std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
-    {
-        remBeads.erase(remBeads.begin());
-        for(std::vector<Bead *>::iterator riter = remBeads.begin(); riter != remBeads.end(); riter++)
-        {
-            //check pair with tol
-            double dx, dy, dz;
-            double x3, y3, z3;
-            double dx3, dy3, dz3;
-
-            double x1 = (*iter)->getX();
-            double x2 = (*riter)->getX();
-
-            double y1 = (*iter)->getY();
-            double y2 = (*riter)->getY();
-
-            double z1 = (*iter)->getZ();
-            double z2 = (*riter)->getZ();
-
-            double r1 = (*iter)->getR();
-            double r2 = (*riter)->getR();
-
-            dx = x2-x1;
-            dy = y2-y1;
-            dz = z2-z1;
-
-            double dist = sqrt( pow(dx, 2) + pow(dy, 2) + pow(dz, 2) );
-
-            double factor = this->prm->bridgeOffsetFactor;
-
-            /* if ((*iter)->neighbour(*riter, eps, dx, dy, dz)) */
-            if (dist < r1 + r2 + eps)
-            {
-
-                //cylinder radius
-                double rBeadSmallest = (r1 <= r2? r1 : r2);
-                double rBridge = db_dp * rBeadSmallest;
-
-                /* this->dimTagsBridges.push_back({3, factory::addCylinder((*iter)->getX(), (*iter)->getY(), (*iter)->getZ(), dx, dy, dz, rBridge) }) ; */
-                /* this->dimTagsBeads.push_back({3, factory::addCylinder((*iter)->getX(), (*iter)->getY(), (*iter)->getZ(), dx, dy, dz, rBridge) }) ; */
-
-                //Cylinder start point
-                x3 = x1 + factor * r1 * dx/dist;
-                y3 = y1 + factor * r1 * dy/dist;
-                z3 = z1 + factor * r1 * dz/dist;
-
-                //cylinder length
-                dx3 = dx * (dist - factor * (r1+r2))/dist;
-                dy3 = dy * (dist - factor * (r1+r2))/dist;
-                dz3 = dz * (dist - factor * (r1+r2))/dist;
-
-                /* this->dimTagsBeads.push_back({3, factory::addCylinder(x3, y3, z3, dx3, dy3, dz3, rBridge) }) ; */
-                this->dimTagsBridges.push_back({3, factory::addCylinder(x3, y3, z3, dx3, dy3, dz3, rBridge) }) ;
-
-            }
-
-        }
-    }
-
-    std::cout << "done!" << std::endl;
-    factory::dilate(dimTagsBridges, 0,0,0, 0.1, 0.1, 0.1);
-}
-
 
 void PackedBed::mesh(std::string outfile)
 {
-
     // Store dimTags and dimTagsMap
     std::vector<std::pair<int, int> > ov;
     std::vector<std::pair<int, int> > bv;

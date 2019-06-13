@@ -33,6 +33,7 @@ public:
     double GeometryScalingFactor=1.0;
     double MeshScalingFactor=1.0;
     double dilateFactor=1.0;
+    double preScalingFactor=1.0;
 
     int MeshSmoothing=1;
     int MeshSmoothRatio=1.8;

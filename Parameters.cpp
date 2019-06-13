@@ -63,6 +63,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "zCylMax")                                     zCylMax                                    = atof(val.at(0).c_str());
     else if(key == "rFactor")                                     rFactor                                    = atof(val.at(0).c_str());
     else if(key == "dilateFactor")                                dilateFactor                               = atof(val.at(0).c_str());
+    else if(key == "preScalingFactor")                            preScalingFactor                           = atof(val.at(0).c_str());
     else if(key == "bridgeTol")                                   bridgeTol                                  = atof(val.at(0).c_str());
     else if(key == "db_dp")                                       db_dp                                      = atof(val.at(0).c_str());
     else if(key == "lc")                                          lc                                         = atof(val.at(0).c_str());
@@ -135,6 +136,7 @@ void Parameters::print()
     std::cout << "zCylMax                                     "<< this->zCylMax                                    << std::endl;
     std::cout << "rFactor                                     "<< this->rFactor                                    << std::endl;
     std::cout << "dilateFactor                                "<< this->dilateFactor                               << std::endl;
+    std::cout << "preScalingFactor                            "<< this->preScalingFactor                           << std::endl;
     std::cout << "bridgeTol                                   "<< this->bridgeTol                                  << std::endl;
     std::cout << "db_dp                                       "<< this->db_dp                                      << std::endl;
     std::cout << "lc                                          "<< this->lc                                         << std::endl;

@@ -1,9 +1,9 @@
 ## Input file for mesher
 zBot  0
-zTop  80
+zTop  1
 
 ## Cylinder
-rCyl     5.01
+rCyl     5.02
 xCyl     5.0
 yCyl     5.0
 inlet    2.5
@@ -48,7 +48,7 @@ fragment                1
 
 ## Mesh
 lc        0.08                # Element size
-lc_beads  0.15
+lc_beads  0.10
 dryRun    off                   # Do not Generate Mesh
 
 # turn on to generate identical meshes at inlet and outlet
@@ -60,7 +60,7 @@ dryRun    off                   # Do not Generate Mesh
 Geometry.OCCParallel                        1        # 0:      No        | 1: Yes
 Mesh.Algorithm                              2        # 1:      MeshAdapt | 2: Auto    | 5: Delaunay |        6: Frontal |       7:  BAMG |  8:    DelQuad
 Mesh.Algorithm3D                            1        # 1:      Delaunay  | 4: Frontal | 5: Frontal  Delaunay |  6:      Frontal Hex |    7: MMG3D | 9: RTree | 10: HXT
-Mesh.Optimize                               0 
+Mesh.Optimize                               1 
 Mesh.OptimizeNetgen                         0 
 Mesh.Generate                               3        # 3:      Volumes   | 2: Surfaces
 Mesh.RefineSteps                            10       # Default =         10 

@@ -48,11 +48,11 @@ fragment                1
 # 0.1, 0.95
 
 ## Mesh
-lc        0.20                # Element size
-lc_beads  0.20
+lc        0.0020                # Element size
+lc_beads  0.0020
 dryRun    off                   # Do not Generate Mesh
 
-dilateFactor                    0.5
+# dilateFactor                    0.5
 
 # turn on to generate identical meshes at inlet and outlet
 # Not implemented!!!
@@ -76,3 +76,6 @@ Named.interstitialVolume        1
 Named.outerSurface              1           # inlet, outlet and wall
 Named.beadVolume                1
 Named.beadSurface               1
+
+preScalingFactor 0.01
+Mesh.ScalingFactor 100
