@@ -59,20 +59,16 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "yCyl")                                        yCyl                                       = atof(val.at(0).c_str());
     else if(key == "inlet")                                       inlet                                      = atof(val.at(0).c_str());
     else if(key == "outlet")                                      outlet                                     = atof(val.at(0).c_str());
-    /* else if(key == "zCylMin")                                     zCylMin                                    = atof(val.at(0).c_str()); */
-    /* else if(key == "zCylMax")                                     zCylMax                                    = atof(val.at(0).c_str()); */
-    else if(key == "rFactor")                                     rFactor                                    = atof(val.at(0).c_str());
-    /* else if(key == "dilateFactor")                                dilateFactor                               = atof(val.at(0).c_str()); */
+
     else if(key == "preScalingFactor")                            preScalingFactor                           = atof(val.at(0).c_str());
+    else if(key == "rFactor")                                     rFactor                                    = atof(val.at(0).c_str());
     else if(key == "bridgeTol")                                   bridgeTol                                  = atof(val.at(0).c_str());
-    else if(key == "db_dp")                                       db_dp                                      = atof(val.at(0).c_str());
+    else if(key == "relativeBridgeRadius")                        relativeBridgeRadius                       = atof(val.at(0).c_str());
     else if(key == "lc")                                          lc                                         = atof(val.at(0).c_str());
     else if(key == "lc_beads")                                    lc_beads                                   = atof(val.at(0).c_str());
     else if(key == "nbeads")                                      nBeadsInPack                               = atoi(val.at(0).c_str());
-    else if(key == "bridgeOffsetFactor")                          bridgeOffsetFactor                         = atof(val.at(0).c_str());
+    else if(key == "bridgeOffsetRatio")                           bridgeOffsetRatio                          = atof(val.at(0).c_str());
     else if(key == "booleanOperation")                            booleanOperation                           = atoi(val.at(0).c_str());
-    /* else if(key == "fuseBeadsAndBridges")                         fuseBeadsAndBridges                        = atoi(val.at(0).c_str()); */
-    /* else if(key == "cutBeadsAndBridges")                          cutBeadsAndBridges                         = atoi(val.at(0).c_str()); */
     else if(key == "fragment")                                    fragment                                   = atoi(val.at(0).c_str());
     else if(key == "Named.beadVolume")                            NamedBeadVolume                            = atoi(val.at(0).c_str());
     else if(key == "Named.interstitialVolume")                    NamedInterstitialVolume                    = atoi(val.at(0).c_str());
@@ -97,28 +93,29 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "Mesh.OptimizeNetgen")                         MeshOptimizeNetgen                         = atoi(val.at(0).c_str());
     else if(key == "Mesh.RefineSteps")                            MeshRefineSteps                            = atoi(val.at(0).c_str());
     else if(key == "Mesh.Generate")                               MeshGenerate                               = atoi(val.at(0).c_str());
+    else if(key == "dryRun")                                      dryRun                                     = atoi(val.at(0).c_str());
 
     else if(key == "packing") packfile = val.at(0);
     else if(key == "outpath") outpath  = val.at(0);
-    else if(key == "copybeads")
 
-    {
-        if(val.at(0) == "on") copyBeads = true;
-        else if(val.at(0) == "off") copyBeads = false;
-        else throw mixd::MixdException("Unknown option for copybeads: " + val.at(0));
-    }
-    else if(key == "periodic")
-    {
-        if(val.at(0) == "on") periodic = true;
-        else if(val.at(0) == "off") periodic = false;
-        else throw mixd::MixdException("Unknown option for periodic: " + val.at(0));
-    }
-    else if(key == "dryRun")
-    {
-        if(val.at(0) == "on") dryRun = true;
-        else if(val.at(0) == "off") dryRun = false;
-        else throw mixd::MixdException("Unknown option for dryRun: " + val.at(0));
-    }
+    /* else if(key == "copybeads") */
+    /* { */
+    /*     if(val.at(0) == "on") copyBeads = true; */
+    /*     else if(val.at(0) == "off") copyBeads = false; */
+    /*     else throw mixd::MixdException("Unknown option for copybeads: " + val.at(0)); */
+    /* } */
+    /* else if(key == "periodic") */
+    /* { */
+    /*     if(val.at(0) == "on") periodic = true; */
+    /*     else if(val.at(0) == "off") periodic = false; */
+    /*     else throw mixd::MixdException("Unknown option for periodic: " + val.at(0)); */
+    /* } */
+    /* else if(key == "dryRun") */
+    /* { */
+    /*     if(val.at(0) == "on") dryRun = true; */
+    /*     else if(val.at(0) == "off") dryRun = false; */
+    /*     else throw mixd::MixdException("Unknown option for dryRun: " + val.at(0)); */
+    /* } */
     else
         throw mixd::MixdException("Unknown keyword: " + key);
 }
@@ -133,36 +130,31 @@ void Parameters::print()
     std::cout << "yCyl                                        "<< this->yCyl                                       << std::endl;
     std::cout << "inlet                                       "<< this->inlet                                      << std::endl;
     std::cout << "outlet                                      "<< this->outlet                                     << std::endl;
-    /* std::cout << "zCylMin                                     "<< this->zCylMin                                    << std::endl; */
-    /* std::cout << "zCylMax                                     "<< this->zCylMax                                    << std::endl; */
     std::cout << "rFactor                                     "<< this->rFactor                                    << std::endl;
-    /* std::cout << "dilateFactor                                "<< this->dilateFactor                               << std::endl; */
     std::cout << "preScalingFactor                            "<< this->preScalingFactor                           << std::endl;
     std::cout << "bridgeTol                                   "<< this->bridgeTol                                  << std::endl;
-    std::cout << "db_dp                                       "<< this->db_dp                                      << std::endl;
+    std::cout << "relativeBridgeRadius                        "<< this->relativeBridgeRadius                       << std::endl;
     std::cout << "lc                                          "<< this->lc                                         << std::endl;
     std::cout << "lc_beads                                    "<< this->lc_beads                                   << std::endl;
     std::cout << "nbeads                                      "<< this->nBeadsInPack                               << std::endl;
-    std::cout << "bridgeOffsetFactor                          "<< this->bridgeOffsetFactor                         << std::endl;
+    std::cout << "bridgeOffsetRatio                           "<< this->bridgeOffsetRatio                          << std::endl;
     std::cout << "booleanOperation                            "<< this->booleanOperation                           << std::endl;
-    /* std::cout << "fuseBeadsAndBridges                         "<< this->fuseBeadsAndBridges                        << std::endl; */
-    /* std::cout << "cutBeadsAndBridges                          "<< this->cutBeadsAndBridges                         << std::endl; */
     std::cout << "fragment                                    "<< this->fragment                                   << std::endl;
     std::cout << "Named.beadVolume                            "<< this->NamedBeadVolume                            << std::endl;
     std::cout << "Named.interstitialVolume                    "<< this->NamedInterstitialVolume                    << std::endl;
     std::cout << "Named.beadSurface                           "<< this->NamedBeadSurface                           << std::endl;
-    std::cout << "Named.inlet                                 "<< this->NamedInlet                                 << std::endl;
-    std::cout << "Named.outlet                                "<< this->NamedOutlet                                << std::endl;
-    std::cout << "Named.wall                                  "<< this->NamedWall                                  << std::endl;
     std::cout << "Named.outerSurface                          "<< this->NamedOuterSurface                          << std::endl;
+    /* std::cout << "Named.inlet                                 "<< this->NamedInlet                                 << std::endl; */
+    /* std::cout << "Named.outlet                                "<< this->NamedOutlet                                << std::endl; */
+    /* std::cout << "Named.wall                                  "<< this->NamedWall                                  << std::endl; */
     std::cout << "General.NumThreads                          "<< this->GeneralNumThreads                          << std::endl;
+    std::cout << "Geometry.OCCParallel                        "<< this->GeometryOCCParallel                        << std::endl;
+    std::cout << "Geometry.ScalingFactor                      "<< this->GeometryScalingFactor                      << std::endl;
+    std::cout << "Mesh.ScalingFactor                          "<< this->MeshScalingFactor                          << std::endl;
     std::cout << "Mesh.CharacteristicLengthExtendFromBoundary "<< this->MeshCharacteristicLengthExtendFromBoundary << std::endl;
     std::cout << "Mesh.CharacteristicLengthMin                "<< this->MeshCharacteristicLengthMin                << std::endl;
     std::cout << "Mesh.CharacteristicLengthFromCurvature      "<< this->MeshCharacteristicLengthFromCurvature      << std::endl;
     std::cout << "Mesh.CharacteristicLengthFromPoints         "<< this->MeshCharacteristicLengthFromPoints         << std::endl;
-    std::cout << "Geometry.OCCParallel                        "<< this->GeometryOCCParallel                        << std::endl;
-    std::cout << "Geometry.ScalingFactor                      "<< this->GeometryScalingFactor                      << std::endl;
-    std::cout << "Mesh.ScalingFactor                          "<< this->MeshScalingFactor                          << std::endl;
     std::cout << "Mesh.Smoothing                              "<< this->MeshSmoothing                              << std::endl;
     std::cout << "Mesh.SmoothRatio                            "<< this->MeshSmoothRatio                            << std::endl;
     std::cout << "Mesh.Algorithm                              "<< this->MeshAlgorithm                              << std::endl;
@@ -174,8 +166,6 @@ void Parameters::print()
     std::cout << "packing                                     "<< this->packfile                                   << std::endl;
     std::cout << "outpath                                     "<< this->outpath                                    << std::endl;
     std::cout << "dryRun                                      "<< this->dryRun                                     << std::endl;
-
-
 
 }
 

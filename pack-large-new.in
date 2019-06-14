@@ -22,24 +22,24 @@ outpath    output/
 
 ## BRIDGE
 rFactor                1.00                  # Modification to       bead  radius
-db_dp                  0.20                  # Bridge       diameter to    bead diameter
-bridgeOffsetFactor     0.90                  # Factor to offset bridge position by proportion of radius of bead. 
+relativeBridgeRadius                  0.20                  # Bridge       diameter to    bead diameter
+bridgeOffsetRatio     0.90                  # Factor to offset bridge position by proportion of radius of bead. 
 bridgeTol              0.08                  # Tolerance    to       build bridges
 fuseBeadsAndBridges     1
 cutBeadsAndBridges      0
 
 # ## CAP
 # rFactor                1.00                  # Modification to       bead  radius
-# db_dp                  0.25                  # Bridge       diameter to    bead diameter
-# bridgeOffsetFactor     0.97                  # Factor to offset bridge position by proportion of radius of bead. 
+# relativeBridgeRadius                  0.25                  # Bridge       diameter to    bead diameter
+# bridgeOffsetRatio     0.97                  # Factor to offset bridge position by proportion of radius of bead. 
 # bridgeTol              0.001                 # Tolerance    to       build bridges
 # fuseBeadsAndBridges     0
 # cutBeadsAndBridges      1
 
 # ## REDUCE
 # rFactor                0.99                  # Modification to       bead  radius
-# db_dp                  0.2                   # Bridge       diameter to    bead diameter
-# bridgeOffsetFactor     0.98                  # Factor to offset bridge position by proportion of radius of bead. 
+# relativeBridgeRadius                  0.2                   # Bridge       diameter to    bead diameter
+# bridgeOffsetRatio     0.98                  # Factor to offset bridge position by proportion of radius of bead. 
 # bridgeTol              -999                 # Tolerance    to       build bridges
 # fuseBeadsAndBridges     0
 # cutBeadsAndBridges      0

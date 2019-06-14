@@ -109,13 +109,13 @@ void PackedBed::createGeometry()
 
 
             /*
-             * If bridgeOffsetFactor is not defined, calculate it ourselves.
+             * If bridgeOffsetRatio is not defined, calculate it ourselves.
              * If booleanOperation == 2 (Cut), then round UP to two decimal places.
              *      Else round DOWN to two decimal places.
              */
-            double factor = this->prm->bridgeOffsetFactor;
+            double factor = this->prm->bridgeOffsetRatio;
             if (factor == 0)
-                factor = ( ( sqrt(1 - pow(this->prm->db_dp,2)) * 100 ) + (this->prm->booleanOperation==2) ) / 100;
+                factor = ( ( sqrt(1 - pow(this->prm->relativeBridgeRadius,2)) * 100 ) + (this->prm->booleanOperation==2) ) / 100;
 
             /* if ((*iter)->neighbour(*riter, eps, dx, dy, dz)) */
             if (dist < r1 + r2 + this->prm->bridgeTol)
@@ -123,7 +123,7 @@ void PackedBed::createGeometry()
 
                 //cylinder radius
                 double rBeadSmallest = (r1 <= r2? r1 : r2);
-                double rBridge = this->prm->db_dp * rBeadSmallest;
+                double rBridge = this->prm->relativeBridgeRadius * rBeadSmallest;
 
                 /* this->dimTagsBridges.push_back({3, factory::addCylinder((*iter)->getX(), (*iter)->getY(), (*iter)->getZ(), dx, dy, dz, rBridge) }) ; */
                 /* this->dimTagsBeads.push_back({3, factory::addCylinder((*iter)->getX(), (*iter)->getY(), (*iter)->getZ(), dx, dy, dz, rBridge) }) ; */

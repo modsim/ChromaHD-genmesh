@@ -31,8 +31,8 @@ nbeads                 1
 outpath    output/
 
 rFactor                1.00                  # Modification to       bead  radius
-db_dp                  0.3                   # Bridge       diameter to    bead diameter
-# bridgeOffsetFactor     0.90                  # Factor to offset bridge position by proportion of radius of bead. 
+relativeBridgeRadius                  0.3                   # Bridge       diameter to    bead diameter
+# bridgeOffsetRatio     0.90                  # Factor to offset bridge position by proportion of radius of bead. 
 bridgeTol              0.001                  # Tolerance    to       build bridges
 # bridgeTol              -999                  # Tolerance    to       build bridges
 
@@ -43,8 +43,8 @@ bridgeTol              0.001                  # Tolerance    to       build brid
 booleanOperation        2
 fragment                1 
 
-### To use cap method, db_dp^2 + bridgeOffsetFactor^2 >= 1
-### To use bridge method, db_dp^2 + bridgeOffsetFactor^2 <= 1
+### To use cap method, relativeBridgeRadius^2 + bridgeOffsetRatio^2 >= 1
+### To use bridge method, relativeBridgeRadius^2 + bridgeOffsetRatio^2 <= 1
 # 0.2, 0.98
 # 0.1, 0.95
 

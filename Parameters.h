@@ -27,8 +27,8 @@ public:
     double inlet=-1.0, outlet=-1.0;
     double radius=0.0, rFactor=0.0;
     double lc=0.0, lc_beads=0.0;
-    double bridgeTol=-999, db_dp=0.0;
-    double bridgeOffsetFactor=0.0;
+    double bridgeTol=-999, relativeBridgeRadius=0.0;
+    double bridgeOffsetRatio=0.0;
 
 
     double GeometryScalingFactor=1.0;
@@ -69,8 +69,7 @@ public:
     int NamedOuterSurface=1;
 
     int nBeadsInPack=99999999;
-
-    bool dryRun=0;
+    int dryRun=0;
 
     bool copyBeads, periodic;
 

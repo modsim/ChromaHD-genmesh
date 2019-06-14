@@ -1,71 +1,86 @@
-## Input file for mesher
+#== Geometry: {{{==============================#
 
-zBot  715
-zTop  723.34
+zBot                                        715
+zTop                                        723.34
 
-## Cylinder
-rCyl     5.01
-xCyl     5.0
-yCyl     5.0
-inlet    2.5
-outlet   2.5
+packing                                     packing/pack-large.xyzd
+nbeads                                      7681
 
-## Beads
-#packing                packing/pack-large-new.xyzd
-#nbeads                 147456
+# packing                                     packing/pack-large-new.xyzd
+# nbeads                                      147456
+#==============================================#
 
-packing                packing/pack-large.xyzd
-nbeads                 7681
+#==============================================#
+rCyl                                        5.01
+xCyl                                        5.0
+yCyl                                        5.0
+inlet                                       2.5
+outlet                                      2.5
+preScalingFactor                            1
+#===========================================}}}#
 
-## Output folder. Always end with '/'. Must exist prior to run.
-outpath    output/
+#== Misc: {{{==================================#
+dryRun                                      0 # Do not Generate Mesh
+outpath                                     output/ # Output folder. Always end with '/'. Must exist prior to run.
+#===========================================}}}#
 
-rFactor                0.98                  # Modification to       bead  radius
-db_dp                  0.2                   # Bridge       diameter to    bead diameter
-bridgeOffsetFactor     0.95                  # Factor to offset bridge position by proportion of radius of bead. 
-# bridgeTol              0.06                  # Tolerance    to       build bridges
-bridgeTol              -999                  # Tolerance    to       build bridges
+#== BeadOperations: {{{==============================#
+fragment                                    1 
 
-booleanOperation        0               # 0: None | 1: Fuse | 2: Cut
-fuseBeadsAndBridges     0
-cutBeadsAndBridges      0
-fragment                1 
+#== BRIDGE: ===================================#
 
-### To use cap method, db_dp^2 + bridgeOffsetFactor^2 >= 1
-### To use bridge method, db_dp^2 + bridgeOffsetFactor^2 <= 1
-# 0.2, 0.98
-# 0.1, 0.95
+rFactor                                     1.00 # Modification to bead radius
+relativeBridgeRadius                        0.20 # Bridge diameter to bead diameter
+bridgeTol                                   0.08 # Tolerance to build bridges
+booleanOperation                            1    # 0 : None | 1 : Fuse | 2 : Cut
+# bridgeOffsetRatio                           0.95 # Factor to offset bridge position by proportion of radius of bead. 
 
-## Mesh
-lc        0.08                # Element size
-lc_beads  0.08
-dryRun    off                   # Do not Generate Mesh
+#== CAPPED ====================================#
 
-# turn on to generate identical meshes at inlet and outlet
-# Not implemented!!!
-# periodic off  
+# rFactor                                     1.00 # Modification to bead radius
+# relativeBridgeRadius                        0.20 # Bridge diameter to bead diameter
+# bridgeTol                                   0.08 # Tolerance to build bridges
+# booleanOperation                            2 # 0 : None | 1 : Fuse | 2 : Cut
+# # bridgeOffsetRatio                           0.95 # Factor to offset bridge position by proportion of radius of bead. 
 
+#== REDUCE ====================================#
 
-##GMSH     settings
+# rFactor                                     0.98 # Modification to bead radius
+# relativeBridgeRadius                        0.2 # Bridge diameter to bead diameter
+# bridgeTol                                   -999 # Tolerance to build bridges
+# # bridgeOffsetRatio                           0.95 # Factor to offset bridge position by proportion of radius of bead. 
+# booleanOperation                            0 # 0 : None | 1 : Fuse | 2 : Cut
+
+#===========================================}}}#
+
+#== MeshSize: {{{==============================#
+lc                                          0.08 # Element size
+lc_beads                                    0.08
+#===========================================}}}#
+
+#== GMSH: {{{==================================#
 General.NumThreads                          8
-Geometry.OCCParallel                        1        # 0:      No        | 1: Yes
-Geometry.ScalingFactor                      1
-Mesh.Algorithm                              2        # 1:      MeshAdapt | 2: Auto    | 5: Delaunay |        6: Frontal |       7:  BAMG |  8:    DelQuad
-Mesh.Algorithm3D                            1        # 1:      Delaunay  | 4: Frontal | 5: Frontal  Delaunay |  6:      Frontal Hex |    7: MMG3D | 9: RTree | 10: HXT
-Mesh.Optimize                               1 
-Mesh.OptimizeNetgen                         0 
-Mesh.Generate                               3        # 3:      Volumes   | 2: Surfaces
-Mesh.RefineSteps                            10       # Default =         10 
-
-Mesh.CharacteristicLengthExtendFromBoundary 2
+Geometry.OCCParallel                        1
+Geometry.ScalingFactor                      1 # Doesn't seem to work with OCC.
+Mesh.ScalingFactor                          1
+Mesh.CharacteristicLengthExtendFromBoundary 1
 Mesh.CharacteristicLengthMin                0
 Mesh.CharacteristicLengthFromCurvature      1
 Mesh.CharacteristicLengthFromPoints         1
+Mesh.Smoothing                              1
+Mesh.SmoothRatio                            1.8
+Mesh.Algorithm                              2 # 1 : MeshAdapt | 2: Auto | 5 : Delaunay | 6 : Frontal | 7 : BAMG | 8 : DelQuad
+Mesh.Algorithm3D                            1 # 1 : Delaunay | 4 : Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
+Mesh.Optimize                               1
+Mesh.OptimizeNetgen                         0
+Mesh.RefineSteps                            10
+Mesh.Generate                               3
+#===========================================}}}#
 
-# Geometry.Tolerance             1e-6
-# Geometry.ToleranceBoolean      1e-6
-
-Named.interstitialVolume        1
-Named.outerSurface              1           # inlet, outlet and wall
-Named.beadVolume                1
-Named.beadSurface               1
+#== NamedGroups: {{{===========================#
+Named.interstitialVolume                    1
+Named.outerSurface                          1 # inlet, outlet and wall
+Named.beadVolume                            1
+Named.beadSurface                           1
+#===========================================}}}#
+# vim: fdm=marker
