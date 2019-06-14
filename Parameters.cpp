@@ -51,7 +51,7 @@ Parameters::~Parameters() {
 void Parameters::decide (const std::string & key, const std::vector<std::string> & val)
 {
 
-         if(key == "zBot")                                        zBot                                       = atof(val.at(0).c_str());
+    if(key == "zBot")                                        zBot                                       = atof(val.at(0).c_str());
 
     else if(key == "zTop")                                        zTop                                       = atof(val.at(0).c_str());
     else if(key == "rCyl")                                        rCyl                                       = atof(val.at(0).c_str());
@@ -59,10 +59,10 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "yCyl")                                        yCyl                                       = atof(val.at(0).c_str());
     else if(key == "inlet")                                       inlet                                      = atof(val.at(0).c_str());
     else if(key == "outlet")                                      outlet                                     = atof(val.at(0).c_str());
-    else if(key == "zCylMin")                                     zCylMin                                    = atof(val.at(0).c_str());
-    else if(key == "zCylMax")                                     zCylMax                                    = atof(val.at(0).c_str());
+    /* else if(key == "zCylMin")                                     zCylMin                                    = atof(val.at(0).c_str()); */
+    /* else if(key == "zCylMax")                                     zCylMax                                    = atof(val.at(0).c_str()); */
     else if(key == "rFactor")                                     rFactor                                    = atof(val.at(0).c_str());
-    else if(key == "dilateFactor")                                dilateFactor                               = atof(val.at(0).c_str());
+    /* else if(key == "dilateFactor")                                dilateFactor                               = atof(val.at(0).c_str()); */
     else if(key == "preScalingFactor")                            preScalingFactor                           = atof(val.at(0).c_str());
     else if(key == "bridgeTol")                                   bridgeTol                                  = atof(val.at(0).c_str());
     else if(key == "db_dp")                                       db_dp                                      = atof(val.at(0).c_str());
@@ -70,8 +70,9 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "lc_beads")                                    lc_beads                                   = atof(val.at(0).c_str());
     else if(key == "nbeads")                                      nBeadsInPack                               = atoi(val.at(0).c_str());
     else if(key == "bridgeOffsetFactor")                          bridgeOffsetFactor                         = atof(val.at(0).c_str());
-    else if(key == "fuseBeadsAndBridges")                         fuseBeadsAndBridges                        = atoi(val.at(0).c_str());
-    else if(key == "cutBeadsAndBridges")                          cutBeadsAndBridges                         = atoi(val.at(0).c_str());
+    else if(key == "booleanOperation")                            booleanOperation                           = atoi(val.at(0).c_str());
+    /* else if(key == "fuseBeadsAndBridges")                         fuseBeadsAndBridges                        = atoi(val.at(0).c_str()); */
+    /* else if(key == "cutBeadsAndBridges")                          cutBeadsAndBridges                         = atoi(val.at(0).c_str()); */
     else if(key == "fragment")                                    fragment                                   = atoi(val.at(0).c_str());
     else if(key == "Named.beadVolume")                            NamedBeadVolume                            = atoi(val.at(0).c_str());
     else if(key == "Named.interstitialVolume")                    NamedInterstitialVolume                    = atoi(val.at(0).c_str());
@@ -132,10 +133,10 @@ void Parameters::print()
     std::cout << "yCyl                                        "<< this->yCyl                                       << std::endl;
     std::cout << "inlet                                       "<< this->inlet                                      << std::endl;
     std::cout << "outlet                                      "<< this->outlet                                     << std::endl;
-    std::cout << "zCylMin                                     "<< this->zCylMin                                    << std::endl;
-    std::cout << "zCylMax                                     "<< this->zCylMax                                    << std::endl;
+    /* std::cout << "zCylMin                                     "<< this->zCylMin                                    << std::endl; */
+    /* std::cout << "zCylMax                                     "<< this->zCylMax                                    << std::endl; */
     std::cout << "rFactor                                     "<< this->rFactor                                    << std::endl;
-    std::cout << "dilateFactor                                "<< this->dilateFactor                               << std::endl;
+    /* std::cout << "dilateFactor                                "<< this->dilateFactor                               << std::endl; */
     std::cout << "preScalingFactor                            "<< this->preScalingFactor                           << std::endl;
     std::cout << "bridgeTol                                   "<< this->bridgeTol                                  << std::endl;
     std::cout << "db_dp                                       "<< this->db_dp                                      << std::endl;
@@ -143,8 +144,9 @@ void Parameters::print()
     std::cout << "lc_beads                                    "<< this->lc_beads                                   << std::endl;
     std::cout << "nbeads                                      "<< this->nBeadsInPack                               << std::endl;
     std::cout << "bridgeOffsetFactor                          "<< this->bridgeOffsetFactor                         << std::endl;
-    std::cout << "fuseBeadsAndBridges                         "<< this->fuseBeadsAndBridges                        << std::endl;
-    std::cout << "cutBeadsAndBridges                          "<< this->cutBeadsAndBridges                         << std::endl;
+    std::cout << "booleanOperation                            "<< this->booleanOperation                           << std::endl;
+    /* std::cout << "fuseBeadsAndBridges                         "<< this->fuseBeadsAndBridges                        << std::endl; */
+    /* std::cout << "cutBeadsAndBridges                          "<< this->cutBeadsAndBridges                         << std::endl; */
     std::cout << "fragment                                    "<< this->fragment                                   << std::endl;
     std::cout << "Named.beadVolume                            "<< this->NamedBeadVolume                            << std::endl;
     std::cout << "Named.interstitialVolume                    "<< this->NamedInterstitialVolume                    << std::endl;

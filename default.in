@@ -26,6 +26,7 @@ bridgeOffsetFactor     0.95                  # Factor to offset bridge position 
 # bridgeTol              0.06                  # Tolerance    to       build bridges
 bridgeTol              -999                  # Tolerance    to       build bridges
 
+booleanOperation        0               # 0: None | 1: Fuse | 2: Cut
 fuseBeadsAndBridges     0
 cutBeadsAndBridges      0
 fragment                1 

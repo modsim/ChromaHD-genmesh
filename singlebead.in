@@ -7,8 +7,8 @@
 # zTop 710.3
 #
 
-zBot 7
-zTop 8
+zBot 0
+zTop 2
 rCyl     5.02
 xCyl     0.0
 yCyl     0.0
@@ -31,15 +31,16 @@ nbeads                 1
 outpath    output/
 
 rFactor                1.00                  # Modification to       bead  radius
-db_dp                  0.2                   # Bridge       diameter to    bead diameter
-bridgeOffsetFactor     0.90                  # Factor to offset bridge position by proportion of radius of bead. 
+db_dp                  0.3                   # Bridge       diameter to    bead diameter
+# bridgeOffsetFactor     0.90                  # Factor to offset bridge position by proportion of radius of bead. 
 bridgeTol              0.001                  # Tolerance    to       build bridges
 # bridgeTol              -999                  # Tolerance    to       build bridges
 
 # method      n # 1: reduce | 2: enlarge | 3: bridge | 4: cap
 
-fuseBeadsAndBridges     1
-cutBeadsAndBridges      0
+# fuseBeadsAndBridges     1
+# cutBeadsAndBridges      0
+booleanOperation        2
 fragment                1 
 
 ### To use cap method, db_dp^2 + bridgeOffsetFactor^2 >= 1
@@ -78,4 +79,4 @@ Named.beadVolume                1
 Named.beadSurface               1
 
 preScalingFactor 0.01
-Mesh.ScalingFactor 100
+# Mesh.ScalingFactor 100

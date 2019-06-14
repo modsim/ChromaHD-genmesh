@@ -23,6 +23,11 @@ PackedBed::PackedBed(Parameters * prm)
 {
     this->prm = prm;
     this->readPacking(this->prm->packfile);
+
+    /* beads.push_back(new Bead(0, 0, 0, this->prm->rFactor * 1)); */
+    /* beads.push_back(new Bead(0, 0, 2, this->prm->rFactor * 1)); */
+
+
     model::add("PackedBed");
 }
 
@@ -102,7 +107,15 @@ void PackedBed::createGeometry()
 
             double dist = sqrt( pow(dx, 2) + pow(dy, 2) + pow(dz, 2) );
 
+
+            /*
+             * If bridgeOffsetFactor is not defined, calculate it ourselves.
+             * If booleanOperation == 2 (Cut), then round UP to two decimal places.
+             *      Else round DOWN to two decimal places.
+             */
             double factor = this->prm->bridgeOffsetFactor;
+            if (factor == 0)
+                factor = ( ( sqrt(1 - pow(this->prm->db_dp,2)) * 100 ) + (this->prm->booleanOperation==2) ) / 100;
 
             /* if ((*iter)->neighbour(*riter, eps, dx, dy, dz)) */
             if (dist < r1 + r2 + this->prm->bridgeTol)
@@ -135,14 +148,6 @@ void PackedBed::createGeometry()
 
     std::cout << "done!" << std::endl;
 
-
-    /* std::cout << "Dilating Geometries... " << std::flush; */
-    /* double df = this->prm->dilateFactor; */
-    /* factory::dilate(dimTagsCyl, 0,0,0, df, df, df); */
-    /* factory::dilate(dimTagsBeads, 0,0,0, df, df, df); */
-    /* factory::dilate(dimTagsBridges, 0,0,0, df, df, df); */
-    /* std::cout << "done!" << std::endl; */
-
 }
 
 void PackedBed::mesh(std::string outfile)
@@ -156,17 +161,15 @@ void PackedBed::mesh(std::string outfile)
     /* //TODO:extract wall, cut, */
 
     /* //Fuse beads together (with bridges or without) */
-    if (this->prm->fuseBeadsAndBridges)
+    if (this->prm->booleanOperation == 1)
     {
         if (dimTagsBridges.size() == 0) dimTagsBridges = {3, dimTagsBeads.back()};
+
         std::cout << "Fusing Beads and Bridges... " << std::flush;
-        /* factory::fuse(dimTagsBeads, {3, dimTagsBeads.back()}, ov, ovv ); */
-        /* factory::fuse(dimTagsBeads, dimTagsBeads, ov, ovv ); */
         factory::fuse(dimTagsBeads, dimTagsBridges, ov, ovv );
         std::cout << "done!" << std::endl;
     }
-
-    if (this->prm->cutBeadsAndBridges)
+    else if (this->prm->booleanOperation == 2)
     {
         if (dimTagsBridges.size() == 0)
         {
@@ -177,21 +180,18 @@ void PackedBed::mesh(std::string outfile)
         std::cout << "Capping Beads... " << std::flush;
         factory::cut(dimTagsBeads, dimTagsBridges, ov, ovv );
         std::cout << "done!" << std::endl;
+
     }
 
     // Fragment cylinder w.r.t. beads
     if (this->prm->fragment)
     {
         if (ov.size() == 0) ov = dimTagsBeads;
+
         std::cout << "Fragmenting Volumes... " << std::flush;
         factory::fragment(dimTagsCyl, ov, bv, ovv );
         std::cout << "done!" << std::endl;
     }
-
-    /* // Fragment Cylinder. Newly created interstitial volume is stored after the bead tags. */
-    /* factory::fragment(dimTagsCyl, dimTagsBeads, bv, ovv ); */
-
-
 
     // Synchronize gmsh model with geometry kernel.
     std::cout << "synchronizing... " << std::flush;
@@ -201,7 +201,7 @@ void PackedBed::mesh(std::string outfile)
     std::cout << std::endl;
 
     // ============================
-    // general solution
+    // Named Physical Groups
 
     dimTagsInterstitial.push_back(bv.back());
 
@@ -265,7 +265,7 @@ void PackedBed::mesh(std::string outfile)
     /* model::mesh::embed(0,{tagCenter}, 3,dimTagsBeads.back().second); */
 
     //Embed points in beads to control element size within them
-    if (this->prm->fuseBeadsAndBridges)
+    if (this->prm->booleanOperation == 1)
     {
         for (std::vector<std::pair<int,int>>::iterator iter = bv.begin(); iter != bv.end(); iter++ )
         {

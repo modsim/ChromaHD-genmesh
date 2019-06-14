@@ -43,8 +43,11 @@ This should create the mesh in the required format in the `outpath` directory. A
 6. Switch off outputs of mesh fragments
 7. Mesh.MaxNumThreads3D, Mesh.CharacteristicLengthFactor, Mesh.OptimizeThreshold, 
 8. Implement geometry creation in Built in kernel 
-    1. Create routines for spheres and cylinders
-    2. Modularize and refactor existing code
+    2. Create routines for spheres and cylinders
+    3. Modularize and refactor existing code
+9. BridgeOffsetFactor -> BridgeOffsetRatio 
+10. db_dp -> RelativeBridgeRadius
+11. Bridges at the cylinder-bead interface
 
 ## Known Issues
 1. After mesh size constraints were applied to only surfaces (and points were used inside beads), the Netgen optimizer crashes randomly.

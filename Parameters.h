@@ -23,16 +23,17 @@ public:
     void write(std::string filename);
 
     double zBot=0.0, zTop=0.0, rCyl=0.0, xCyl=0.0, yCyl=0.0;
-    double zCylMin=1.0, zCylMax=-1.0;
+    /* double zCylMin=1.0, zCylMax=-1.0; */
     double inlet=-1.0, outlet=-1.0;
     double radius=0.0, rFactor=0.0;
     double lc=0.0, lc_beads=0.0;
     double bridgeTol=-999, db_dp=0.0;
     double bridgeOffsetFactor=0.0;
 
+
     double GeometryScalingFactor=1.0;
     double MeshScalingFactor=1.0;
-    double dilateFactor=1.0;
+    /* double dilateFactor=1.0; */
     double preScalingFactor=1.0;
 
     int MeshSmoothing=1;
@@ -52,9 +53,12 @@ public:
     int MeshCharacteristicLengthFromCurvature=1;
     int MeshCharacteristicLengthFromPoints=1;
 
-    int fuseBeadsAndBridges=0;
-    int cutBeadsAndBridges=0;
-    int fragment=1;
+    int beadType = 0; //
+
+    int booleanOperation    = 0;
+    /* int fuseBeadsAndBridges = 0; */
+    /* int cutBeadsAndBridges  = 0; */
+    int fragment            = 1;
 
     int NamedBeadVolume=1;
     int NamedInterstitialVolume=1;
