@@ -21,6 +21,7 @@ public:
 
     void print();
     void write(std::string filename);
+    void update();
 
     double zBot=0.0, zTop=0.0, rCyl=0.0, xCyl=0.0, yCyl=0.0;
     /* double zCylMin=1.0, zCylMax=-1.0; */
@@ -35,6 +36,7 @@ public:
     double MeshScalingFactor=1.0;
     /* double dilateFactor=1.0; */
     double preScalingFactor=1.0;
+    int autoScaleParameters = 0;
 
     int MeshSmoothing=1;
     int MeshSmoothRatio=1.8;

@@ -36,7 +36,8 @@ int main(int argc, char** argv) {
     try{
 
         Parameters * prm = new Parameters(infile);
-        prm->print();
+        /* prm->print(); */
+        /* prm->update(); */
 
         gmsh::option::setNumber("General.Terminal", 1);
         gmsh::option::setNumber("General.NumThreads", prm->GeneralNumThreads);

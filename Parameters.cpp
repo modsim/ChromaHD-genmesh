@@ -50,9 +50,9 @@ Parameters::Parameters(const std::string& fname)
 
     }
 
-    bridgeTol = preScalingFactor * bridgeTol;
-    lc        = preScalingFactor * lc;
-    lc_beads  = preScalingFactor * lc_beads;
+    print();
+    update();
+
 
 
 
@@ -66,6 +66,16 @@ Parameters::Parameters(const Parameters& orig) {
 Parameters::~Parameters() {
 }
 
+void Parameters::update()
+{
+    //using a separate method to update instead of putting the code
+    //in the constructor allows us to print the parameters in the stdout
+    //and re-use the parameters directly in the next simulation.
+
+    bridgeTol = preScalingFactor * bridgeTol;
+    lc        = preScalingFactor * lc;
+    lc_beads  = preScalingFactor * lc_beads;
+}
 
 void Parameters::decide (const std::string & key, const std::vector<std::string> & val)
 {

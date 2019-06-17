@@ -7,8 +7,8 @@
 # zTop 710.3
 #
 
-zBot 0
-zTop 2
+zBot 7
+zTop 8
 rCyl     5.02
 xCyl     0.0
 yCyl     0.0
@@ -33,14 +33,14 @@ outpath    output/
 rFactor                1.00                  # Modification to       bead  radius
 relativeBridgeRadius                  0.3                   # Bridge       diameter to    bead diameter
 # bridgeOffsetRatio     0.90                  # Factor to offset bridge position by proportion of radius of bead. 
-bridgeTol              0.001                  # Tolerance    to       build bridges
-# bridgeTol              -999                  # Tolerance    to       build bridges
+# bridgeTol              0.001                  # Tolerance    to       build bridges
+bridgeTol              -999                  # Tolerance    to       build bridges
 
 # method      n # 1: reduce | 2: enlarge | 3: bridge | 4: cap
 
 # fuseBeadsAndBridges     1
 # cutBeadsAndBridges      0
-booleanOperation        2
+booleanOperation        0
 fragment                1 
 
 ### To use cap method, relativeBridgeRadius^2 + bridgeOffsetRatio^2 >= 1
@@ -49,8 +49,8 @@ fragment                1
 # 0.1, 0.95
 
 ## Mesh
-lc        0.0020                # Element size
-lc_beads  0.0020
+lc        0.20                # Element size
+lc_beads  0.20
 dryRun    off                   # Do not Generate Mesh
 
 # dilateFactor                    0.5
