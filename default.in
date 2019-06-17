@@ -1,7 +1,7 @@
 #== Geometry: {{{==============================#
 
 zBot                                        715
-zTop                                        723.34
+zTop                                        717
 
 packing                                     packing/pack-large.xyzd
 nbeads                                      7681
@@ -16,7 +16,7 @@ xCyl                                        5.0
 yCyl                                        5.0
 inlet                                       2.5
 outlet                                      2.5
-preScalingFactor                            0.1
+# preScalingFactor                            0.1
 #===========================================}}}#
 
 #== Misc: {{{==================================#
@@ -31,7 +31,7 @@ fragment                                    1
 
 rFactor                                     1.00 # Modification to bead radius
 relativeBridgeRadius                        0.20 # Bridge diameter to bead diameter
-bridgeTol                                   0.08 # Tolerance to build bridges
+bridgeTol                                   0.08 # Tolerance to build bridges (automatically prescaled)
 booleanOperation                            1    # 0 : None | 1 : Fuse | 2 : Cut
 # bridgeOffsetRatio                           0.95 # Factor to offset bridge position by proportion of radius of bead. 
 
@@ -54,7 +54,7 @@ booleanOperation                            1    # 0 : None | 1 : Fuse | 2 : Cut
 #===========================================}}}#
 
 #== MeshSize: {{{==============================#
-lc                                          0.08 # Element size
+lc                                          0.08 # Element size (automatically prescaled)
 lc_beads                                    0.08
 #===========================================}}}#
 

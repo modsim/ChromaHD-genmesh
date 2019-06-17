@@ -50,6 +50,10 @@ Parameters::Parameters(const std::string& fname)
 
     }
 
+    bridgeTol = preScalingFactor * bridgeTol;
+    lc        = preScalingFactor * lc;
+    lc_beads  = preScalingFactor * lc_beads;
+
 
 
     file.close();
