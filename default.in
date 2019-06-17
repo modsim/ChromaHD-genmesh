@@ -11,12 +11,12 @@ nbeads                                      7681
 #==============================================#
 
 #==============================================#
-rCyl                                        5.01
+rCyl                                        5.02
 xCyl                                        5.0
 yCyl                                        5.0
 inlet                                       2.5
 outlet                                      2.5
-preScalingFactor                            1
+preScalingFactor                            0.1
 #===========================================}}}#
 
 #== Misc: {{{==================================#
@@ -71,7 +71,7 @@ Mesh.Smoothing                              1
 Mesh.SmoothRatio                            1.8
 Mesh.Algorithm                              2 # 1 : MeshAdapt | 2: Auto | 5 : Delaunay | 6 : Frontal | 7 : BAMG | 8 : DelQuad
 Mesh.Algorithm3D                            1 # 1 : Delaunay | 4 : Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
-Mesh.Optimize                               1
+Mesh.Optimize                               0
 Mesh.OptimizeNetgen                         0
 Mesh.RefineSteps                            10
 Mesh.Generate                               3

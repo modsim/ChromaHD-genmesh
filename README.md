@@ -38,18 +38,14 @@ This should create the mesh in the required format in the `outpath` directory. A
 1. Use GMSH::logger.
 2. Improved error handling.
 3. Easy switch between cap/bridge/reduce/enlarge
-4. ~~Easy handling of db_dp and offset calculation~~
-5. Easy handling of nbeads
-6. Switch off outputs of mesh fragments
-7. Mesh.MaxNumThreads3D, Mesh.CharacteristicLengthFactor, Mesh.OptimizeThreshold, 
-8. ~~Implement geometry creation in Built in kernel~~: no boolean ops in built-in kernel 
-9. ~~BridgeOffsetFactor -> BridgeOffsetRatio~~ 
-10. ~~db_dp -> RelativeBridgeRadius~~
-11. Bridges at the cylinder-bead interface
-12. Implement Translation
+4. Easy handling of nbeads: input 750 => extracts first 750 beads from zBot to zTop, not based on packing order
+5. Switch off outputs of mesh fragments
+6. Mesh.MaxNumThreads3D, Mesh.CharacteristicLengthFactor, Mesh.OptimizeThreshold, 
+7. Bridges at the cylinder-bead interface
+8. Implement Translation
+9. Readjust zBot and zTop to be the first and last bead's z value
 
 ## Known Issues
 1. After mesh size constraints were applied to only surfaces (and points were used inside beads), the Netgen optimizer crashes randomly.
 2. Geometry.ScalingFactor doesn't work. Use dilateFactor instead.
 3. Large beds either are stuck or crash with errors.
-

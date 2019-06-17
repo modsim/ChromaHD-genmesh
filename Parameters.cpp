@@ -8,6 +8,7 @@
 #include "Parameters.h"
 #include "mixd.hpp"
 #include <sstream>
+#include <cmath>
 
 Parameters::Parameters(const std::string& fname)
 {
@@ -36,6 +37,20 @@ Parameters::Parameters(const std::string& fname)
             decide(key, val);
         }
     }
+
+    /*
+     * If bridgeOffsetRatio is not defined, calculate it ourselves.
+     * If booleanOperation == 2 (Cut), then round UP to two decimal places.
+     *      Else round DOWN to two decimal places.
+     */
+    if (bridgeOffsetRatio == 0)
+    {
+        bridgeOffsetRatio = ( ( sqrt(1 - pow(relativeBridgeRadius,2)) * 100 ) + (booleanOperation == 2)*1 - (booleanOperation != 2)*2 ) / 100;
+        std::cout << "#bridgeOffsetRatio automatically calculated!" << std::endl;
+
+    }
+
+
 
     file.close();
 }
@@ -118,6 +133,9 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     /* } */
     else
         throw mixd::MixdException("Unknown keyword: " + key);
+
+
+
 }
 
 void Parameters::print()
