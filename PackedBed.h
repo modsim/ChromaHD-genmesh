@@ -43,7 +43,7 @@ class PackedBed{
     private:
         Parameters * prm;
 
-        void readPacking(std::string packingFilename);
+        void readFile(std::string packingFilename);
 
 };
 

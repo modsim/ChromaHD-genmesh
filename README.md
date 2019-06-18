@@ -35,9 +35,9 @@ This should create the mesh in the required format in the `outpath` directory. A
 
 ## Todo
 
-1. Use GMSH::logger.
+1. ~~Use GMSH::logger~~
 2. Improved error handling.
-3. Easy switch between cap/bridge/reduce/enlarge
+3. ~~Easy switch between cap/bridge/reduce/enlarge~~
 4. Easy handling of nbeads: input 750 => extracts first 750 beads from zBot to zTop, not based on packing order
 5. Switch off outputs of mesh fragments
 6. Mesh.MaxNumThreads3D, Mesh.CharacteristicLengthFactor, Mesh.OptimizeThreshold, 

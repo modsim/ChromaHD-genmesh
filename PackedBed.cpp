@@ -13,6 +13,7 @@
 #include <iostream>
 #include "Files.h"
 #include <gmsh.h>
+#include <iterator>
 
 #define PI 3.1415926535897932
 
@@ -22,11 +23,10 @@ namespace factory = gmsh::model::occ;
 PackedBed::PackedBed(Parameters * prm)
 {
     this->prm = prm;
-    this->readPacking(this->prm->packfile);
+    this->readFile(this->prm->packfile);
 
     /* beads.push_back(new Bead(0, 0, 0, this->prm->rFactor * 1)); */
     /* beads.push_back(new Bead(0, 0, 2, this->prm->rFactor * 1)); */
-
 
     model::add("PackedBed");
 }
@@ -348,88 +348,6 @@ void PackedBed::mesh(std::string outfile)
 
 }
 
-
-void PackedBed::readPacking(std::string packingFilename) {
-    // read cords
-    size_t nBeads = this->prm->nBeadsInPack;
-    size_t nvals = 4 * nBeads; // for each bead: x y z d
-    //  std::cout << nvals << std::endl;
-
-    float *contents = new float[nvals];
-    FILE *fid = fopen(packingFilename.c_str(), "rb");
-    std::cout << "reading packing ... " << std::flush;
-    size_t itemsread = fread(contents, sizeof (float), nvals, fid);
-
-    fclose(fid);
-
-    if (itemsread != nvals) {
-        std::cerr << "reading file went wrong!!!" << std::endl;
-        std::cerr << "Beads read: " << itemsread/4 << std::endl;
-        exit(1);
-    }
-
-    if (isBigEndian())
-        swapbytes((char*) contents, nvals, sizeof (float));
-
-    std::cout << "done!" << std::endl << std::endl;
-    std::cout << "Selecting beads in range..." << std::endl;
-
-    double cz1 = this->prm->zBot;
-    double cz2 = this->prm->zTop;
-
-    //     double radius = -1.0;
-    double rmax = -1.0;
-    for (size_t i = 0; i < nBeads; i++) {
-        double x = contents[i * 4 ];
-        double y = contents[i * 4 + 1];
-        double z = contents[i * 4 + 2];
-        double r = contents[i * 4 + 3] * 0.5;
-
-        // add bead to list, if its center is in the expected range
-        if (z >= cz1 && z <= cz2) {
-            /* // check for equal bead radius ONLY if we */
-            /* // want to copy meshes between beads */
-            /* if (parameters->copyBeads) { */
-            /*     if (radius < 0.0) */
-            /*         radius = r; */
-            /*     else */
-            /*         if (radius != r) { */
-            /*             std::cerr << "Beads may NOT have different diameters when copying meshes!!!" << std::endl; */
-            /*             exit(1); */
-            /*         } */
-            /* } */
-            if(r > rmax) rmax = r;
-            beads.push_back(new Bead(x, y, z, this->prm->rFactor * r));
-        }
-    }
-
-    this->prm->radius = this->prm->rFactor * rmax;
-
-    if (beads.size() == 0) {
-        std::cerr << "ERROR: no beads in selection!!!" << std::endl;
-        exit(1);
-    }
-
-    // compute volume of selected beads:
-    double vol_total = 0.0;
-
-    for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
-    {
-        // remember: this is already the shrunken radius!!!
-        double r = (*it)->getR();
-
-        double vol = 4.0/3.0 * PI * r*r*r;
-
-        vol_total += vol;
-    }
-
-    std::cout << "bead sizes are OK!" << std::endl;
-    std::cout << this->beads.size() << " beads in the selected range." << std::endl;
-    std::cout << "total beads volume (after rFactoring!): " << std::scientific << std::setprecision(10) <<  vol_total << std::endl;
-    std::cout << "average bead volume: " << std::scientific << std::setprecision(10) << vol_total/beads.size() << std::endl << std::endl << std::endl;
-
-}
-
 void PackedBed::printPacking()
 {
     std::cout << "Printing packing geometry..." << std::endl;
@@ -444,3 +362,72 @@ void PackedBed::printPacking()
 
 }
 
+void PackedBed::readFile(std::string packingFilename)
+{
+    // open the file:
+    std::ifstream file(packingFilename.c_str(), std::ios::binary);
+
+    // Stop eating new lines in binary mode!!!
+    file.unsetf(std::ios::skipws);
+
+    file.seekg(0, std::ios::end);
+    const size_t num_elements = file.tellg() / sizeof(float);
+    file.seekg(0, std::ios::beg);
+
+    std::cout << "reading packing ... " << std::flush;
+    std::vector<float> data(num_elements);
+    file.read(reinterpret_cast<char*>(&data[0]), num_elements*sizeof(float));
+
+    /* if (isBigEndian()) */
+    /*     swapbytes(reinterpret_cast<char*>(&data[0]), data.size(), sizeof (float)); */
+
+    std::cout << "done!" << std::endl << std::endl;
+    std::cout << "Selecting beads in range..." << std::endl;
+
+    double cz1 = this->prm->zBot;
+    double cz2 = this->prm->zTop;
+
+    for(size_t i = 0; i < data.size()/4; ++i)
+    {
+        double x = data[i * 4 ];
+        double y = data[i * 4 + 1];
+        double z = data[i * 4 + 2];
+        double r = data[i * 4 + 3] * 0.5;
+
+        /* std::cout << x << std::endl; */
+        /* std::cout << y << std::endl; */
+        /* std::cout << z << std::endl; */
+        /* std::cout << r << std::endl; */
+
+        if (z >= cz1 && z <= cz2)
+        {
+            beads.push_back(new Bead(x, y, z, this->prm->rFactor * r));
+        }
+
+    }
+
+    /* this->prm->radius = this->prm->rFactor * rmax; */
+
+    if (beads.size() == 0) {
+        std::cerr << "ERROR: no beads in selection!!!" << std::endl;
+        exit(1);
+    }
+
+    // compute volume of selected beads:
+    double radius_total = 0.0;
+    double radius_max = -1.0;
+
+    for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
+    {
+        // remember: this is already the shrunken radius!!!
+        double r = (*it)->getR();
+        radius_total +=  r;
+        if(r > radius_max)
+            radius_max = r;
+    }
+
+    std::cout << this->beads.size() << "/" << data.size()/4 << " beads in the selected range." << std::endl;
+    std::cout << "average bead radius: " << std::scientific << std::setprecision(10) << radius_total/beads.size() << std::endl;
+    std::cout << "maximum bead radius: " << std::scientific << std::setprecision(10) << radius_max << std::endl << std::endl;
+
+}
