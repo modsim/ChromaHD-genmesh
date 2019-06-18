@@ -378,8 +378,8 @@ void PackedBed::readFile(std::string packingFilename)
     std::vector<float> data(num_elements);
     file.read(reinterpret_cast<char*>(&data[0]), num_elements*sizeof(float));
 
-    /* if (isBigEndian()) */
-    /*     swapbytes(reinterpret_cast<char*>(&data[0]), data.size(), sizeof (float)); */
+    if (isBigEndian())
+        swapbytes(reinterpret_cast<char*>(&data[0]), data.size(), sizeof (float));
 
     std::cout << "done!" << std::endl << std::endl;
     std::cout << "Selecting beads in range..." << std::endl;
@@ -394,11 +394,6 @@ void PackedBed::readFile(std::string packingFilename)
         double z = data[i * 4 + 2];
         double r = data[i * 4 + 3] * 0.5;
 
-        /* std::cout << x << std::endl; */
-        /* std::cout << y << std::endl; */
-        /* std::cout << z << std::endl; */
-        /* std::cout << r << std::endl; */
-
         if (z >= cz1 && z <= cz2)
         {
             beads.push_back(new Bead(x, y, z, this->prm->rFactor * r));
@@ -406,14 +401,11 @@ void PackedBed::readFile(std::string packingFilename)
 
     }
 
-    /* this->prm->radius = this->prm->rFactor * rmax; */
-
     if (beads.size() == 0) {
         std::cerr << "ERROR: no beads in selection!!!" << std::endl;
         exit(1);
     }
 
-    // compute volume of selected beads:
     double radius_total = 0.0;
     double radius_max = -1.0;
 
