@@ -70,7 +70,7 @@ public:
     int NamedWall;
     int NamedOuterSurface=1;
 
-    int nBeadsInPack=99999999;
+    int nBeads=0;
     int dryRun=0;
 
     bool copyBeads, periodic;

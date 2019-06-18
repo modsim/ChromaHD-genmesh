@@ -86,3 +86,4 @@ int Bead::getCTag()
 {
     return this->ctag;
 }
+

@@ -1,10 +1,6 @@
 #== Geometry: {{{==============================#
-
-zBot                                        715
-zTop                                        717
-
 packing                                     packing/pack-large.xyzd
-nbeads                                      7681
+nBeads                                      750
 
 # packing                                     packing/pack-large-new.xyzd
 # nbeads                                      147456

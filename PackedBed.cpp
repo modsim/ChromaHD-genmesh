@@ -387,19 +387,33 @@ void PackedBed::readFile(std::string packingFilename)
     double cz1 = this->prm->zBot;
     double cz2 = this->prm->zTop;
 
-    for(size_t i = 0; i < data.size()/4; ++i)
+    double nBeadsMax = data.size()/4;
+
+    for(size_t i = 0; i < nBeadsMax; ++i)
     {
         double x = data[i * 4 ];
         double y = data[i * 4 + 1];
         double z = data[i * 4 + 2];
         double r = data[i * 4 + 3] * 0.5;
 
-        if (z >= cz1 && z <= cz2)
-        {
-            beads.push_back(new Bead(x, y, z, this->prm->rFactor * r));
-        }
-
+        beads.push_back(new Bead(x, y, z, this->prm->rFactor * r));
     }
+
+    // sort using a lambda expression
+    std::cout << "Sorting beads according to z-value..." << std::flush;
+    std::sort(beads.begin(), beads.end(), [](const Bead* b1, const Bead* b2) {
+            return b1->getZ() < b2->getZ();
+    });
+    std::cout << "done!" << std::endl;
+
+    //Only store nBeads
+    // testing nBeads
+    double nBeads = this->prm->nBeads > nBeadsMax? nBeadsMax: this->prm->nBeads;
+    beads.erase(beads.begin() + nBeads, beads.end());
+
+    //Adjust zBot and zTop
+    this->prm->zBot=beads.front()->getZ();
+    this->prm->zTop=beads.back()->getZ();
 
     if (beads.size() == 0) {
         std::cerr << "ERROR: no beads in selection!!!" << std::endl;
