@@ -36,14 +36,11 @@ int main(int argc, char** argv) {
     try{
 
         Parameters * prm = new Parameters(infile);
-        /* prm->print(); */
-        /* prm->update(); */
 
         gmsh::option::setNumber("General.Terminal", 1);
         gmsh::option::setNumber("General.NumThreads", prm->GeneralNumThreads);
         gmsh::option::setNumber("Geometry.OCCParallel", prm->GeometryOCCParallel);
         gmsh::option::setNumber("Geometry.ScalingFactor", prm->GeometryScalingFactor);
-        //gmsh::option::setNumber("Geometry.MatchGeomAndMesh", 1);
         gmsh::option::setNumber("Mesh.ScalingFactor", prm->MeshScalingFactor);
         gmsh::option::setNumber("Mesh.Smoothing", prm->MeshSmoothing);
         gmsh::option::setNumber("Mesh.SmoothRatio", prm->MeshSmoothRatio);
@@ -69,8 +66,15 @@ int main(int argc, char** argv) {
 
         PackedBed * packedBed = new PackedBed(prm);
 
+        long start = gmsh::logger::time();
+
         packedBed->createGeometry();
         packedBed->mesh(outfile);
+
+        long duration = gmsh::logger::time() - start;
+
+        gmsh::logger::write("Wall time: " + std::to_string(duration) + " s", "info");
+        gmsh::logger::write("CPU  time: " + std::to_string(gmsh::logger::cputime()) + " s", "info");
 
         delete prm;
         delete packedBed;
