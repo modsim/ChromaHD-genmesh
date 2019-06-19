@@ -173,6 +173,7 @@ void PackedBed::mesh(std::string outfile)
 
         std::cout << "Fragmenting Volumes... " << std::flush;
         factory::fragment(dimTagsCyl, ov, bv, ovv );
+        dimTagsInterstitial.push_back(bv.back());
         std::cout << "done!" << std::endl;
     }
 
@@ -186,16 +187,18 @@ void PackedBed::mesh(std::string outfile)
     // ============================
     // Named Physical Groups
 
-    dimTagsInterstitial.push_back(bv.back());
 
     if (this->prm->NamedInterstitialVolume)
     {
+        std::cout << "Naming Interstitial Volumes... ";
         model::addPhysicalGroup(3,{bv.back().second},5);
         model::setPhysicalName(3,5,"interstitialVolume");
+        std::cout << "done!" << std::endl;
     }
 
     if (this->prm->NamedOuterSurface)
     {
+        std::cout << "Naming Outer Surfaces... ";
         model::getBoundary({{3, bv.back().second}}, cv, false, false,false);
         model::addPhysicalGroup(2,{cv[0].second},3);
         model::addPhysicalGroup(2,{cv[1].second},2);
@@ -203,6 +206,7 @@ void PackedBed::mesh(std::string outfile)
         model::setPhysicalName(2,1, "inlet");
         model::setPhysicalName(2,2, "outlet");
         model::setPhysicalName(2,3, "wall");
+        std::cout << "done!" << std::endl;
     }
 
 
@@ -211,12 +215,14 @@ void PackedBed::mesh(std::string outfile)
     if (this->prm->NamedBeadVolume)
     {
         tBeads.clear();
+        std::cout << "Naming Bead Volumes... ";
         for ( std::vector<std::pair< int , int>>::iterator it = bv.begin(); it != bv.end(); it++   )
         {
             tBeads.push_back((*it).second);
         }
         model::addPhysicalGroup(3,tBeads,6 );
         model::setPhysicalName(3,6,"beadVolume");
+        std::cout << "done!" << std::endl;
 
     }
 
@@ -235,8 +241,10 @@ void PackedBed::mesh(std::string outfile)
     }
 
     //Set mesh size globally
-    /* model::getEntities(cv, 0); */
-    /* model::mesh::setSize(cv, this->prm->lc); */
+    std::cout << "Setting global mesh size...";
+    model::getEntities(cv, 0);
+    model::mesh::setSize(cv, this->prm->lc);
+    std:: cout << " done!" << std::endl;
 
     /* model::getEntitiesInBoundingBox(-0.1,-0.1,7.2, 0.1,0.1,7.8, cv, 0); */
     /* model::mesh::setSize(cv, this->prm->lc_beads); */
@@ -247,26 +255,31 @@ void PackedBed::mesh(std::string outfile)
 
     /* model::mesh::embed(0,{tagCenter}, 3,dimTagsBeads.back().second); */
 
-    //Embed points in beads to control element size within them
-    if (this->prm->booleanOperation == 1)
-    {
-        for (std::vector<std::pair<int,int>>::iterator iter = bv.begin(); iter != bv.end(); iter++ )
-        {
-            model::mesh::embed(0,tBeadCPs, 3, (*iter).second);
-        }
-    }
-    else
-    {
-        for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++ )
-        {
-            model::mesh::embed(0,{(*iter)->getCTag()}, 3, (*iter)->getTag());
-        }
-
-    }
+    /* std:: cout << "Embedding control points within spheres..." << std::flush; */
+    /* //Embed points in beads to control element size within them */
+    /* if (this->prm->booleanOperation == 1) */
+    /* { */
+    /*     // if fuse: embed all bead centers into the bead fragment */
+    /*     for (std::vector<std::pair<int,int>>::iterator iter = bv.begin(); iter != bv.end(); iter++ ) */
+    /*     { */
+    /*         model::mesh::embed(0,tBeadCPs, 3, (*iter).second); */
+    /*     } */
+    /* } */
+    /* else */
+    /* { */
+    /*     //if cap or reduce, embed into beads themeselves. */
+    /*     for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++ ) */
+    /*     { */
+    /*         model::mesh::embed(0,{(*iter)->getCTag()}, 3, (*iter)->getTag()); */
+    /*     } */
+    /* } */
+    /* std:: cout << " done!" << std::endl; */
 
     // Set mesh size for interstitial
+    std:: cout << "Setting mesh size for surfaces...";
     model::getBoundary(dimTagsInterstitial, cv, false, false, true);
     model::mesh::setSize(cv, this->prm->lc);
+    std:: cout << " done!" << std::endl;
 
     //set mesh size on bead surface
     // maybe use the inside of the interstitial fragment instead?
@@ -320,7 +333,7 @@ void PackedBed::mesh(std::string outfile)
 
         if (this->prm->NamedBeadSurface)
         {
-            std::cout << "Naming Bead Surfaces... ";
+            /* std::cout << "Naming Bead Surfaces... "; */
             model::getBoundary(bv, cv, false, false,false);
             tBeads.clear();
             for ( std::vector<std::pair< int , int>>::iterator it = cv.begin(); it != cv.end(); it++   )

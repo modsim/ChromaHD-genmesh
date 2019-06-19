@@ -127,6 +127,25 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "Mesh.Generate")                               MeshGenerate                               = atoi(val.at(0).c_str());
     else if(key == "dryRun")                                      dryRun                                     = atoi(val.at(0).c_str());
 
+    else if(key == "reduced")
+    {
+        rFactor = atof(val.at(0).c_str());
+        bridgeTol = -999;
+        booleanOperation = 0;
+    }
+    else if(key == "bridged")
+    {
+        relativeBridgeRadius = atof(val.at(0).c_str());
+        bridgeTol = lc/10;
+        booleanOperation = 1;
+    }
+    else if(key == "capped")
+    {
+        relativeBridgeRadius = atof(val.at(0).c_str());
+        bridgeTol = lc/10;
+        booleanOperation = 2;
+    }
+
     else if(key == "packing") packfile = val.at(0);
     else if(key == "outpath") outpath  = val.at(0);
 
@@ -201,6 +220,10 @@ void Parameters::print()
     std::cout << "packing                                     "<< this->packfile                                   << std::endl;
     std::cout << "outpath                                     "<< this->outpath                                    << std::endl;
     std::cout << "dryRun                                      "<< this->dryRun                                     << std::endl;
+
+    /* std::cout << "reduced                                     "<< this->reduced                                    << std::endl; */
+    /* std::cout << "bridged                                     "<< this->bridged                                    << std::endl; */
+    /* std::cout << "capped                                      "<< this->capped                                     << std::endl; */
 
 }
 

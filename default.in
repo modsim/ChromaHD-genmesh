@@ -1,35 +1,28 @@
-#== Geometry: {{{==============================#
-packing                                     packing/pack-large.xyzd
+#== General ==============================#
+
+packing                                     packing/singlebead.xyzd
 nBeads                                      200
+preScalingFactor                            1
 
-# packing                                     packing/pack-large-new.xyzd
-# nbeads                                      147456
+lc                                          0.08 # Element size (automatically prescaled)
+lc_beads                                    0.08
+
+reduced                                     0.90
+# bridged                                     0.20
+# capped                                      0.20
+
+fragment                                    1 
 #==============================================#
-
-#==============================================#
-rCyl                                        5.02
-xCyl                                        5.0
-yCyl                                        5.0
-inlet                                       2.5
-outlet                                      2.5
-# preScalingFactor                            0.1
-#===========================================}}}#
-
-#== Misc: {{{==================================#
-dryRun                                      0 # Do not Generate Mesh
-outpath                                     output/ # Output folder. Always end with '/'. Must exist prior to run.
-#===========================================}}}#
 
 #== BeadOperations: {{{==============================#
-fragment                                    1 
 
 #== BRIDGE: ===================================#
 
-rFactor                                     1.00 # Modification to bead radius
-relativeBridgeRadius                        0.20 # Bridge diameter to bead diameter
-bridgeTol                                   0.01 # Tolerance to build bridges (automatically prescaled)
-booleanOperation                            1    # 0 : None | 1 : Fuse | 2 : Cut
-# bridgeOffsetRatio                           0.95 # Factor to offset bridge position by proportion of radius of bead. 
+# rFactor                                     1.00 # Modification to bead radius
+# relativeBridgeRadius                        0.20 # Bridge diameter to bead diameter
+# bridgeTol                                   0.00 # Tolerance to build bridges (automatically prescaled)
+# booleanOperation                            1    # 0 : None | 1 : Fuse | 2 : Cut
+# # bridgeOffsetRatio                           0.95 # Factor to offset bridge position by proportion of radius of bead. 
 
 #== CAPPED ====================================#
 
@@ -49,14 +42,21 @@ booleanOperation                            1    # 0 : None | 1 : Fuse | 2 : Cut
 
 #===========================================}}}#
 
-#== MeshSize: {{{==============================#
-lc                                          0.08 # Element size (automatically prescaled)
-lc_beads                                    0.08
+#== Misc: {{{==================================#
+dryRun                                      0 # Do not Generate Mesh
+outpath                                     output/ # Output folder. Always end with '/'. Must exist prior to run.
+#===========================================}}}#
+
+#== Cylinder: {{{==============================#
+rCyl                                        5.12
+xCyl                                        5.0
+yCyl                                        5.0
+inlet                                       2.5
+outlet                                      2.5
 #===========================================}}}#
 
 #== GMSH: {{{==================================#
 
-General.NumThreads                          8
 Geometry.OCCParallel                        1
 Geometry.ScalingFactor                      1 # Doesn't seem to work with OCC.
 Mesh.ScalingFactor                          1
@@ -74,7 +74,8 @@ Mesh.OptimizeNetgen                         0
 Mesh.OptimizeThreshold                      0.3
 Mesh.RefineSteps                            10
 Mesh.Generate                               3
-Mesh.MaxNumThreads                          0
+Mesh.MaxNumThreads                          8
+General.NumThreads                          8
 
 #===========================================}}}#
 

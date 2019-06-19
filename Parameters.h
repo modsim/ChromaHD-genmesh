@@ -59,6 +59,9 @@ public:
     double MeshCharacteristicLengthFactor = 1;
     double MeshOptimizeThreshold = 0.3;
 
+    double bridged = -1;
+    double reduced = -1;
+    double capped = -1;
 
     int beadType = 0; //
 

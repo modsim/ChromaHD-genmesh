@@ -25,7 +25,7 @@ outlet   2.5
 ## Beads
 
 packing                packing/singlebead.xyzd
-nbeads                 1
+nBeads                 1
 
 ## Output folder. Always end with '/'. Must exist prior to run.
 outpath    output/
