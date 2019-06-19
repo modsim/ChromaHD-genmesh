@@ -1,6 +1,6 @@
 #== Geometry: {{{==============================#
 packing                                     packing/pack-large.xyzd
-nBeads                                      750
+nBeads                                      200
 
 # packing                                     packing/pack-large-new.xyzd
 # nbeads                                      147456
@@ -27,7 +27,7 @@ fragment                                    1
 
 rFactor                                     1.00 # Modification to bead radius
 relativeBridgeRadius                        0.20 # Bridge diameter to bead diameter
-bridgeTol                                   0.08 # Tolerance to build bridges (automatically prescaled)
+bridgeTol                                   0.01 # Tolerance to build bridges (automatically prescaled)
 booleanOperation                            1    # 0 : None | 1 : Fuse | 2 : Cut
 # bridgeOffsetRatio                           0.95 # Factor to offset bridge position by proportion of radius of bead. 
 

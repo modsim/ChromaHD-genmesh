@@ -38,14 +38,17 @@ This should create the mesh in the required format in the `outpath` directory. A
 1. ~~Use GMSH::logger~~
 2. Improved error handling.
 3. ~~Easy switch between cap/bridge/reduce/enlarge~~
-4. Easy handling of nbeads: input 750 => extracts first 750 beads from zBot to zTop, not based on packing order
+4. ~~Easy handling of nbeads: input 750 => extracts first 750 beads from zBot to zTop, not based on packing order~~
 5. Switch off outputs of mesh fragments
 6. Mesh.MaxNumThreads3D, Mesh.CharacteristicLengthFactor, Mesh.OptimizeThreshold, 
 7. Bridges at the cylinder-bead interface
 8. Implement Translation
-9. Readjust zBot and zTop to be the first and last bead's z value
+9. ~~Readjust zBot and zTop to be the first and last bead's z value~~
+10. Check for memleaks. No errors. But some blocks are reachable.
 
-## Known Issues
+Known Issues
 1. After mesh size constraints were applied to only surfaces (and points were used inside beads), the Netgen optimizer crashes randomly.
 2. Geometry.ScalingFactor doesn't work. Use dilateFactor instead.
 3. Large beds either are stuck or crash with errors.
+4. In 7k-pre and 6k-pre cases, only a handful of beads were actually captured and meshed. [prescaling issue?]
+

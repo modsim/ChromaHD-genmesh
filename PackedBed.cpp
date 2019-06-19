@@ -25,9 +25,6 @@ PackedBed::PackedBed(Parameters * prm)
     this->prm = prm;
     this->readFile(this->prm->packfile);
 
-    /* beads.push_back(new Bead(0, 0, 0, this->prm->rFactor * 1)); */
-    /* beads.push_back(new Bead(0, 0, 2, this->prm->rFactor * 1)); */
-
     model::add("PackedBed");
 }
 
@@ -49,7 +46,6 @@ void PackedBed::createGeometry()
     double rCyl = psf * this->prm->rCyl;
 
     std::cout << "Creating cylinder... " << std::flush;
-    /* dimTagsCyl.push_back( {3, factory::addCylinder(this->prm->xCyl,this->prm->yCyl, zCylBot, 0,0,zCylTop-zCylBot, this->prm->rCyl) } ); */
     dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
     std::cout << "done!" << std::endl;
 
@@ -114,9 +110,6 @@ void PackedBed::createGeometry()
                 double rBeadSmallest = (r1 <= r2? r1 : r2);
                 double rBridge = this->prm->relativeBridgeRadius * rBeadSmallest;
 
-                /* this->dimTagsBridges.push_back({3, factory::addCylinder((*iter)->getX(), (*iter)->getY(), (*iter)->getZ(), dx, dy, dz, rBridge) }) ; */
-                /* this->dimTagsBeads.push_back({3, factory::addCylinder((*iter)->getX(), (*iter)->getY(), (*iter)->getZ(), dx, dy, dz, rBridge) }) ; */
-
                 double factor = this->prm->bridgeOffsetRatio;
 
                 //Cylinder start point
@@ -129,7 +122,6 @@ void PackedBed::createGeometry()
                 dy3 = dy * (dist - factor * (r1+r2))/dist;
                 dz3 = dz * (dist - factor * (r1+r2))/dist;
 
-                /* this->dimTagsBeads.push_back({3, factory::addCylinder(x3, y3, z3, dx3, dy3, dz3, rBridge) }) ; */
                 this->dimTagsBridges.push_back({3, factory::addCylinder(x3, y3, z3, dx3, dy3, dz3, rBridge) }) ;
 
             }
@@ -151,7 +143,7 @@ void PackedBed::mesh(std::string outfile)
 
     /* //TODO:extract wall, cut, */
 
-    /* //Fuse beads together (with bridges or without) */
+    /* Fuse beads together (with bridges or without) */
     if (this->prm->booleanOperation == 1)
     {
         if (dimTagsBridges.size() == 0) dimTagsBridges = {3, dimTagsBeads.back()};
@@ -414,6 +406,9 @@ void PackedBed::readFile(std::string packingFilename)
     //Adjust zBot and zTop
     this->prm->zBot=beads.front()->getZ();
     this->prm->zTop=beads.back()->getZ();
+
+    std::cout << "Set zBot to " << this->prm->zBot << std::endl;
+    std::cout << "Set zTop to " << this->prm->zTop << std::endl;
 
     if (beads.size() == 0) {
         std::cerr << "ERROR: no beads in selection!!!" << std::endl;
