@@ -55,6 +55,7 @@ lc_beads                                    0.08
 #===========================================}}}#
 
 #== GMSH: {{{==================================#
+
 General.NumThreads                          8
 Geometry.OCCParallel                        1
 Geometry.ScalingFactor                      1 # Doesn't seem to work with OCC.
@@ -63,14 +64,18 @@ Mesh.CharacteristicLengthExtendFromBoundary 1
 Mesh.CharacteristicLengthMin                0
 Mesh.CharacteristicLengthFromCurvature      1
 Mesh.CharacteristicLengthFromPoints         1
+Mesh.CharacteristicLengthFactor             1
 Mesh.Smoothing                              1
 Mesh.SmoothRatio                            1.8
 Mesh.Algorithm                              2 # 1 : MeshAdapt | 2: Auto | 5 : Delaunay | 6 : Frontal | 7 : BAMG | 8 : DelQuad
 Mesh.Algorithm3D                            1 # 1 : Delaunay | 4 : Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
 Mesh.Optimize                               0
 Mesh.OptimizeNetgen                         0
+Mesh.OptimizeThreshold                      0.3
 Mesh.RefineSteps                            10
 Mesh.Generate                               3
+Mesh.MaxNumThreads                          0
+
 #===========================================}}}#
 
 #== NamedGroups: {{{===========================#

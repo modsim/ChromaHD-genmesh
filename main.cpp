@@ -58,6 +58,12 @@ int main(int argc, char** argv) {
         gmsh::option::setNumber("Mesh.OptimizeNetgen", prm->MeshOptimizeNetgen); //Default = 0
         gmsh::option::setNumber("Mesh.RefineSteps", prm->MeshRefineSteps); //Default = 10
 
+        gmsh::option::setNumber("Mesh.MaxNumThreads1D", prm->MeshMaxNumThreads);
+        gmsh::option::setNumber("Mesh.MaxNumThreads2D", prm->MeshMaxNumThreads);
+        gmsh::option::setNumber("Mesh.MaxNumThreads3D", prm->MeshMaxNumThreads);
+        gmsh::option::setNumber("Mesh.CharacteristicLengthFactor", prm->MeshCharacteristicLengthFactor);
+        gmsh::option::setNumber("Mesh.OptimizeThreshold", prm->MeshOptimizeThreshold);
+
         //1: MeshAdapt | 2: Auto | 5: Delaunay | 6: Frontal | 7: BAMG | 8: DelQuad
         gmsh::option::setNumber("Mesh.Algorithm", prm->MeshAlgorithm); //Default = 2
 

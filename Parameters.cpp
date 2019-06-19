@@ -95,7 +95,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "relativeBridgeRadius")                        relativeBridgeRadius                       = atof(val.at(0).c_str());
     else if(key == "lc")                                          lc                                         = atof(val.at(0).c_str());
     else if(key == "lc_beads")                                    lc_beads                                   = atof(val.at(0).c_str());
-    else if(key == "nBeads")                                      nBeads                               = atoi(val.at(0).c_str());
+    else if(key == "nBeads")                                      nBeads                                     = atoi(val.at(0).c_str());
     else if(key == "bridgeOffsetRatio")                           bridgeOffsetRatio                          = atof(val.at(0).c_str());
     else if(key == "booleanOperation")                            booleanOperation                           = atoi(val.at(0).c_str());
     else if(key == "fragment")                                    fragment                                   = atoi(val.at(0).c_str());
@@ -116,6 +116,9 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "Mesh.CharacteristicLengthMin")                MeshCharacteristicLengthMin                = atof(val.at(0).c_str());
     else if(key == "Mesh.CharacteristicLengthFromCurvature")      MeshCharacteristicLengthFromCurvature      = atoi(val.at(0).c_str());
     else if(key == "Mesh.CharacteristicLengthFromPoints")         MeshCharacteristicLengthFromPoints         = atoi(val.at(0).c_str());
+    else if(key == "Mesh.CharacteristicLengthFactor")             MeshCharacteristicLengthFactor             = atof(val.at(0).c_str());
+    else if(key == "Mesh.MaxNumThreads")                          MeshMaxNumThreads                          = atof(val.at(0).c_str());
+    else if(key == "Mesh.OptimizeThreshold")                      MeshOptimizeThreshold                      = atof(val.at(0).c_str());
     else if(key == "Mesh.Algorithm")                              MeshAlgorithm                              = atoi(val.at(0).c_str());
     else if(key == "Mesh.Algorithm3D")                            MeshAlgorithm3D                            = atoi(val.at(0).c_str());
     else if(key == "Mesh.Optimize")                               MeshOptimize                               = atoi(val.at(0).c_str());
@@ -168,7 +171,7 @@ void Parameters::print()
     std::cout << "relativeBridgeRadius                        "<< this->relativeBridgeRadius                       << std::endl;
     std::cout << "lc                                          "<< this->lc                                         << std::endl;
     std::cout << "lc_beads                                    "<< this->lc_beads                                   << std::endl;
-    std::cout << "nBeads                                      "<< this->nBeads                               << std::endl;
+    std::cout << "nBeads                                      "<< this->nBeads                                     << std::endl;
     std::cout << "bridgeOffsetRatio                           "<< this->bridgeOffsetRatio                          << std::endl;
     std::cout << "booleanOperation                            "<< this->booleanOperation                           << std::endl;
     std::cout << "fragment                                    "<< this->fragment                                   << std::endl;
@@ -176,9 +179,6 @@ void Parameters::print()
     std::cout << "Named.interstitialVolume                    "<< this->NamedInterstitialVolume                    << std::endl;
     std::cout << "Named.beadSurface                           "<< this->NamedBeadSurface                           << std::endl;
     std::cout << "Named.outerSurface                          "<< this->NamedOuterSurface                          << std::endl;
-    /* std::cout << "Named.inlet                                 "<< this->NamedInlet                                 << std::endl; */
-    /* std::cout << "Named.outlet                                "<< this->NamedOutlet                                << std::endl; */
-    /* std::cout << "Named.wall                                  "<< this->NamedWall                                  << std::endl; */
     std::cout << "General.NumThreads                          "<< this->GeneralNumThreads                          << std::endl;
     std::cout << "Geometry.OCCParallel                        "<< this->GeometryOCCParallel                        << std::endl;
     std::cout << "Geometry.ScalingFactor                      "<< this->GeometryScalingFactor                      << std::endl;
@@ -187,6 +187,9 @@ void Parameters::print()
     std::cout << "Mesh.CharacteristicLengthMin                "<< this->MeshCharacteristicLengthMin                << std::endl;
     std::cout << "Mesh.CharacteristicLengthFromCurvature      "<< this->MeshCharacteristicLengthFromCurvature      << std::endl;
     std::cout << "Mesh.CharacteristicLengthFromPoints         "<< this->MeshCharacteristicLengthFromPoints         << std::endl;
+    std::cout << "Mesh.CharacteristicLengthFactor             "<< this->MeshCharacteristicLengthFactor             << std::endl;
+    std::cout << "Mesh.OptimizeThreshold                      "<< this->MeshOptimizeThreshold                      << std::endl;
+    std::cout << "Mesh.MaxNumThreads                          "<< this->MeshMaxNumThreads                          << std::endl;
     std::cout << "Mesh.Smoothing                              "<< this->MeshSmoothing                              << std::endl;
     std::cout << "Mesh.SmoothRatio                            "<< this->MeshSmoothRatio                            << std::endl;
     std::cout << "Mesh.Algorithm                              "<< this->MeshAlgorithm                              << std::endl;

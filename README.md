@@ -15,8 +15,9 @@ Note: Ensure that \$LD_LIBRARY_PATH points to the OpenCASCADE libs.
 A rough concept of execution is as follows:
 
 - Read input file (default.in) for parameters.
-- Read packing.xyzd file within limits specified and store bead data.
-- Generate geometries (Cylinder, Beads, and Bridges).
+- Read packing.xyzd file and store bead data.
+- Sort beads by z co-ordinate and save only nBeads beads.
+- Generate geometries (Cylinder, Beads, and Bridges) with applied preScalingFactor. 
 - Perform specified boolean operations: fuse/cut + fragment.
 - Generate Named Physical Groups for different features.
 - Generate mesh.
@@ -28,23 +29,19 @@ Here, the term 'bridges' is used to denote cylindrical geometries between indivi
 ## Usage
 
 ``` 
-./genmesh <optional output filename with extension> 
+./genmesh <input file> <optional output filename with extension> 
 ```
 
 This should create the mesh in the required format in the `outpath` directory. Additionally, two vtk files of the two domains are generated to allow easier examination of the mesh. 
 
 ## Todo
 
-1. ~~Use GMSH::logger~~
-2. Improved error handling.
-3. ~~Easy switch between cap/bridge/reduce/enlarge~~
-4. ~~Easy handling of nbeads: input 750 => extracts first 750 beads from zBot to zTop, not based on packing order~~
-5. Switch off outputs of mesh fragments
-6. Mesh.MaxNumThreads3D, Mesh.CharacteristicLengthFactor, Mesh.OptimizeThreshold, 
-7. Bridges at the cylinder-bead interface
-8. Implement Translation
-9. ~~Readjust zBot and zTop to be the first and last bead's z value~~
-10. Check for memleaks. No errors. But some blocks are reachable.
+1. Improved error handling.
+2. Switch off outputs of mesh fragments
+3. Bridges at the cylinder-bead interface
+4. Implement Translation
+5. Check for memleaks. No errors. But some blocks are reachable.
+6. Implement enlarged beads
 
 Known Issues
 1. After mesh size constraints were applied to only surfaces (and points were used inside beads), the Netgen optimizer crashes randomly.

@@ -55,6 +55,11 @@ public:
     int MeshCharacteristicLengthFromCurvature=1;
     int MeshCharacteristicLengthFromPoints=1;
 
+    int MeshMaxNumThreads = 0;
+    double MeshCharacteristicLengthFactor = 1;
+    double MeshOptimizeThreshold = 0.3;
+
+
     int beadType = 0; //
 
     int booleanOperation    = 0;
