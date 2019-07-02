@@ -32,6 +32,12 @@ class PackedBed{
         int tCyl;
         int contactStrategy;
 
+        double radius_avg = 0.0;
+        double radius_max = -1.0;
+        double radius_min = 999999;
+        double x_sum = 0.0;
+        double y_sum = 0.0;
+
         std::vector<int> tBeads;
         std::vector<int> tBeadCPs;
         std::vector<std::pair<int, int>> dimTagsBeads;
@@ -39,6 +45,7 @@ class PackedBed{
         std::vector<std::pair<int, int>> dimTagsBridges;
         std::vector<std::pair<int, int>> dimTagsInterstitial;
 
+        std::vector<std::pair <int, double>> bridgeTagRadiusPairs;
 
     private:
         Parameters * prm;

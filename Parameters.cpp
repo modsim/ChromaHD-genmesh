@@ -75,6 +75,8 @@ void Parameters::update()
     bridgeTol = preScalingFactor * bridgeTol;
     lc        = preScalingFactor * lc;
     lc_beads  = preScalingFactor * lc_beads;
+    lc_max    = preScalingFactor * lc_max;
+
 }
 
 void Parameters::decide (const std::string & key, const std::vector<std::string> & val)
@@ -95,6 +97,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "relativeBridgeRadius")                        relativeBridgeRadius                       = atof(val.at(0).c_str());
     else if(key == "lc")                                          lc                                         = atof(val.at(0).c_str());
     else if(key == "lc_beads")                                    lc_beads                                   = atof(val.at(0).c_str());
+    else if(key == "lc_max")                                      lc_max                                     = atof(val.at(0).c_str());
     else if(key == "nBeads")                                      nBeads                                     = atoi(val.at(0).c_str());
     else if(key == "bridgeOffsetRatio")                           bridgeOffsetRatio                          = atof(val.at(0).c_str());
     else if(key == "booleanOperation")                            booleanOperation                           = atoi(val.at(0).c_str());
@@ -109,14 +112,17 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "General.NumThreads")                          GeneralNumThreads                          = atoi(val.at(0).c_str());
     else if(key == "Geometry.OCCParallel")                        GeometryOCCParallel                        = atoi(val.at(0).c_str());
     else if(key == "Geometry.ScalingFactor")                      GeometryScalingFactor                      = atof(val.at(0).c_str());
+    else if(key == "Geometry.ToleranceBoolean")                   GeometryToleranceBoolean                   = atof(val.at(0).c_str());
     else if(key == "Mesh.ScalingFactor")                          MeshScalingFactor                          = atof(val.at(0).c_str());
     else if(key == "Mesh.Smoothing")                              MeshSmoothing                              = atof(val.at(0).c_str());
     else if(key == "Mesh.SmoothRatio")                            MeshSmoothRatio                            = atof(val.at(0).c_str());
     else if(key == "Mesh.CharacteristicLengthExtendFromBoundary") MeshCharacteristicLengthExtendFromBoundary = atoi(val.at(0).c_str());
     else if(key == "Mesh.CharacteristicLengthMin")                MeshCharacteristicLengthMin                = atof(val.at(0).c_str());
+    else if(key == "Mesh.CharacteristicLengthMax")                MeshCharacteristicLengthMax                = atof(val.at(0).c_str());
     else if(key == "Mesh.CharacteristicLengthFromCurvature")      MeshCharacteristicLengthFromCurvature      = atoi(val.at(0).c_str());
     else if(key == "Mesh.CharacteristicLengthFromPoints")         MeshCharacteristicLengthFromPoints         = atoi(val.at(0).c_str());
     else if(key == "Mesh.CharacteristicLengthFactor")             MeshCharacteristicLengthFactor             = atof(val.at(0).c_str());
+    else if(key == "Mesh.MinimumCirclePoints")                    MeshMinimumCirclePoints                    = atoi(val.at(0).c_str());
     else if(key == "Mesh.MaxNumThreads")                          MeshMaxNumThreads                          = atof(val.at(0).c_str());
     else if(key == "Mesh.OptimizeThreshold")                      MeshOptimizeThreshold                      = atof(val.at(0).c_str());
     else if(key == "Mesh.Algorithm")                              MeshAlgorithm                              = atoi(val.at(0).c_str());
@@ -190,6 +196,7 @@ void Parameters::print()
     std::cout << "relativeBridgeRadius                        "<< this->relativeBridgeRadius                       << std::endl;
     std::cout << "lc                                          "<< this->lc                                         << std::endl;
     std::cout << "lc_beads                                    "<< this->lc_beads                                   << std::endl;
+    std::cout << "lc_max                                      "<< this->lc_max                                     << std::endl;
     std::cout << "nBeads                                      "<< this->nBeads                                     << std::endl;
     std::cout << "bridgeOffsetRatio                           "<< this->bridgeOffsetRatio                          << std::endl;
     std::cout << "booleanOperation                            "<< this->booleanOperation                           << std::endl;
@@ -201,12 +208,15 @@ void Parameters::print()
     std::cout << "General.NumThreads                          "<< this->GeneralNumThreads                          << std::endl;
     std::cout << "Geometry.OCCParallel                        "<< this->GeometryOCCParallel                        << std::endl;
     std::cout << "Geometry.ScalingFactor                      "<< this->GeometryScalingFactor                      << std::endl;
+    std::cout << "Geometry.ToleranceBoolean                   "<< this->GeometryToleranceBoolean                   << std::endl;
     std::cout << "Mesh.ScalingFactor                          "<< this->MeshScalingFactor                          << std::endl;
     std::cout << "Mesh.CharacteristicLengthExtendFromBoundary "<< this->MeshCharacteristicLengthExtendFromBoundary << std::endl;
     std::cout << "Mesh.CharacteristicLengthMin                "<< this->MeshCharacteristicLengthMin                << std::endl;
+    std::cout << "Mesh.CharacteristicLengthMax                "<< this->MeshCharacteristicLengthMax                << std::endl;
     std::cout << "Mesh.CharacteristicLengthFromCurvature      "<< this->MeshCharacteristicLengthFromCurvature      << std::endl;
     std::cout << "Mesh.CharacteristicLengthFromPoints         "<< this->MeshCharacteristicLengthFromPoints         << std::endl;
     std::cout << "Mesh.CharacteristicLengthFactor             "<< this->MeshCharacteristicLengthFactor             << std::endl;
+    std::cout << "Mesh.MinimumCirclePoints                    "<< this->MeshMinimumCirclePoints                    << std::endl;
     std::cout << "Mesh.OptimizeThreshold                      "<< this->MeshOptimizeThreshold                      << std::endl;
     std::cout << "Mesh.MaxNumThreads                          "<< this->MeshMaxNumThreads                          << std::endl;
     std::cout << "Mesh.Smoothing                              "<< this->MeshSmoothing                              << std::endl;

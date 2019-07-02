@@ -41,17 +41,20 @@ int main(int argc, char** argv) {
         gmsh::option::setNumber("General.NumThreads", prm->GeneralNumThreads);
         gmsh::option::setNumber("Geometry.OCCParallel", prm->GeometryOCCParallel);
         gmsh::option::setNumber("Geometry.ScalingFactor", prm->GeometryScalingFactor);
+        gmsh::option::setNumber("Geometry.ToleranceBoolean", prm->GeometryToleranceBoolean);
         gmsh::option::setNumber("Mesh.ScalingFactor", prm->MeshScalingFactor);
         gmsh::option::setNumber("Mesh.Smoothing", prm->MeshSmoothing);
         gmsh::option::setNumber("Mesh.SmoothRatio", prm->MeshSmoothRatio);
-        gmsh::option::setNumber("Mesh.SaveTopology", 1);
 
         gmsh::option::setNumber("Mesh.CharacteristicLengthExtendFromBoundary", prm->MeshCharacteristicLengthExtendFromBoundary);
+
         gmsh::option::setNumber("Mesh.CharacteristicLengthMin", prm->MeshCharacteristicLengthMin);
+        gmsh::option::setNumber("Mesh.CharacteristicLengthMax", prm->MeshCharacteristicLengthMax);
+
         gmsh::option::setNumber("Mesh.CharacteristicLengthFromCurvature", prm->MeshCharacteristicLengthFromCurvature);
         gmsh::option::setNumber("Mesh.CharacteristicLengthFromPoints", prm->MeshCharacteristicLengthFromPoints);
 
-        /* gmsh::option::setNumber("Mesh.MinimumCirclePoints", 7); //Default = 7 */
+        gmsh::option::setNumber("Mesh.MinimumCirclePoints", prm->MeshMinimumCirclePoints); //Default = 7
         /* gmsh::option::setNumber("Mesh.BoundaryLayerFanPoints", 5); //Default = 5 */
 
         gmsh::option::setNumber("Mesh.Optimize", prm->MeshOptimize); //Default = 1

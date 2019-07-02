@@ -1,88 +1,113 @@
 #== General ==============================#
 
-packing                                     packing/singlebead.xyzd
-nBeads                                      200
-preScalingFactor                            1
-
-lc                                          0.08 # Element size (automatically prescaled)
-lc_beads                                    0.08
-
-reduced                                     0.90
-# bridged                                     0.20
-# capped                                      0.20
-
-fragment                                    1 
-#==============================================#
-
-#== BeadOperations: {{{==============================#
-
-#== BRIDGE: ===================================#
-
-# rFactor                                     1.00 # Modification to bead radius
-# relativeBridgeRadius                        0.20 # Bridge diameter to bead diameter
-# bridgeTol                                   0.00 # Tolerance to build bridges (automatically prescaled)
-# booleanOperation                            1    # 0 : None | 1 : Fuse | 2 : Cut
-# # bridgeOffsetRatio                           0.95 # Factor to offset bridge position by proportion of radius of bead. 
-
-#== CAPPED ====================================#
-
-# rFactor                                     1.00 # Modification to bead radius
-# relativeBridgeRadius                        0.20 # Bridge diameter to bead diameter
-# bridgeTol                                   0.08 # Tolerance to build bridges
-# booleanOperation                            2 # 0 : None | 1 : Fuse | 2 : Cut
-# # bridgeOffsetRatio                           0.95 # Factor to offset bridge position by proportion of radius of bead. 
-
-#== REDUCE ====================================#
-
-# rFactor                                     0.98 # Modification to bead radius
-# relativeBridgeRadius                        0.2 # Bridge diameter to bead diameter
-# bridgeTol                                   -999 # Tolerance to build bridges
-# # bridgeOffsetRatio                           0.95 # Factor to offset bridge position by proportion of radius of bead. 
-# booleanOperation                            0 # 0 : None | 1 : Fuse | 2 : Cut
-
-#===========================================}}}#
-
-#== Misc: {{{==================================#
-dryRun                                      0 # Do not Generate Mesh
-outpath                                     output/ # Output folder. Always end with '/'. Must exist prior to run.
-#===========================================}}}#
-
-#== Cylinder: {{{==============================#
-rCyl                                        5.12
+#== MonoCylinder: {{{==============================#
+rCyl                                        5.02
 xCyl                                        5.0
 yCyl                                        5.0
 inlet                                       2.5
 outlet                                      2.5
 #===========================================}}}#
+##== PolyCylinder: {{{==============================#
+#rCyl                                        5.02
+#xCyl                                        2.3535
+#yCyl                                        2.3535
+#inlet                                       2.5
+#outlet                                      2.5
+##===========================================}}}#
 
-#== GMSH: {{{==================================#
+packing                                     packing/mono-cut.xyzd
+# packing                                     packing/poly-cut.xyzd
+
+nBeads                                      200
+
+# outfile                                     output.msh2
+# preScalingFactor                            1
+
+lc                                          0.10 # Element size (automatically prescaled)
+lc_beads                                    0.10 
+lc_max                                      0.10 
+
+reduced                                     1.00
+booleanOperation                            1
+
+# bridged                                     0.20
+# bridgeOffsetRatio                           0.9
+# bridgeTol                                   0.0
+
+# capped                                      0.20
+
+fragment                                    1
+#==============================================#
+
+#== GMSH: {{==================================#
 
 Geometry.OCCParallel                        1
-Geometry.ScalingFactor                      1 # Doesn't seem to work with OCC.
-Mesh.ScalingFactor                          1
-Mesh.CharacteristicLengthExtendFromBoundary 1
+# Geometry.ScalingFactor                      1 # Doesn't seem to work with OCC.
+# Geometry.ToleranceBoolean                   0.0
+
+# Mesh.ScalingFactor                          1
+Mesh.CharacteristicLengthExtendFromBoundary 0
 Mesh.CharacteristicLengthMin                0
-Mesh.CharacteristicLengthFromCurvature      1
-Mesh.CharacteristicLengthFromPoints         1
-Mesh.CharacteristicLengthFactor             1
-Mesh.Smoothing                              1
-Mesh.SmoothRatio                            1.8
-Mesh.Algorithm                              2 # 1 : MeshAdapt | 2: Auto | 5 : Delaunay | 6 : Frontal | 7 : BAMG | 8 : DelQuad
-Mesh.Algorithm3D                            1 # 1 : Delaunay | 4 : Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
-Mesh.Optimize                               0
-Mesh.OptimizeNetgen                         0
-Mesh.OptimizeThreshold                      0.3
-Mesh.RefineSteps                            10
+Mesh.CharacteristicLengthFromCurvature      0
+Mesh.CharacteristicLengthFromPoints         0
+# Mesh.CharacteristicLengthFactor             1
+# Mesh.MinimumCirclePoints                    20
+# Mesh.Smoothing                              1
+# Mesh.SmoothRatio                            1.8
+# Mesh.Algorithm                              2 # 1 : MeshAdapt | 2: Auto | 5 : Delaunay | 6 : Frontal | 7 : BAMG | 8 : DelQuad
+# Mesh.Algorithm3D                            1 # 1 : Delaunay | 4 : Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
+# Mesh.Optimize                               1
+# Mesh.OptimizeNetgen                         0
+# Mesh.OptimizeThreshold                      0.3
+# Mesh.RefineSteps                            10
 Mesh.Generate                               3
 Mesh.MaxNumThreads                          8
+
 General.NumThreads                          8
 
 #===========================================}}}#
 
-#== NamedGroups: {{{===========================#
-Named.interstitialVolume                    1
-Named.outerSurface                          1 # inlet, outlet and wall
-Named.beadVolume                            1
-Named.beadSurface                           1
-#===========================================}}}#
+##== BeadOperations: {{{==============================#
+
+##== BRIDGE: {{{================================#
+
+#rFactor                                     1.00 # Modification to bead radius
+#relativeBridgeRadius                        0.20 # Bridge diameter to bead diameter
+#bridgeTol                                   0.00 # Tolerance to build bridges (automatically prescaled)
+#booleanOperation                            1    # 0 : None | 1 : Fuse | 2 : Cut
+## bridgeOffsetRatio                           0.95 # Factor to offset bridge position by proportion of radius of bead. 
+
+##===========================================}}}#
+##== CAPPED: {{{================================#
+
+#rFactor                                     1.00 # Modification to bead radius
+#relativeBridgeRadius                        0.20 # Bridge diameter to bead diameter
+#bridgeTol                                   0.08 # Tolerance to build bridges
+#booleanOperation                            2 # 0 : None | 1 : Fuse | 2 : Cut
+## bridgeOffsetRatio                           0.95 # Factor to offset bridge position by proportion of radius of bead. 
+
+##===========================================}}}#
+##== REDUCE: {{{================================#
+
+#rFactor                                     0.98 # Modification to bead radius
+#relativeBridgeRadius                        0.2 # Bridge diameter to bead diameter
+#bridgeTol                                   -999 # Tolerance to build bridges
+## bridgeOffsetRatio                           0.95 # Factor to offset bridge position by proportion of radius of bead. 
+#booleanOperation                            0 # 0 : None | 1 : Fuse | 2 : Cut
+
+##===========================================}}}#
+
+##===========================================}}}#
+
+##== NamedGroups: {{{===========================#
+#Named.interstitialVolume                    0
+#Named.outerSurface                          0 # inlet, outlet and wall
+#Named.beadVolume                            0
+#Named.beadSurface                           0
+##===========================================}}}#
+
+##== Misc: {{{==================================#
+#dryRun                                      0 # Do not Generate Mesh
+#outpath                                     output/ # Output folder. Always end with '/'. Must exist prior to run.
+##===========================================}}}#
 # vim: fdm=marker

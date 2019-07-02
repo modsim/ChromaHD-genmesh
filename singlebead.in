@@ -7,13 +7,13 @@
 # zTop 710.3
 #
 
-zBot 7
-zTop 8
+zBot 6
+zTop 9
 rCyl     5.02
 xCyl     0.0
 yCyl     0.0
-inlet    2.5
-outlet   2.5
+inlet    3.5
+outlet   3.5
 
 # ## Cylinder
 # rCyl     5.02
@@ -50,7 +50,8 @@ fragment                1
 
 ## Mesh
 lc        0.20                # Element size
-lc_beads  0.20
+lc_beads  0.30
+lc_max    0.30
 dryRun    off                   # Do not Generate Mesh
 
 # dilateFactor                    0.5
@@ -70,6 +71,14 @@ Mesh.OptimizeNetgen             0
 Mesh.Generate                   3        # 3: Volumes   | 2: Surfaces
 Mesh.RefineSteps                10      # Default = 10 
 
+
+Mesh.CharacteristicLengthExtendFromBoundary 0
+Mesh.CharacteristicLengthMin                0
+Mesh.CharacteristicLengthFromCurvature      0
+Mesh.CharacteristicLengthFromPoints         0
+Mesh.CharacteristicLengthFactor             1
+
+
 # Geometry.Tolerance             1e-6
 # Geometry.ToleranceBoolean      1e-6
 
@@ -78,5 +87,5 @@ Named.outerSurface              1           # inlet, outlet and wall
 Named.beadVolume                1
 Named.beadSurface               1
 
-preScalingFactor 0.01
+# preScalingFactor 0.01
 # Mesh.ScalingFactor 100

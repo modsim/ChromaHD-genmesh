@@ -25,6 +25,10 @@ PackedBed::PackedBed(Parameters * prm)
     this->prm = prm;
     this->readFile(this->prm->packfile);
 
+    /* beads.clear(); */
+    /* beads.push_back(new Bead(0, 0, 0, this->prm->rFactor * 1)); */
+    /* beads.push_back(new Bead(1.5, 0, 0, this->prm->rFactor * 0.5)); */
+
     model::add("PackedBed");
 }
 
@@ -35,6 +39,10 @@ PackedBed::~PackedBed()
 
 void PackedBed::createGeometry()
 {
+    std::vector<std::pair<int, int> > ov;
+    std::vector<std::pair<int, int> > cv;
+
+    std::vector<double> vCount;
 
     double zCylBot = 0, zCylTop = 0;
 
@@ -44,15 +52,14 @@ void PackedBed::createGeometry()
     double xCyl = psf * this->prm->xCyl;
     double yCyl = psf * this->prm->yCyl;
     double rCyl = psf * this->prm->rCyl;
+    int count = 0;
 
     std::cout << "Creating cylinder... " << std::flush;
     dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
     std::cout << "done!" << std::endl;
 
-    std::vector<std::pair<int, int> > ov;
-
     int tag, ctag;
-    std::cout << "Creating bead geometries... " << std::flush;
+    std::cout << "Creating beads and mesh fields... " << std::flush;
     for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++ )
     {
         double x = psf * (*iter)->getX();
@@ -68,6 +75,15 @@ void PackedBed::createGeometry()
 
         dimTagsBeads.push_back({3, tag});
         tBeadCPs.push_back(ctag);
+
+        model::mesh::field::add("Ball", ++count);
+        model::mesh::field::setNumber(count, "VIn", r/(psf*radius_max) * this->prm->lc_beads);
+        model::mesh::field::setNumber(count, "VOut", this->prm->lc_max);
+        model::mesh::field::setNumber(count, "XCenter", x);
+        model::mesh::field::setNumber(count, "YCenter", y);
+        model::mesh::field::setNumber(count, "ZCenter", z);
+        model::mesh::field::setNumber(count, "Radius", 1.01*r);
+        vCount.push_back(count);
 
     }
     std::cout << "done!" << std::endl;
@@ -122,7 +138,24 @@ void PackedBed::createGeometry()
                 dy3 = dy * (dist - factor * (r1+r2))/dist;
                 dz3 = dz * (dist - factor * (r1+r2))/dist;
 
-                this->dimTagsBridges.push_back({3, factory::addCylinder(x3, y3, z3, dx3, dy3, dz3, rBridge) }) ;
+                int tagBridge = factory::addCylinder(x3, y3, z3, dx3, dy3, dz3, rBridge);
+
+                this->dimTagsBridges.push_back({3, tagBridge }) ;
+                this->bridgeTagRadiusPairs.push_back({tagBridge, rBridge});
+
+
+                model::mesh::field::add("Cylinder", ++count);
+                model::mesh::field::setNumber(count, "VIn", this->prm->lc_beads * rBridge/(psf * radius_max) );
+                model::mesh::field::setNumber(count, "VOut", this->prm->lc_max);
+                model::mesh::field::setNumber(count, "XCenter", x3);
+                model::mesh::field::setNumber(count, "YCenter", y3);
+                model::mesh::field::setNumber(count, "ZCenter", z3);
+                model::mesh::field::setNumber(count, "XAxis", dx3);
+                model::mesh::field::setNumber(count, "YAxis", dy3);
+                model::mesh::field::setNumber(count, "ZAxis", dz3);
+                model::mesh::field::setNumber(count, "Radius", 1.01*rBridge);
+                vCount.push_back(count);
+
 
             }
 
@@ -130,6 +163,18 @@ void PackedBed::createGeometry()
     }
 
     std::cout << "done!" << std::endl;
+
+    std::cout << "Number of Bridges: " << dimTagsBridges.size() << std::endl;
+
+  model::mesh::field::add("Min", ++count);
+  model::mesh::field::setNumbers(count, "FieldsList", vCount);
+
+  model::mesh::field::setAsBackgroundMesh(count);
+
+    /* // Synchronize gmsh model with geometry kernel. */
+    /* std::cout << "synchronizing... " << std::flush; */
+    /* factory::synchronize(); */
+    /* std::cout << "done!" << std::endl; */
 
 }
 
@@ -141,7 +186,35 @@ void PackedBed::mesh(std::string outfile)
     std::vector<std::pair<int, int> > cv;
     std::vector<std::vector<std::pair<int, int> > > ovv;
 
-    /* //TODO:extract wall, cut, */
+
+    /* // Synchronize gmsh model with geometry kernel. */
+    /* std::cout << "synchronizing... " << std::flush; */
+    /* factory::synchronize(); */
+    /* std::cout << "done!" << std::endl; */
+
+    /* // Set scaled mesh size on beads */
+    /* std::cout << "Setting bead sizes..." << std::endl; */
+    /* std::vector<Bead *>::iterator biter = beads.begin(); */
+    /* for (std::vector<std::pair <int, int >>::iterator it = this->dimTagsBeads.begin(); */
+    /*         it != this->dimTagsBeads.end(); it++) */
+    /* { */
+    /*     model::getBoundary({(*it)}, cv, false, false, true ); */
+    /*     model::mesh::setSize(cv, this->prm->lc * (*biter)->getR()/radius_max); */
+    /*     /1* model::mesh::setSize({(*it)}, this->prm->lc * (*biter)->getR()/radius_avg); *1/ */
+    /*     biter++; */
+    /* } */
+
+    /* std::cout << "Setting bridge sizes..." << std::endl; */
+    /* /1* for (std::vector<std::pair <int, int >>::iterator it = this->dimTagsBridges.begin(); *1/ */
+    /* /1*         it != this->dimTagsBridges.end(); it++) *1/ */
+    /* for (std::vector<std::pair <int, double>>::iterator it = this->bridgeTagRadiusPairs.begin(); */
+    /*         it != this->bridgeTagRadiusPairs.end(); it++) */
+    /* { */
+    /*     model::getBoundary({{3,(*it).first}}, cv, false, false, true ); */
+    /*     model::mesh::setSize(cv, this->prm->lc * (*it).second/(this->prm->relativeBridgeRadius * radius_max) ); */
+    /*     model::mesh::setSize(cv, this->prm->lc * (*it).second/(radius_max) ); */
+    /*     /1* model::mesh::setSize({{3,(*it).first}}, this->prm->lc * (*it).second/(this->prm->relativeBridgeRadius * radius_avg) ); *1/ */
+    /* } */
 
     /* Fuse beads together (with bridges or without) */
     if (this->prm->booleanOperation == 1)
@@ -165,6 +238,12 @@ void PackedBed::mesh(std::string outfile)
         std::cout << "done!" << std::endl;
 
     }
+    else
+    {
+        ov = dimTagsBeads;
+    }
+
+    std::cout << "Number of internal volumes: " << ov.size() <<std::endl;
 
     // Fragment cylinder w.r.t. beads
     if (this->prm->fragment)
@@ -177,12 +256,56 @@ void PackedBed::mesh(std::string outfile)
         std::cout << "done!" << std::endl;
     }
 
+    /* int ctag = factory::addPoint(0, 0, 0, this->prm->lc_beads, -1); */
+    /* tBeadCPs.push_back(ctag); */
+    /* ctag = factory::addPoint(1.5, 0, 0, this->prm->lc_beads*0.5, -1); */
+    /* tBeadCPs.push_back(ctag); */
+
     // Synchronize gmsh model with geometry kernel.
     std::cout << "synchronizing... " << std::flush;
     factory::synchronize();
     std::cout << "done!" << std::endl;
 
     std::cout << std::endl;
+
+    /* std:: cout << "Embedding control points within spheres..." << std::flush; */
+    /* model::mesh::embed(0,tBeadCPs, 3, ov[0].second); */
+
+    /* std:: cout << "Embedding control points within spheres..." << std::flush; */
+    /* //Embed points in beads to control element size within them */
+    /* if (this->prm->booleanOperation == 1) */
+    /* { */
+    /*     // if fuse: embed all bead centers into the bead fragment */
+    /*     /1* std::cout << bv.size() << std::endl; *1/ */
+    /*     if (bv.size() == 0) bv = ov; */
+    /*     std::cout << ov.size() << std::endl; */
+    /*     std::cout << bv.size() << std::endl; */
+
+
+    /*     for (std::vector<std::pair<int,int>>::iterator iter = bv.begin(); iter != bv.end(); iter++ ) */
+    /*     { */
+    /*         std::cout << "inside loop.." << std::endl; */
+    /*         model::mesh::embed(0,tBeadCPs, 3, (*iter).second); */
+    /*     } */
+    /* } */
+    /* else */
+    /* { */
+    /*     //if cap or reduce, embed into beads themeselves. */
+    /*     for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++ ) */
+    /*     { */
+    /*         model::mesh::embed(0,{(*iter)->getCTag()}, 3, (*iter)->getTag()); */
+    /*     } */
+    /* } */
+    /* std:: cout << " done!" << std::endl; */
+
+
+
+
+    /* /1* // Set mesh size on cylinder surface *1/ */
+    /* model::getBoundary(dimTagsInterstitial, cv, false, false, true ); */
+    /* cv.erase(cv.begin()+3, cv.end()); */
+    /* model::mesh::setSize(cv, this->prm->lc); */
+
 
     // ============================
     // Named Physical Groups
@@ -240,11 +363,12 @@ void PackedBed::mesh(std::string outfile)
         std::cout << "done!" << std::endl;
     }
 
-    //Set mesh size globally
-    std::cout << "Setting global mesh size...";
-    model::getEntities(cv, 0);
-    model::mesh::setSize(cv, this->prm->lc);
-    std:: cout << " done!" << std::endl;
+    /* //Set mesh size globally */
+    /* std::cout << "Setting global mesh size..."; */
+    /* model::getEntities(cv, 0); */
+    /* model::mesh::setSize(cv, this->prm->lc); */
+    /* std:: cout << " done!" << std::endl; */
+
 
     /* model::getEntitiesInBoundingBox(-0.1,-0.1,7.2, 0.1,0.1,7.8, cv, 0); */
     /* model::mesh::setSize(cv, this->prm->lc_beads); */
@@ -255,31 +379,12 @@ void PackedBed::mesh(std::string outfile)
 
     /* model::mesh::embed(0,{tagCenter}, 3,dimTagsBeads.back().second); */
 
-    /* std:: cout << "Embedding control points within spheres..." << std::flush; */
-    /* //Embed points in beads to control element size within them */
-    /* if (this->prm->booleanOperation == 1) */
-    /* { */
-    /*     // if fuse: embed all bead centers into the bead fragment */
-    /*     for (std::vector<std::pair<int,int>>::iterator iter = bv.begin(); iter != bv.end(); iter++ ) */
-    /*     { */
-    /*         model::mesh::embed(0,tBeadCPs, 3, (*iter).second); */
-    /*     } */
-    /* } */
-    /* else */
-    /* { */
-    /*     //if cap or reduce, embed into beads themeselves. */
-    /*     for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++ ) */
-    /*     { */
-    /*         model::mesh::embed(0,{(*iter)->getCTag()}, 3, (*iter)->getTag()); */
-    /*     } */
-    /* } */
-    /* std:: cout << " done!" << std::endl; */
 
-    // Set mesh size for interstitial
-    std:: cout << "Setting mesh size for surfaces...";
-    model::getBoundary(dimTagsInterstitial, cv, false, false, true);
-    model::mesh::setSize(cv, this->prm->lc);
-    std:: cout << " done!" << std::endl;
+    /* // Set mesh size for interstitial */
+    /* std:: cout << "Setting mesh size for surfaces..."; */
+    /* model::getBoundary(dimTagsInterstitial, cv, false, false, true); */
+    /* model::mesh::setSize(cv, this->prm->lc); */
+    /* std:: cout << " done!" << std::endl; */
 
     //set mesh size on bead surface
     // maybe use the inside of the interstitial fragment instead?
@@ -428,20 +533,34 @@ void PackedBed::readFile(std::string packingFilename)
         exit(1);
     }
 
-    double radius_total = 0.0;
-    double radius_max = -1.0;
 
     for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
     {
         // remember: this is already the shrunken radius!!!
         double r = (*it)->getR();
-        radius_total +=  r;
+        radius_avg +=  r;
+
         if(r > radius_max)
             radius_max = r;
+
+        if (r < radius_min)
+            radius_min = r;
+
+        x_sum += (*it)->getX();
+        y_sum += (*it)->getY();
     }
 
+
+    radius_avg /= beads.size();
+
+    double x_mid = x_sum/beads.size();
+    double y_mid = y_sum/beads.size();
+
+    std::cout << "Midpoint (x,y) of beads is approximately ( " << x_mid << ", " << y_mid << ")" << std::endl;
+
     std::cout << this->beads.size() << "/" << data.size()/4 << " beads in the selected range." << std::endl;
-    std::cout << "average bead radius: " << std::scientific << std::setprecision(10) << radius_total/beads.size() << std::endl;
+    std::cout << "average bead radius: " << std::scientific << std::setprecision(10) << radius_avg << std::endl;
     std::cout << "maximum bead radius: " << std::scientific << std::setprecision(10) << radius_max << std::endl << std::endl;
+    std::cout << "minimum bead radius: " << std::scientific << std::setprecision(10) << radius_min << std::endl << std::endl;
 
 }
