@@ -18,10 +18,10 @@ outlet                                      2.5
 packing                                     packing/mono-cut.xyzd
 # packing                                     packing/poly-cut.xyzd
 
-nBeads                                      200
+nBeads                                      50
 
 # outfile                                     output.msh2
-# preScalingFactor                            1
+preScalingFactor                            0.01
 
 lc                                          0.10 # Element size (automatically prescaled)
 lc_beads                                    0.10 
@@ -35,6 +35,7 @@ booleanOperation                            1
 # bridgeTol                                   0.0
 
 # capped                                      0.20
+# bridgeTol                                   0.0
 
 fragment                                    1
 #==============================================#

@@ -164,6 +164,12 @@ void PackedBed::createGeometry()
 
     std::cout << "done!" << std::endl;
 
+    std::cout << "Translating geometry to origin (using input values for Cylinder)... ";
+    factory::translate(dimTagsCyl, -xCyl, -yCyl, -zCylBot);
+    factory::translate(dimTagsBeads, -xCyl, -yCyl, -zCylBot);
+    factory::translate(dimTagsBridges, -xCyl, -yCyl, -zCylBot);
+    std::cout << "done!" << std::endl;
+
     std::cout << "Number of Bridges: " << dimTagsBridges.size() << std::endl;
 
   model::mesh::field::add("Min", ++count);

@@ -36,25 +36,23 @@ This should create the mesh in the required format in the `outpath` directory. A
 
 ## Todo
 
-1. Improved error handling.
-2. Switch off outputs of mesh fragments
-3. Bridges at the cylinder-bead interface
-4. Implement Translation
-5. Check for memleaks. No errors. But some blocks are reachable.
-6. Implement enlarged beads
-7. Number of bridges, minimum bead size
-8. Scale polydisperse bead meshes to smaller beads. -> set lc for individual beads.
-    - Possibly use GMSH geo kernel for beads, synch, switch to OCC kernel.
-9. bounding box for beads
-10. Generate polydisperse beads with bridges.
-11. Potentially use a Bridge class and create a vector to store all the bridges created.
-    - This way I can scale the mesh size at bridges too.
-12. Write test inputs to run and verify code.
+- [x] Number of bridges, minimum bead size
+- [x] Scale polydisperse bead meshes to smaller beads. -> set lc for individual beads.
+- [x] bounding box for beads
+- [x] Generate polydisperse beads with bridges.
+- [x] Implement Translation
+- [ ] Improved error handling.
+- [ ] Switch off outputs of mesh fragments
+- [ ] Bridges at the cylinder-bead interface
+- [ ] Check for memleaks. No errors. But some blocks are reachable.
+- [ ] Implement enlarged beads
+- [ ] Write test inputs to run and verify code.
+- [ ] Implement memory diagnostics. How much memory/cpu-time does the code use?
+- [ ] Investigate capped meshes. Why did 400 beads take 5-10 hours? 
+- [ ] Cleaner outputs/logging.
 
 Known Issues
-1. After mesh size constraints were applied to only surfaces (and points were used inside beads), the Netgen optimizer crashes randomly.
-2. Geometry.ScalingFactor doesn't work. Use dilateFactor instead.
-3. Large beds either are stuck or crash with errors.
-4. In 7k-pre and 6k-pre cases, only a handful of beads were actually captured and meshed. [prescaling issue?]
-5. ~~Polydisperse setups don't mesh with cylinder on.~~
-
+- After mesh size constraints were applied to only surfaces (and points were used inside beads), the Netgen optimizer crashes randomly.
+    - Does this still happen with fields? 
+- Geometry.ScalingFactor doesn't work. Use preScalingFactor instead.
+- In 7k-pre and 6k-pre cases, only a handful of beads were actually captured and meshed. [prescaling issue?]
