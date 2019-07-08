@@ -21,14 +21,14 @@ packing                                     packing/mono-cut.xyzd
 nBeads                                      50
 
 # outfile                                     output.msh2
-preScalingFactor                            0.01
+preScalingFactor                            1
 
 lc                                          0.10 # Element size (automatically prescaled)
 lc_beads                                    0.10 
 lc_max                                      0.10 
 
-reduced                                     1.00
-booleanOperation                            1
+reduced                                     0.98
+# booleanOperation                            1
 
 # bridged                                     0.20
 # bridgeOffsetRatio                           0.9
@@ -43,14 +43,17 @@ fragment                                    1
 #== GMSH: {{==================================#
 
 Geometry.OCCParallel                        1
-# Geometry.ScalingFactor                      1 # Doesn't seem to work with OCC.
-# Geometry.ToleranceBoolean                   0.0
-
-# Mesh.ScalingFactor                          1
+Mesh.ScalingFactor                          0.0001
 Mesh.CharacteristicLengthExtendFromBoundary 0
 Mesh.CharacteristicLengthMin                0
 Mesh.CharacteristicLengthFromCurvature      0
 Mesh.CharacteristicLengthFromPoints         0
+Mesh.Generate                               3
+# Mesh.MaxNumThreads                          8
+# General.NumThreads                          8
+
+# Geometry.ScalingFactor                      1 # Doesn't seem to work with OCC.
+# Geometry.ToleranceBoolean                   0.0
 # Mesh.CharacteristicLengthFactor             1
 # Mesh.MinimumCirclePoints                    20
 # Mesh.Smoothing                              1
@@ -61,10 +64,7 @@ Mesh.CharacteristicLengthFromPoints         0
 # Mesh.OptimizeNetgen                         0
 # Mesh.OptimizeThreshold                      0.3
 # Mesh.RefineSteps                            10
-Mesh.Generate                               3
-Mesh.MaxNumThreads                          8
 
-General.NumThreads                          8
 
 #===========================================}}}#
 

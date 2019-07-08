@@ -1,6 +1,6 @@
 # genmesh
 
-Generate meshes from packing files (xyzd). Depends on OpenCASCADE and GMSH (v 4.2.2). 
+Generate meshes from packing files (xyzd). Depends on OpenCASCADE and GMSH (v4+). 
 
 ## Installation
 
@@ -24,7 +24,7 @@ A rough concept of execution is as follows:
 - Write full mesh to specified output file. 
 - Write individual domains (interstitial and beads) to vtk files. 
 
-Here, the term 'bridges' is used to denote cylindrical geometries between individual neighbouring beads. Bridges may be used to 'cap' or 'bridge' the beads they connect. 
+Here, the term 'bridges' is used to denote cylindrical objects between individual neighbouring beads. Bridges may be used to 'cap' or 'bridge' the beads they connect. 
 
 ## Usage
 
@@ -50,6 +50,12 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [ ] Implement memory diagnostics. How much memory/cpu-time does the code use?
 - [ ] Investigate capped meshes. Why did 400 beads take 5-10 hours? 
 - [ ] Cleaner outputs/logging.
+- [ ] Check timings for fields vs boundary mesh sizes
+- [ ] Better makefile
+- [ ] Better argument handling?
+- [ ] Switch for fields vs brep meshing
+- [ ] Manual node placement at contact points 
+- [ ] expert mode? 
 
 Known Issues
 - After mesh size constraints were applied to only surfaces (and points were used inside beads), the Netgen optimizer crashes randomly.

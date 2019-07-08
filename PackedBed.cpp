@@ -262,11 +262,6 @@ void PackedBed::mesh(std::string outfile)
         std::cout << "done!" << std::endl;
     }
 
-    /* int ctag = factory::addPoint(0, 0, 0, this->prm->lc_beads, -1); */
-    /* tBeadCPs.push_back(ctag); */
-    /* ctag = factory::addPoint(1.5, 0, 0, this->prm->lc_beads*0.5, -1); */
-    /* tBeadCPs.push_back(ctag); */
-
     // Synchronize gmsh model with geometry kernel.
     std::cout << "synchronizing... " << std::flush;
     factory::synchronize();
@@ -376,15 +371,9 @@ void PackedBed::mesh(std::string outfile)
     /* std:: cout << " done!" << std::endl; */
 
 
-    /* model::getEntitiesInBoundingBox(-0.1,-0.1,7.2, 0.1,0.1,7.8, cv, 0); */
-    /* model::mesh::setSize(cv, this->prm->lc_beads); */
-
     // Set mesh size for beads
     /* model::getBoundary(bv, cv, false, false, true); */
     /* model::mesh::setSize(cv, this->prm->lc_beads); */
-
-    /* model::mesh::embed(0,{tagCenter}, 3,dimTagsBeads.back().second); */
-
 
     /* // Set mesh size for interstitial */
     /* std:: cout << "Setting mesh size for surfaces..."; */
