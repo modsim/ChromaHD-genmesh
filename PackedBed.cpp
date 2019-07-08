@@ -145,7 +145,7 @@ void PackedBed::createGeometry()
 
 
                 model::mesh::field::add("Cylinder", ++count);
-                model::mesh::field::setNumber(count, "VIn", this->prm->lc_beads * rBridge/(psf * radius_max) );
+                model::mesh::field::setNumber(count, "VIn", this->prm->lc_beads * rBridge/(this->prm->relativeBridgeRadius * psf * radius_max) );
                 model::mesh::field::setNumber(count, "VOut", this->prm->lc_max);
                 model::mesh::field::setNumber(count, "XCenter", x3);
                 model::mesh::field::setNumber(count, "YCenter", y3);

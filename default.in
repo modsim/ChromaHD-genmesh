@@ -27,12 +27,12 @@ lc                                          0.10 # Element size (automatically p
 lc_beads                                    0.10 
 lc_max                                      0.10 
 
-reduced                                     0.98
+# reduced                                     0.98
 # booleanOperation                            1
 
-# bridged                                     0.20
-# bridgeOffsetRatio                           0.9
-# bridgeTol                                   0.0
+bridged                                     0.20
+bridgeOffsetRatio                           0.9
+bridgeTol                                   0.0
 
 # capped                                      0.20
 # bridgeTol                                   0.0
