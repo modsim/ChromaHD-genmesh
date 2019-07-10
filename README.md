@@ -41,6 +41,7 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [x] bounding box for beads
 - [x] Generate polydisperse beads with bridges.
 - [x] Implement Translation
+- [ ] Implement PreTranslation
 - [ ] Improved error handling.
 - [ ] Switch off outputs of mesh fragments
 - [ ] Bridges at the cylinder-bead interface

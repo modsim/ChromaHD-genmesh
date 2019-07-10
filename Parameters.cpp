@@ -190,14 +190,14 @@ void Parameters::print()
     std::cout << "yCyl                                        "<< this->yCyl                                       << std::endl;
     std::cout << "inlet                                       "<< this->inlet                                      << std::endl;
     std::cout << "outlet                                      "<< this->outlet                                     << std::endl;
+    std::cout << "nBeads                                      "<< this->nBeads                                     << std::endl;
     std::cout << "rFactor                                     "<< this->rFactor                                    << std::endl;
     std::cout << "preScalingFactor                            "<< this->preScalingFactor                           << std::endl;
-    std::cout << "bridgeTol                                   "<< this->bridgeTol                                  << std::endl;
-    std::cout << "relativeBridgeRadius                        "<< this->relativeBridgeRadius                       << std::endl;
     std::cout << "lc                                          "<< this->lc                                         << std::endl;
     std::cout << "lc_beads                                    "<< this->lc_beads                                   << std::endl;
     std::cout << "lc_max                                      "<< this->lc_max                                     << std::endl;
-    std::cout << "nBeads                                      "<< this->nBeads                                     << std::endl;
+    std::cout << "bridgeTol                                   "<< this->bridgeTol                                  << std::endl;
+    std::cout << "relativeBridgeRadius                        "<< this->relativeBridgeRadius                       << std::endl;
     std::cout << "bridgeOffsetRatio                           "<< this->bridgeOffsetRatio                          << std::endl;
     std::cout << "booleanOperation                            "<< this->booleanOperation                           << std::endl;
     std::cout << "fragment                                    "<< this->fragment                                   << std::endl;

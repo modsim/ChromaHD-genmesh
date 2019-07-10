@@ -56,7 +56,7 @@ public:
 
     int MeshMaxNumThreads = 0;
     double MeshCharacteristicLengthFactor = 1;
-    int MeshMinimumCirclePoints = 1;
+    int MeshMinimumCirclePoints = 7;
     double MeshOptimizeThreshold = 0.3;
 
     double MeshCharacteristicLengthMin=0;

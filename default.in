@@ -18,7 +18,7 @@ outlet                                      2.5
 packing                                     packing/mono-cut.xyzd
 # packing                                     packing/poly-cut.xyzd
 
-nBeads                                      50
+nBeads                                      500
 
 # outfile                                     output.msh2
 preScalingFactor                            1
@@ -31,11 +31,9 @@ lc_max                                      0.10
 # booleanOperation                            1
 
 bridged                                     0.20
-bridgeOffsetRatio                           0.9
-bridgeTol                                   0.0
-
 # capped                                      0.20
-# bridgeTol                                   0.0
+bridgeOffsetRatio                           0.9
+bridgeTol                                   0.00
 
 fragment                                    1
 #==============================================#
@@ -43,7 +41,7 @@ fragment                                    1
 #== GMSH: {{==================================#
 
 Geometry.OCCParallel                        1
-Mesh.ScalingFactor                          0.0001
+# Mesh.ScalingFactor                          0.0001
 Mesh.CharacteristicLengthExtendFromBoundary 0
 Mesh.CharacteristicLengthMin                0
 Mesh.CharacteristicLengthFromCurvature      0
@@ -58,8 +56,8 @@ Mesh.Generate                               3
 # Mesh.MinimumCirclePoints                    20
 # Mesh.Smoothing                              1
 # Mesh.SmoothRatio                            1.8
-# Mesh.Algorithm                              2 # 1 : MeshAdapt | 2: Auto | 5 : Delaunay | 6 : Frontal | 7 : BAMG | 8 : DelQuad
-# Mesh.Algorithm3D                            1 # 1 : Delaunay | 4 : Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
+Mesh.Algorithm                              1 # 1 : MeshAdapt | 2: Auto | 5 : Delaunay | 6 : Frontal | 7 : BAMG | 8 : DelQuad
+Mesh.Algorithm3D                            10 # 1 : Delaunay | 4 : Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
 # Mesh.Optimize                               1
 # Mesh.OptimizeNetgen                         0
 # Mesh.OptimizeThreshold                      0.3
