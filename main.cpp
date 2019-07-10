@@ -41,6 +41,7 @@ int main(int argc, char** argv) {
         gmsh::option::setNumber("General.NumThreads", prm->GeneralNumThreads);
         gmsh::option::setNumber("Geometry.OCCParallel", prm->GeometryOCCParallel);
         gmsh::option::setNumber("Geometry.ScalingFactor", prm->GeometryScalingFactor);
+        gmsh::option::setNumber("Geometry.Tolerance", prm->GeometryTolerance);
         gmsh::option::setNumber("Geometry.ToleranceBoolean", prm->GeometryToleranceBoolean);
         gmsh::option::setNumber("Mesh.ScalingFactor", prm->MeshScalingFactor);
         gmsh::option::setNumber("Mesh.Smoothing", prm->MeshSmoothing);

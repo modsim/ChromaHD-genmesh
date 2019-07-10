@@ -51,6 +51,7 @@ Mesh.Generate                               3
 # General.NumThreads                          8
 
 # Geometry.ScalingFactor                      1 # Doesn't seem to work with OCC.
+# Geometry.Tolerance                          1e-8
 # Geometry.ToleranceBoolean                   0.0
 # Mesh.CharacteristicLengthFactor             1
 # Mesh.MinimumCirclePoints                    20

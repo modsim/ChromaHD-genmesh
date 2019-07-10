@@ -112,6 +112,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "General.NumThreads")                          GeneralNumThreads                          = atoi(val.at(0).c_str());
     else if(key == "Geometry.OCCParallel")                        GeometryOCCParallel                        = atoi(val.at(0).c_str());
     else if(key == "Geometry.ScalingFactor")                      GeometryScalingFactor                      = atof(val.at(0).c_str());
+    else if(key == "Geometry.Tolerance")                          GeometryTolerance                          = atof(val.at(0).c_str());
     else if(key == "Geometry.ToleranceBoolean")                   GeometryToleranceBoolean                   = atof(val.at(0).c_str());
     else if(key == "Mesh.ScalingFactor")                          MeshScalingFactor                          = atof(val.at(0).c_str());
     else if(key == "Mesh.Smoothing")                              MeshSmoothing                              = atof(val.at(0).c_str());
@@ -208,6 +209,7 @@ void Parameters::print()
     std::cout << "General.NumThreads                          "<< this->GeneralNumThreads                          << std::endl;
     std::cout << "Geometry.OCCParallel                        "<< this->GeometryOCCParallel                        << std::endl;
     std::cout << "Geometry.ScalingFactor                      "<< this->GeometryScalingFactor                      << std::endl;
+    std::cout << "Geometry.Tolerance                          "<< this->GeometryTolerance                          << std::endl;
     std::cout << "Geometry.ToleranceBoolean                   "<< this->GeometryToleranceBoolean                   << std::endl;
     std::cout << "Mesh.ScalingFactor                          "<< this->MeshScalingFactor                          << std::endl;
     std::cout << "Mesh.CharacteristicLengthExtendFromBoundary "<< this->MeshCharacteristicLengthExtendFromBoundary << std::endl;

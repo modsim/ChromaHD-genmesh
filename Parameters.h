@@ -39,6 +39,7 @@ public:
     int MeshSmoothing=1;
     double MeshSmoothRatio=1.8;
 
+    double GeometryTolerance = 1e-8;
     double GeometryToleranceBoolean = 0.0;
 
     int GeometryOCCParallel=1;
