@@ -25,9 +25,9 @@ PackedBed::PackedBed(Parameters * prm)
     this->prm = prm;
     this->readFile(this->prm->packfile);
 
-    /* beads.clear(); */
-    /* beads.push_back(new Bead(0, 0, 0, this->prm->rFactor * 1)); */
-    /* beads.push_back(new Bead(1.5, 0, 0, this->prm->rFactor * 0.5)); */
+    beads.clear();
+    beads.push_back(new Bead(5, 5, 710.5, this->prm->rFactor * 1));
+    beads.push_back(new Bead(6.5, 5,710.5, this->prm->rFactor * 0.50001));
 
     model::add("PackedBed");
 }
@@ -54,9 +54,6 @@ void PackedBed::createGeometry()
     double rCyl = psf * this->prm->rCyl;
     int count = 0;
 
-    std::cout << "Creating cylinder... " << std::flush;
-    dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
-    std::cout << "done!" << std::endl;
 
     int tag, ctag;
     std::cout << "Creating beads and mesh fields... " << std::flush;
@@ -68,13 +65,13 @@ void PackedBed::createGeometry()
         double r = psf * (*iter)->getR();
 
         tag = factory::addSphere(x, y, z, this->prm->rFactor * r);
-        ctag = factory::addPoint(x, y, z, this->prm->lc_beads, -1);
+        /* ctag = factory::addPoint(x, y, z, this->prm->lc_beads, -1); */
 
         (*iter)->setTag(tag);
-        (*iter)->setCTag(ctag);
+        /* (*iter)->setCTag(ctag); */
 
         dimTagsBeads.push_back({3, tag});
-        tBeadCPs.push_back(ctag);
+        /* tBeadCPs.push_back(ctag); */
 
         model::mesh::field::add("Ball", ++count);
         model::mesh::field::setNumber(count, "VIn", r/(psf*radius_max) * this->prm->lc_beads);
@@ -82,7 +79,7 @@ void PackedBed::createGeometry()
         model::mesh::field::setNumber(count, "XCenter", x);
         model::mesh::field::setNumber(count, "YCenter", y);
         model::mesh::field::setNumber(count, "ZCenter", z);
-        model::mesh::field::setNumber(count, "Radius", 1.01*r);
+        model::mesh::field::setNumber(count, "Radius", this->prm->fieldExtensionFactor * r);
         vCount.push_back(count);
 
     }
@@ -90,6 +87,59 @@ void PackedBed::createGeometry()
 
     std::vector<Bead *> remBeads = this->beads;
 
+    /* std::cout << "Creating Midpoints... " << std::flush; */
+    /* for(std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
+    /* { */
+    /*     remBeads.erase(remBeads.begin()); */
+    /*     for(std::vector<Bead *>::iterator riter = remBeads.begin(); riter != remBeads.end(); riter++) */
+    /*     { */
+    /*         //check pair with tol */
+    /*         double dx, dy, dz; */
+    /*         double x3, y3, z3; */
+    /*         double dx3, dy3, dz3; */
+
+    /*         double x1 = psf * (*iter)->getX(); */
+    /*         double x2 = psf * (*riter)->getX(); */
+
+    /*         double y1 = psf * (*iter)->getY(); */
+    /*         double y2 = psf * (*riter)->getY(); */
+
+    /*         double z1 = psf * (*iter)->getZ(); */
+    /*         double z2 = psf * (*riter)->getZ(); */
+
+    /*         double r1 = psf * (*iter)->getR(); */
+    /*         double r2 = psf * (*riter)->getR(); */
+
+    /*         dx = x2-x1; */
+    /*         dy = y2-y1; */
+    /*         dz = z2-z1; */
+
+    /*         double dist = sqrt( pow(dx, 2) + pow(dy, 2) + pow(dz, 2) ); */
+
+
+
+    /*         if (dist <= r1 + r2 + this->prm->bridgeTol) */
+    /*         { */
+
+    /*             double midX = x1 + r1 * dx/dist; */
+    /*             double midY = y1 + r1 * dy/dist; */
+    /*             double midZ = z1 + r1 * dz/dist; */
+
+    /*             int mtag = factory::addPoint(midX, midY, midZ, this->prm->lc_beads, -1); */
+    /*             model::getBoundary({{3,(*iter)->getTag()}}, cv, false, false, false ); */
+    /*             model::mesh::embed(0,{mtag}, 2, cv[0].second); */
+    /*             model::getBoundary({{3,(*riter)->getTag()}}, cv, false, false, false ); */
+    /*             model::mesh::embed(0,{mtag}, 2, cv[0].second); */
+
+    /*         } */
+
+    /*     } */
+    /* } */
+    /* std::cout << " done!" << std::endl; */
+
+
+
+    remBeads = this->beads;
     std::cout << "Creating Bridges... " << std::flush;
     for(std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
     {
@@ -145,7 +195,7 @@ void PackedBed::createGeometry()
 
 
                 model::mesh::field::add("Cylinder", ++count);
-                model::mesh::field::setNumber(count, "VIn", this->prm->lc_beads * rBridge/(this->prm->relativeBridgeRadius * psf * radius_max) );
+                model::mesh::field::setNumber(count, "VIn", this->prm->lc_beads * rBeadSmallest/(psf * radius_max) );
                 model::mesh::field::setNumber(count, "VOut", this->prm->lc_max);
                 model::mesh::field::setNumber(count, "XCenter", x3);
                 model::mesh::field::setNumber(count, "YCenter", y3);
@@ -153,7 +203,7 @@ void PackedBed::createGeometry()
                 model::mesh::field::setNumber(count, "XAxis", dx3);
                 model::mesh::field::setNumber(count, "YAxis", dy3);
                 model::mesh::field::setNumber(count, "ZAxis", dz3);
-                model::mesh::field::setNumber(count, "Radius", 1.01*rBridge);
+                model::mesh::field::setNumber(count, "Radius", this->prm->fieldExtensionFactor * rBridge);
                 vCount.push_back(count);
 
 
@@ -164,6 +214,10 @@ void PackedBed::createGeometry()
 
     std::cout << "done!" << std::endl;
 
+    std::cout << "Creating cylinder... " << std::flush;
+    dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
+    std::cout << "done!" << std::endl;
+
     /* std::cout << "Translating geometry to origin (using input values for Cylinder)... "; */
     /* factory::translate(dimTagsCyl, -xCyl, -yCyl, -zCylBot); */
     /* factory::translate(dimTagsBeads, -xCyl, -yCyl, -zCylBot); */
@@ -172,10 +226,16 @@ void PackedBed::createGeometry()
 
     std::cout << "Number of Bridges: " << dimTagsBridges.size() << std::endl;
 
-  model::mesh::field::add("Min", ++count);
-  model::mesh::field::setNumbers(count, "FieldsList", vCount);
+    std::string backgroundField;
+    if (this->prm->lc_beads > this->prm->lc_max)
+        backgroundField="Max";
+    else
+        backgroundField="Min";
 
-  model::mesh::field::setAsBackgroundMesh(count);
+    model::mesh::field::add(backgroundField, ++count);
+    model::mesh::field::setNumbers(count, "FieldsList", vCount);
+
+    model::mesh::field::setAsBackgroundMesh(count);
 
     /* // Synchronize gmsh model with geometry kernel. */
     /* std::cout << "synchronizing... " << std::flush; */
@@ -250,6 +310,7 @@ void PackedBed::mesh(std::string outfile)
     }
 
     std::cout << "Number of internal volumes: " << ov.size() <<std::endl;
+
 
     // Fragment cylinder w.r.t. beads
     if (this->prm->fragment)

@@ -57,6 +57,7 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [ ] Switch for fields vs brep meshing
 - [ ] Manual node placement at contact points 
 - [ ] expert mode? 
+- [ ] Better preScalingFactor implementation
 
 Known Issues
 - After mesh size constraints were applied to only surfaces (and points were used inside beads), the Netgen optimizer crashes randomly.

@@ -46,8 +46,11 @@ public:
     int MeshAlgorithm=2, MeshAlgorithm3D=1;
     int MeshRefineSteps=10;
     int MeshOptimize=1;
-    int MeshOptimizeNetgen=1;
+    int MeshOptimizeNetgen=0;
     int MeshGenerate=3;
+
+    int fieldExtensionFactor = 1.00;
+
 
     int GeneralNumThreads=8;
 

@@ -98,6 +98,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "lc")                                          lc                                         = atof(val.at(0).c_str());
     else if(key == "lc_beads")                                    lc_beads                                   = atof(val.at(0).c_str());
     else if(key == "lc_max")                                      lc_max                                     = atof(val.at(0).c_str());
+    else if(key == "fieldExtensionFactor")                        fieldExtensionFactor                       = atof(val.at(0).c_str());
     else if(key == "nBeads")                                      nBeads                                     = atoi(val.at(0).c_str());
     else if(key == "bridgeOffsetRatio")                           bridgeOffsetRatio                          = atof(val.at(0).c_str());
     else if(key == "booleanOperation")                            booleanOperation                           = atoi(val.at(0).c_str());
@@ -197,6 +198,7 @@ void Parameters::print()
     std::cout << "lc                                          "<< this->lc                                         << std::endl;
     std::cout << "lc_beads                                    "<< this->lc_beads                                   << std::endl;
     std::cout << "lc_max                                      "<< this->lc_max                                     << std::endl;
+    std::cout << "fieldExtensionFactor                        "<< this->fieldExtensionFactor                       << std::endl;
     std::cout << "bridgeTol                                   "<< this->bridgeTol                                  << std::endl;
     std::cout << "relativeBridgeRadius                        "<< this->relativeBridgeRadius                       << std::endl;
     std::cout << "bridgeOffsetRatio                           "<< this->bridgeOffsetRatio                          << std::endl;

@@ -18,21 +18,22 @@ outlet                                      2.5
 packing                                     packing/mono-cut.xyzd
 # packing                                     packing/poly-cut.xyzd
 
-nBeads                                      500
+nBeads                                      100
 
 # outfile                                     output.msh2
 preScalingFactor                            1
 
 lc                                          0.10 # Element size (automatically prescaled)
-lc_beads                                    0.10 
-lc_max                                      0.10 
+lc_beads                                    0.15 
+lc_max                                      0.08 
+fieldExtensionFactor                        1.00
 
-# reduced                                     0.98
-# booleanOperation                            1
+# reduced                                     1.00
+# booleanOperation                            0
 
 bridged                                     0.20
-# capped                                      0.20
-bridgeOffsetRatio                           0.9
+## capped                                      0.20
+bridgeOffsetRatio                           0.94
 bridgeTol                                   0.00
 
 fragment                                    1
@@ -51,15 +52,15 @@ Mesh.Generate                               3
 # General.NumThreads                          8
 
 # Geometry.ScalingFactor                      1 # Doesn't seem to work with OCC.
-# Geometry.Tolerance                          1e-8
+# Geometry.Tolerance                          0
 # Geometry.ToleranceBoolean                   0.0
 # Mesh.CharacteristicLengthFactor             1
 # Mesh.MinimumCirclePoints                    20
 # Mesh.Smoothing                              1
 # Mesh.SmoothRatio                            1.8
-Mesh.Algorithm                              1 # 1 : MeshAdapt | 2: Auto | 5 : Delaunay | 6 : Frontal | 7 : BAMG | 8 : DelQuad
+Mesh.Algorithm                              5 # 1 : MeshAdapt | 2: Auto | 5 : Delaunay | 6 : Frontal | 7 : BAMG | 8 : DelQuad
 Mesh.Algorithm3D                            10 # 1 : Delaunay | 4 : Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
-# Mesh.Optimize                               1
+Mesh.Optimize                               0
 # Mesh.OptimizeNetgen                         0
 # Mesh.OptimizeThreshold                      0.3
 # Mesh.RefineSteps                            10
