@@ -49,7 +49,7 @@ public:
     int MeshOptimizeNetgen=0;
     int MeshGenerate=3;
 
-    int fieldExtensionFactor = 1.00;
+    double fieldExtensionFactor = 1.00;
 
 
     int GeneralNumThreads=8;

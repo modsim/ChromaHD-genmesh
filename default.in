@@ -26,7 +26,7 @@ preScalingFactor                            1
 lc                                          0.10 # Element size (automatically prescaled)
 lc_beads                                    0.15 
 lc_max                                      0.08 
-fieldExtensionFactor                        1.00
+fieldExtensionFactor                        0.9999
 
 # reduced                                     1.00
 # booleanOperation                            0
