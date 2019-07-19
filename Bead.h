@@ -20,6 +20,8 @@ public:
     double getY() const;
     double getX() const;
     double getR() const;
+    void translate(double offsetx, double offsety, double offsetz);
+    void scale(double factor);
     bool neighbour(Bead* bead, double eps, double &dx, double &dy, double &dz) const;
     void setTag(int tag);
     void setCTag(int ctag);

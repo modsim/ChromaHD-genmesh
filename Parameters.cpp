@@ -75,7 +75,7 @@ void Parameters::update()
     bridgeTol = preScalingFactor * bridgeTol;
     lc        = preScalingFactor * lc;
     lc_beads  = preScalingFactor * lc_beads;
-    lc_max    = preScalingFactor * lc_max;
+    lc_out    = preScalingFactor * lc_out;
 
 }
 
@@ -86,18 +86,18 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
 
     else if(key == "zTop")                                        zTop                                       = atof(val.at(0).c_str());
     else if(key == "rCyl")                                        rCyl                                       = atof(val.at(0).c_str());
+    else if(key == "rCylDelta")                                   rCylDelta                                  = atof(val.at(0).c_str());
     else if(key == "xCyl")                                        xCyl                                       = atof(val.at(0).c_str());
     else if(key == "yCyl")                                        yCyl                                       = atof(val.at(0).c_str());
     else if(key == "inlet")                                       inlet                                      = atof(val.at(0).c_str());
     else if(key == "outlet")                                      outlet                                     = atof(val.at(0).c_str());
-
     else if(key == "preScalingFactor")                            preScalingFactor                           = atof(val.at(0).c_str());
     else if(key == "rFactor")                                     rFactor                                    = atof(val.at(0).c_str());
     else if(key == "bridgeTol")                                   bridgeTol                                  = atof(val.at(0).c_str());
     else if(key == "relativeBridgeRadius")                        relativeBridgeRadius                       = atof(val.at(0).c_str());
     else if(key == "lc")                                          lc                                         = atof(val.at(0).c_str());
     else if(key == "lc_beads")                                    lc_beads                                   = atof(val.at(0).c_str());
-    else if(key == "lc_max")                                      lc_max                                     = atof(val.at(0).c_str());
+    else if(key == "lc_out")                                      lc_out                                     = atof(val.at(0).c_str());
     else if(key == "fieldExtensionFactor")                        fieldExtensionFactor                       = atof(val.at(0).c_str());
     else if(key == "nBeads")                                      nBeads                                     = atoi(val.at(0).c_str());
     else if(key == "bridgeOffsetRatio")                           bridgeOffsetRatio                          = atof(val.at(0).c_str());
@@ -188,6 +188,7 @@ void Parameters::print()
     std::cout << "zBot                                        "<< this->zBot                                       << std::endl;
     std::cout << "zTop                                        "<< this->zTop                                       << std::endl;
     std::cout << "rCyl                                        "<< this->rCyl                                       << std::endl;
+    std::cout << "rCylDelta                                   "<< this->rCylDelta                                  << std::endl;
     std::cout << "xCyl                                        "<< this->xCyl                                       << std::endl;
     std::cout << "yCyl                                        "<< this->yCyl                                       << std::endl;
     std::cout << "inlet                                       "<< this->inlet                                      << std::endl;
@@ -197,7 +198,7 @@ void Parameters::print()
     std::cout << "preScalingFactor                            "<< this->preScalingFactor                           << std::endl;
     std::cout << "lc                                          "<< this->lc                                         << std::endl;
     std::cout << "lc_beads                                    "<< this->lc_beads                                   << std::endl;
-    std::cout << "lc_max                                      "<< this->lc_max                                     << std::endl;
+    std::cout << "lc_out                                      "<< this->lc_out                                     << std::endl;
     std::cout << "fieldExtensionFactor                        "<< this->fieldExtensionFactor                       << std::endl;
     std::cout << "bridgeTol                                   "<< this->bridgeTol                                  << std::endl;
     std::cout << "relativeBridgeRadius                        "<< this->relativeBridgeRadius                       << std::endl;

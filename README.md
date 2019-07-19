@@ -36,12 +36,17 @@ This should create the mesh in the required format in the `outpath` directory. A
 
 ## Todo
 
+
 - [x] Number of bridges, minimum bead size
 - [x] Scale polydisperse bead meshes to smaller beads. -> set lc for individual beads.
 - [x] bounding box for beads
 - [x] Generate polydisperse beads with bridges.
 - [x] Implement Translation
-- [ ] Implement PreTranslation
+- [x] Check timings for fields vs boundary mesh sizes
+- [x] Implement PreTranslation
+- [x] Better preScalingFactor implementation
+- [x] Implement auto cylinder boundaries
+- [x] Cleaner outputs/logging.
 - [ ] Improved error handling.
 - [ ] Switch off outputs of mesh fragments
 - [ ] Bridges at the cylinder-bead interface
@@ -49,18 +54,21 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [ ] Implement enlarged beads
 - [ ] Write test inputs to run and verify code.
 - [ ] Implement memory diagnostics. How much memory/cpu-time does the code use?
-- [ ] Investigate capped meshes. Why did 400 beads take 5-10 hours? 
-- [ ] Cleaner outputs/logging.
-- [ ] Check timings for fields vs boundary mesh sizes
+- [ ] {!}Investigate capped meshes. Why did 400 beads take 5-10 hours? 
 - [ ] Better makefile
 - [ ] Better argument handling?
 - [ ] Switch for fields vs brep meshing
 - [ ] Manual node placement at contact points 
-- [ ] expert mode? 
-- [ ] Better preScalingFactor implementation
+- [ ] Try volume generating
+- [ ] Improve default.in: folds should allow quick selection of kugelpackung
+- [ ] Check if it's possible to import meshes and modify them.
+- [ ] Try embedded bead CP and mesh size control
+- [ ] Time spent on booleans
 
 Known Issues
 - After mesh size constraints were applied to only surfaces (and points were used inside beads), the Netgen optimizer crashes randomly.
     - Does this still happen with fields? 
 - Geometry.ScalingFactor doesn't work. Use preScalingFactor instead.
 - In 7k-pre and 6k-pre cases, only a handful of beads were actually captured and meshed. [prescaling issue?]
+- Caps takes too long to generate
+    - Issue with caps (for poly) might be due to bridges being too small for the larger beads. 

@@ -1,55 +1,71 @@
 #== General ==============================#
 
-#== MonoCylinder: {{{==============================#
-rCyl                                        5.02
-xCyl                                        5.0
-yCyl                                        5.0
+#== mono-full: {{{==============================#
+packing                                     packing/mono-full.xyzd
 inlet                                       2.5
 outlet                                      2.5
 #===========================================}}}#
-##== PolyCylinder: {{{==============================#
-#rCyl                                        5.02
-#xCyl                                        2.3535
-#yCyl                                        2.3535
+##== mono-cut: {{{==============================#
+#packing                                     packing/mono-cut.xyzd
 #inlet                                       2.5
 #outlet                                      2.5
 ##===========================================}}}#
+##== poly-full: {{{==============================#
+#packing                                     packing/poly-full.xyzd
+#inlet                                       2.5
+#outlet                                      2.5
+#preScalingFactor                            2.1244954
+##===========================================}}}#
+##== poly-cut: {{{==============================#
+#packing                                     packing/poly-cut.xyzd
+#inlet                                       2.5
+#outlet                                      2.5
+#preScalingFactor                            2.1244954
+##===========================================}}}#
+##== poly5: {{{==============================#
+#packing                                     packing/poly5.xyzd
+#inlet                                       2.5
+#outlet                                      2.5
+#preScalingFactor                            2
+##===========================================}}}#
 
-packing                                     packing/mono-cut.xyzd
-# packing                                     packing/poly-cut.xyzd
+nBeads                                      500
+rCylDelta                                   0.01
 
-nBeads                                      100
+lc_beads                                    0.08 
+lc_out                                      0.08 
+fieldExtensionFactor                        1.01
 
-# outfile                                     output.msh2
-preScalingFactor                            1
+# reduced                                     0.999
 
-lc                                          0.10 # Element size (automatically prescaled)
-lc_beads                                    0.15 
-lc_max                                      0.08 
-fieldExtensionFactor                        0.9999
+# reduced                                     1.0
+# booleanOperation                            1
 
-# reduced                                     1.00
-# booleanOperation                            0
-
-bridged                                     0.20
-## capped                                      0.20
-bridgeOffsetRatio                           0.94
-bridgeTol                                   0.00
+# bridged                                     0.20
+capped                                      0.20
+# bridgeOffsetRatio                           0.96
+# bridgeTol                                   0.04
 
 fragment                                    1
 #==============================================#
 
 #== GMSH: {{==================================#
+# Algo  := 1 : Delaunay | 4 : Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
+# Algo3D:= 1 : MeshAdapt | 2: Auto | 5 : Delaunay | 6 : Frontal | 7 : BAMG | 8 : DelQuad
 
 Geometry.OCCParallel                        1
-# Mesh.ScalingFactor                          0.0001
+General.NumThreads                          8
+Mesh.MaxNumThreads                          8
+Mesh.ScalingFactor                          0.0001
 Mesh.CharacteristicLengthExtendFromBoundary 0
 Mesh.CharacteristicLengthMin                0
 Mesh.CharacteristicLengthFromCurvature      0
 Mesh.CharacteristicLengthFromPoints         0
 Mesh.Generate                               3
-# Mesh.MaxNumThreads                          8
-# General.NumThreads                          8
+Mesh.Algorithm                              5 
+Mesh.Algorithm3D                            10 
+Mesh.Optimize                               1
+Mesh.OptimizeNetgen                         1
 
 # Geometry.ScalingFactor                      1 # Doesn't seem to work with OCC.
 # Geometry.Tolerance                          0
@@ -58,10 +74,6 @@ Mesh.Generate                               3
 # Mesh.MinimumCirclePoints                    20
 # Mesh.Smoothing                              1
 # Mesh.SmoothRatio                            1.8
-Mesh.Algorithm                              5 # 1 : MeshAdapt | 2: Auto | 5 : Delaunay | 6 : Frontal | 7 : BAMG | 8 : DelQuad
-Mesh.Algorithm3D                            10 # 1 : Delaunay | 4 : Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
-Mesh.Optimize                               0
-# Mesh.OptimizeNetgen                         0
 # Mesh.OptimizeThreshold                      0.3
 # Mesh.RefineSteps                            10
 
@@ -107,8 +119,7 @@ Mesh.Optimize                               0
 #Named.beadSurface                           0
 ##===========================================}}}#
 
-##== Misc: {{{==================================#
-#dryRun                                      0 # Do not Generate Mesh
+# dryRun                                      1 # Do not Generate Mesh
 #outpath                                     output/ # Output folder. Always end with '/'. Must exist prior to run.
-##===========================================}}}#
+
 # vim: fdm=marker

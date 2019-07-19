@@ -20,6 +20,7 @@ Bead::Bead(double x, double y, double z, double r) {
     this->r = r;
 }
 
+
 Bead::Bead(const Bead& orig) {
 }
 
@@ -40,6 +41,22 @@ double Bead::getX() const {
 
 double Bead::getR() const {
     return r;
+}
+
+
+void Bead::translate(double offsetx, double offsety, double offsetz)
+{
+    this->x = offsetx + this->x;
+    this->y = offsety + this->y;
+    this->z = offsetz + this->z;
+}
+
+void Bead::scale(double factor)
+{
+    this->x = factor * this->x;
+    this->y = factor * this->y;
+    this->z = factor * this->z;
+    this->r = factor * this->r;
 }
 
 

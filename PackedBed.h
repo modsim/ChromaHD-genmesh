@@ -30,13 +30,11 @@ class PackedBed{
         void GMSHGeom(std::string outfile);
 
         int tCyl;
-        int contactStrategy;
 
         double radius_avg = 0.0;
         double radius_max = -1.0;
         double radius_min = 999999;
-        double x_sum = 0.0;
-        double y_sum = 0.0;
+        double nBeadsMax = 0;
 
         std::vector<int> tBeads;
         std::vector<int> tBeadCPs;
@@ -50,7 +48,8 @@ class PackedBed{
     private:
         Parameters * prm;
 
-        void readFile(std::string packingFilename);
+        void getBeads(std::string packingFilename);
+        void transformBeads();
 
 };
 

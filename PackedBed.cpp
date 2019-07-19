@@ -15,6 +15,8 @@
 #include <gmsh.h>
 #include <iterator>
 
+#include <float.h>
+
 #define PI 3.1415926535897932
 
 namespace model = gmsh::model;
@@ -23,11 +25,12 @@ namespace factory = gmsh::model::occ;
 PackedBed::PackedBed(Parameters * prm)
 {
     this->prm = prm;
-    this->readFile(this->prm->packfile);
+    this->getBeads(this->prm->packfile);
+    this->transformBeads();
 
-    beads.clear();
-    beads.push_back(new Bead(5, 5, 710.5, this->prm->rFactor * 1));
-    beads.push_back(new Bead(6.5, 5,710.5, this->prm->rFactor * 0.50001));
+    /* beads.clear(); */
+    /* beads.push_back(new Bead(5, 5, 710.5, this->prm->rFactor * 1)); */
+    /* beads.push_back(new Bead(6.5, 5,710.5, this->prm->rFactor * 0.50001)); */
 
     model::add("PackedBed");
 }
@@ -46,12 +49,11 @@ void PackedBed::createGeometry()
 
     double zCylBot = 0, zCylTop = 0;
 
-    double psf  = this->prm->preScalingFactor;
-    zCylBot     = psf * ( this->prm->zBot - this->prm->inlet );
-    zCylTop     = psf * ( this->prm->zTop + this->prm->outlet );
-    double xCyl = psf * this->prm->xCyl;
-    double yCyl = psf * this->prm->yCyl;
-    double rCyl = psf * this->prm->rCyl;
+    zCylBot     = ( this->prm->zBot - this->prm->inlet );
+    zCylTop     = ( this->prm->zTop + this->prm->outlet );
+    double xCyl = this->prm->xCyl;
+    double yCyl = this->prm->yCyl;
+    double rCyl = this->prm->rCyl;
     int count = 0;
 
 
@@ -59,10 +61,10 @@ void PackedBed::createGeometry()
     std::cout << "Creating beads and mesh fields... " << std::flush;
     for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++ )
     {
-        double x = psf * (*iter)->getX();
-        double y = psf * (*iter)->getY();
-        double z = psf * (*iter)->getZ();
-        double r = psf * (*iter)->getR();
+        double x = (*iter)->getX();
+        double y = (*iter)->getY();
+        double z = (*iter)->getZ();
+        double r = (*iter)->getR();
 
         tag = factory::addSphere(x, y, z, this->prm->rFactor * r);
         /* ctag = factory::addPoint(x, y, z, this->prm->lc_beads, -1); */
@@ -74,8 +76,8 @@ void PackedBed::createGeometry()
         /* tBeadCPs.push_back(ctag); */
 
         model::mesh::field::add("Ball", ++count);
-        model::mesh::field::setNumber(count, "VIn", r/(psf*radius_max) * this->prm->lc_beads);
-        model::mesh::field::setNumber(count, "VOut", this->prm->lc_max);
+        model::mesh::field::setNumber(count, "VIn", r/(radius_max) * this->prm->lc_beads);
+        model::mesh::field::setNumber(count, "VOut", this->prm->lc_out);
         model::mesh::field::setNumber(count, "XCenter", x);
         model::mesh::field::setNumber(count, "YCenter", y);
         model::mesh::field::setNumber(count, "ZCenter", z);
@@ -86,60 +88,6 @@ void PackedBed::createGeometry()
     std::cout << "done!" << std::endl;
 
     std::vector<Bead *> remBeads = this->beads;
-
-    /* std::cout << "Creating Midpoints... " << std::flush; */
-    /* for(std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
-    /* { */
-    /*     remBeads.erase(remBeads.begin()); */
-    /*     for(std::vector<Bead *>::iterator riter = remBeads.begin(); riter != remBeads.end(); riter++) */
-    /*     { */
-    /*         //check pair with tol */
-    /*         double dx, dy, dz; */
-    /*         double x3, y3, z3; */
-    /*         double dx3, dy3, dz3; */
-
-    /*         double x1 = psf * (*iter)->getX(); */
-    /*         double x2 = psf * (*riter)->getX(); */
-
-    /*         double y1 = psf * (*iter)->getY(); */
-    /*         double y2 = psf * (*riter)->getY(); */
-
-    /*         double z1 = psf * (*iter)->getZ(); */
-    /*         double z2 = psf * (*riter)->getZ(); */
-
-    /*         double r1 = psf * (*iter)->getR(); */
-    /*         double r2 = psf * (*riter)->getR(); */
-
-    /*         dx = x2-x1; */
-    /*         dy = y2-y1; */
-    /*         dz = z2-z1; */
-
-    /*         double dist = sqrt( pow(dx, 2) + pow(dy, 2) + pow(dz, 2) ); */
-
-
-
-    /*         if (dist <= r1 + r2 + this->prm->bridgeTol) */
-    /*         { */
-
-    /*             double midX = x1 + r1 * dx/dist; */
-    /*             double midY = y1 + r1 * dy/dist; */
-    /*             double midZ = z1 + r1 * dz/dist; */
-
-    /*             int mtag = factory::addPoint(midX, midY, midZ, this->prm->lc_beads, -1); */
-    /*             model::getBoundary({{3,(*iter)->getTag()}}, cv, false, false, false ); */
-    /*             model::mesh::embed(0,{mtag}, 2, cv[0].second); */
-    /*             model::getBoundary({{3,(*riter)->getTag()}}, cv, false, false, false ); */
-    /*             model::mesh::embed(0,{mtag}, 2, cv[0].second); */
-
-    /*         } */
-
-    /*     } */
-    /* } */
-    /* std::cout << " done!" << std::endl; */
-
-
-
-    remBeads = this->beads;
     std::cout << "Creating Bridges... " << std::flush;
     for(std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
     {
@@ -151,17 +99,17 @@ void PackedBed::createGeometry()
             double x3, y3, z3;
             double dx3, dy3, dz3;
 
-            double x1 = psf * (*iter)->getX();
-            double x2 = psf * (*riter)->getX();
+            double x1 = (*iter)->getX();
+            double x2 = (*riter)->getX();
 
-            double y1 = psf * (*iter)->getY();
-            double y2 = psf * (*riter)->getY();
+            double y1 = (*iter)->getY();
+            double y2 = (*riter)->getY();
 
-            double z1 = psf * (*iter)->getZ();
-            double z2 = psf * (*riter)->getZ();
+            double z1 = (*iter)->getZ();
+            double z2 = (*riter)->getZ();
 
-            double r1 = psf * (*iter)->getR();
-            double r2 = psf * (*riter)->getR();
+            double r1 = (*iter)->getR();
+            double r2 = (*riter)->getR();
 
             dx = x2-x1;
             dy = y2-y1;
@@ -195,8 +143,8 @@ void PackedBed::createGeometry()
 
 
                 model::mesh::field::add("Cylinder", ++count);
-                model::mesh::field::setNumber(count, "VIn", this->prm->lc_beads * rBeadSmallest/(psf * radius_max) );
-                model::mesh::field::setNumber(count, "VOut", this->prm->lc_max);
+                model::mesh::field::setNumber(count, "VIn", this->prm->lc_beads * rBeadSmallest/(radius_max) );
+                model::mesh::field::setNumber(count, "VOut", this->prm->lc_out);
                 model::mesh::field::setNumber(count, "XCenter", x3);
                 model::mesh::field::setNumber(count, "YCenter", y3);
                 model::mesh::field::setNumber(count, "ZCenter", z3);
@@ -218,29 +166,18 @@ void PackedBed::createGeometry()
     dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
     std::cout << "done!" << std::endl;
 
-    /* std::cout << "Translating geometry to origin (using input values for Cylinder)... "; */
-    /* factory::translate(dimTagsCyl, -xCyl, -yCyl, -zCylBot); */
-    /* factory::translate(dimTagsBeads, -xCyl, -yCyl, -zCylBot); */
-    /* factory::translate(dimTagsBridges, -xCyl, -yCyl, -zCylBot); */
-    /* std::cout << "done!" << std::endl; */
-
-    std::cout << "Number of Bridges: " << dimTagsBridges.size() << std::endl;
-
     std::string backgroundField;
-    if (this->prm->lc_beads > this->prm->lc_max)
+    if (this->prm->lc_beads > this->prm->lc_out)
         backgroundField="Max";
     else
         backgroundField="Min";
+
+    std::cout << "Setting Background Field: " << backgroundField << std::endl;
 
     model::mesh::field::add(backgroundField, ++count);
     model::mesh::field::setNumbers(count, "FieldsList", vCount);
 
     model::mesh::field::setAsBackgroundMesh(count);
-
-    /* // Synchronize gmsh model with geometry kernel. */
-    /* std::cout << "synchronizing... " << std::flush; */
-    /* factory::synchronize(); */
-    /* std::cout << "done!" << std::endl; */
 
 }
 
@@ -309,8 +246,6 @@ void PackedBed::mesh(std::string outfile)
         ov = dimTagsBeads;
     }
 
-    std::cout << "Number of internal volumes: " << ov.size() <<std::endl;
-
 
     // Fragment cylinder w.r.t. beads
     if (this->prm->fragment)
@@ -329,6 +264,10 @@ void PackedBed::mesh(std::string outfile)
     std::cout << "done!" << std::endl;
 
     std::cout << std::endl;
+
+    std::cout << "Number of Beads: " << dimTagsBeads.size() << std::endl;
+    std::cout << "Number of Bridges: " << dimTagsBridges.size() << std::endl;
+    std::cout << "Number of internal volumes: " << ov.size() <<std::endl << std::endl;
 
     /* std:: cout << "Embedding control points within spheres..." << std::flush; */
     /* model::mesh::embed(0,tBeadCPs, 3, ov[0].second); */
@@ -360,9 +299,6 @@ void PackedBed::mesh(std::string outfile)
     /* } */
     /* std:: cout << " done!" << std::endl; */
 
-
-
-
     /* /1* // Set mesh size on cylinder surface *1/ */
     /* model::getBoundary(dimTagsInterstitial, cv, false, false, true ); */
     /* cv.erase(cv.begin()+3, cv.end()); */
@@ -371,8 +307,6 @@ void PackedBed::mesh(std::string outfile)
 
     // ============================
     // Named Physical Groups
-
-
     if (this->prm->NamedInterstitialVolume)
     {
         std::cout << "Naming Interstitial Volumes... ";
@@ -494,7 +428,6 @@ void PackedBed::mesh(std::string outfile)
 
         if (this->prm->NamedBeadSurface)
         {
-            /* std::cout << "Naming Bead Surfaces... "; */
             model::getBoundary(bv, cv, false, false,false);
             tBeads.clear();
             for ( std::vector<std::pair< int , int>>::iterator it = cv.begin(); it != cv.end(); it++   )
@@ -503,7 +436,6 @@ void PackedBed::mesh(std::string outfile)
             }
             model::addPhysicalGroup(2,tBeads,14);
             model::setPhysicalName(2,14, "beadSurface");
-            std::cout << "done!" << std::endl;
         }
 
         gmsh::write(this->prm->outpath + outfile + "_beads.vtk");
@@ -528,7 +460,7 @@ void PackedBed::printPacking()
 
 }
 
-void PackedBed::readFile(std::string packingFilename)
+void PackedBed::getBeads(std::string packingFilename)
 {
     // open the file:
     std::ifstream file(packingFilename.c_str(), std::ios::binary);
@@ -553,7 +485,7 @@ void PackedBed::readFile(std::string packingFilename)
     double cz1 = this->prm->zBot;
     double cz2 = this->prm->zTop;
 
-    double nBeadsMax = data.size()/4;
+    nBeadsMax = data.size()/4;
 
     for(size_t i = 0; i < nBeadsMax; ++i)
     {
@@ -565,6 +497,11 @@ void PackedBed::readFile(std::string packingFilename)
         beads.push_back(new Bead(x, y, z, this->prm->rFactor * r));
     }
 
+    if (beads.size() == 0) {
+        std::cerr << "ERROR: No beads found!" << std::endl;
+        exit(1);
+    }
+
     // sort using a lambda expression
     std::cout << "Sorting beads according to z-value..." << std::flush;
     std::sort(beads.begin(), beads.end(), [](const Bead* b1, const Bead* b2) {
@@ -573,50 +510,131 @@ void PackedBed::readFile(std::string packingFilename)
     std::cout << "done!" << std::endl;
 
     //Only store nBeads
-    // testing nBeads
     double nBeads = this->prm->nBeads > nBeadsMax? nBeadsMax: this->prm->nBeads;
     beads.erase(beads.begin() + nBeads, beads.end());
 
-    //Adjust zBot and zTop
-    this->prm->zBot=beads.front()->getZ();
-    this->prm->zTop=beads.back()->getZ();
+    std::cout << this->beads.size() << "/" << nBeadsMax << " beads in the selected range." << std::endl;
 
-    std::cout << "Set zBot to " << this->prm->zBot << std::endl;
-    std::cout << "Set zTop to " << this->prm->zTop << std::endl;
+}
 
-    if (beads.size() == 0) {
-        std::cerr << "ERROR: no beads in selection!!!" << std::endl;
-        exit(1);
+void PackedBed::transformBeads()
+{
+    //Calculate bounding box
+    double xCyl = 0, yCyl = 0, rCyl = 0;
+    double xMax = -DBL_MAX, yMax = -DBL_MAX;
+    double xMin = DBL_MAX, yMin = DBL_MAX;
+    double x=0, y=0, r=0;
+    double zBot=0, zTop=0;
+    radius_avg=0;
+
+    for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
+    {
+        x = (*it)->getX();
+        y = (*it)->getY();
+        r = (*it)->getR();
+
+        radius_avg +=  r;
+
+        if ( (x + r) > xMax ) xMax = x + r;
+        if ( (x - r) < xMin ) xMin = x - r;
+        if ( (y + r) > yMax ) yMax = y + r;
+        if ( (y - r) < yMin ) yMin = y - r;
+
+        if (r > radius_max) radius_max = r;
+        if (r < radius_min) radius_min = r;
+
     }
+    radius_avg /= beads.size();
+
+    xCyl = (xMax + xMin) / 2;
+    yCyl = (yMax + yMin) / 2;
+    rCyl = std::max(std::max(xMax, std::abs(xMin)), std::max(yMax, std::abs(yMin) ) ) + this->prm->rCylDelta;
+
+    //Adjust zBot and zTop
+    zBot=beads.front()->getZ();
+    zTop=beads.back()->getZ();
+
+    std::cout << std::endl;
+    std::cout << "== Before Transform ==" << std::endl;
+    std::cout << "xCyl: " << xCyl << std::endl;
+    std::cout << "yCyl: " << yCyl << std::endl;
+    std::cout << "rCyl: " << rCyl << std::endl;
+    std::cout << "xMax: " << xMax << std::endl;
+    std::cout << "xMin: " << xMin << std::endl;
+    std::cout << "yMax: " << yMax << std::endl;
+    std::cout << "yMin: " << yMin << std::endl;
+    std::cout << "zBot: " << zBot << std::endl;
+    std::cout << "zTop: " << zTop << std::endl;
+    std::cout << std::endl;
+
+    double offsetx = -xCyl;
+    double offsety = -yCyl;
+    double offsetz = -zBot;
+
+    std::cout << "Translating beads by (" << offsetx << ", "<< offsety << ", " << offsetz << ")"<<  std::flush;
+    for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
+        (*it)->translate(offsetx, offsety, offsetz);
+    std::cout << " done!" << std::endl;
+
+    std::cout << "Scaling beads by " << this->prm->preScalingFactor << std::flush;
+    for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
+        (*it)->scale(this->prm->preScalingFactor);
+    std::cout << " done!" << std::endl << std::endl;
+
+    //Adjust zBot and zTop
+    zBot=beads.front()->getZ();
+    zTop=beads.back()->getZ();
+
+    xCyl = 0, yCyl = 0, rCyl = 0;
+    xMax = -DBL_MAX, yMax = -DBL_MAX;
+    xMin = DBL_MAX, yMin = DBL_MAX;
+    x=0, y=0, r=0;;
+    radius_avg=0;
 
 
     for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
     {
-        // remember: this is already the shrunken radius!!!
-        double r = (*it)->getR();
+        x = (*it)->getX();
+        y = (*it)->getY();
+        r = (*it)->getR();
+
         radius_avg +=  r;
 
-        if(r > radius_max)
-            radius_max = r;
+        if ( (x + r) > xMax ) xMax = x + r;
+        if ( (x - r) < xMin ) xMin = x - r;
+        if ( (y + r) > yMax ) yMax = y + r;
+        if ( (y - r) < yMin ) yMin = y - r;
 
-        if (r < radius_min)
-            radius_min = r;
+        if (r > radius_max) radius_max = r;
+        if (r < radius_min) radius_min = r;
 
-        x_sum += (*it)->getX();
-        y_sum += (*it)->getY();
     }
-
-
     radius_avg /= beads.size();
 
-    double x_mid = x_sum/beads.size();
-    double y_mid = y_sum/beads.size();
+    xCyl = (xMax + xMin) / 2;
+    yCyl = (yMax + yMin) / 2;
+    rCyl = std::max(std::max(xMax, std::abs(xMin)), std::max(yMax, std::abs(yMin) ) ) + this->prm->rCylDelta;
 
-    std::cout << "Midpoint (x,y) of beads is approximately ( " << x_mid << ", " << y_mid << ")" << std::endl;
+    this->prm->xCyl = xCyl;
+    this->prm->yCyl = yCyl;
+    this->prm->rCyl = rCyl;
+    this->prm->zBot = zBot;
+    this->prm->zTop = zTop;
 
-    std::cout << this->beads.size() << "/" << data.size()/4 << " beads in the selected range." << std::endl;
+    std::cout << "== After Transform ==" << std::endl;
+    std::cout << "xCyl: " << xCyl << std::endl;
+    std::cout << "yCyl: " << yCyl << std::endl;
+    std::cout << "rCyl: " << rCyl << std::endl;
+    std::cout << "xMax: " << xMax << std::endl;
+    std::cout << "xMin: " << xMin << std::endl;
+    std::cout << "yMax: " << yMax << std::endl;
+    std::cout << "yMin: " << yMin << std::endl;
+    std::cout << "zBot: " << zBot << std::endl;
+    std::cout << "zTop: " << zTop << std::endl;
+    std::cout << std::endl;
+
     std::cout << "average bead radius: " << std::scientific << std::setprecision(10) << radius_avg << std::endl;
-    std::cout << "maximum bead radius: " << std::scientific << std::setprecision(10) << radius_max << std::endl << std::endl;
+    std::cout << "maximum bead radius: " << std::scientific << std::setprecision(10) << radius_max << std::endl;
     std::cout << "minimum bead radius: " << std::scientific << std::setprecision(10) << radius_min << std::endl << std::endl;
 
 }
