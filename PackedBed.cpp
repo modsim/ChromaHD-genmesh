@@ -219,6 +219,8 @@ void PackedBed::mesh(std::string outfile)
     /*     /1* model::mesh::setSize({{3,(*it).first}}, this->prm->lc * (*it).second/(this->prm->relativeBridgeRadius * radius_avg) ); *1/ */
     /* } */
 
+    long bool_start = gmsh::logger::time();
+
     /* Fuse beads together (with bridges or without) */
     if (this->prm->booleanOperation == 1)
     {
@@ -258,6 +260,8 @@ void PackedBed::mesh(std::string outfile)
         std::cout << "done!" << std::endl;
     }
 
+    long bool_duration = gmsh::logger::time() - bool_start;
+
     // Synchronize gmsh model with geometry kernel.
     std::cout << "synchronizing... " << std::flush;
     factory::synchronize();
@@ -265,9 +269,12 @@ void PackedBed::mesh(std::string outfile)
 
     std::cout << std::endl;
 
-    std::cout << "Number of Beads: " << dimTagsBeads.size() << std::endl;
-    std::cout << "Number of Bridges: " << dimTagsBridges.size() << std::endl;
-    std::cout << "Number of internal volumes: " << ov.size() <<std::endl << std::endl;
+    std::cout << "Number of Beads: "            << dimTagsBeads.size()   << std::endl;
+    std::cout << "Number of Bridges: "          << dimTagsBridges.size() << std::endl;
+    std::cout << "Number of internal volumes: " << ov.size()             << std::endl;
+
+    gmsh::logger::write("Boolean time: " + std::to_string(bool_duration) + " s", "info");
+    std::cout << std::endl;
 
     /* std:: cout << "Embedding control points within spheres..." << std::flush; */
     /* model::mesh::embed(0,tBeadCPs, 3, ov[0].second); */
@@ -382,6 +389,9 @@ void PackedBed::mesh(std::string outfile)
     /* model::getBoundary(bv, cv, false, false, false); */
     /* model::getBoundary(cv, ov, false, false, true); */
     /* model::mesh::setSize(ov, this->prm->lc); */
+
+    /* gmsh::write(this->prm->outpath + "geometry.brep" ); */
+
 
     if(!this->prm->dryRun)
     {

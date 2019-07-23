@@ -36,7 +36,6 @@ This should create the mesh in the required format in the `outpath` directory. A
 
 ## Todo
 
-
 - [x] Number of bridges, minimum bead size
 - [x] Scale polydisperse bead meshes to smaller beads. -> set lc for individual beads.
 - [x] bounding box for beads
@@ -47,6 +46,10 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [x] Better preScalingFactor implementation
 - [x] Implement auto cylinder boundaries
 - [x] Cleaner outputs/logging.
+- [x] Improve default.in: folds should allow quick selection of kugelpackung
+- [-] Export geometry before mesh start: [ Possible ].
+- [x] Time spent on booleans
+- [ ] Save options (so that it can be reloaded and used with exported geometry?)
 - [ ] Improved error handling.
 - [ ] Switch off outputs of mesh fragments
 - [ ] Bridges at the cylinder-bead interface
@@ -60,10 +63,8 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [ ] Switch for fields vs brep meshing
 - [ ] Manual node placement at contact points 
 - [ ] Try volume generating
-- [ ] Improve default.in: folds should allow quick selection of kugelpackung
 - [ ] Check if it's possible to import meshes and modify them.
 - [ ] Try embedded bead CP and mesh size control
-- [ ] Time spent on booleans
 
 Known Issues
 - After mesh size constraints were applied to only surfaces (and points were used inside beads), the Netgen optimizer crashes randomly.

@@ -1,21 +1,21 @@
 #== General ==============================#
 
-#== mono-full: {{{==============================#
-packing                                     packing/mono-full.xyzd
-inlet                                       2.5
-outlet                                      2.5
-#===========================================}}}#
+##== mono-full: {{{==============================#
+#packing                                     packing/mono-full.xyzd
+#inlet                                       2.5
+#outlet                                      2.5
+##===========================================}}}#
 ##== mono-cut: {{{==============================#
 #packing                                     packing/mono-cut.xyzd
 #inlet                                       2.5
 #outlet                                      2.5
 ##===========================================}}}#
-##== poly-full: {{{==============================#
-#packing                                     packing/poly-full.xyzd
-#inlet                                       2.5
-#outlet                                      2.5
-#preScalingFactor                            2.1244954
-##===========================================}}}#
+#== poly-full: {{{==============================#
+packing                                     packing/poly-full.xyzd
+inlet                                       2.5
+outlet                                      2.5
+preScalingFactor                            2.1244954
+#===========================================}}}#
 ##== poly-cut: {{{==============================#
 #packing                                     packing/poly-cut.xyzd
 #inlet                                       2.5
@@ -29,8 +29,8 @@ outlet                                      2.5
 #preScalingFactor                            2
 ##===========================================}}}#
 
-nBeads                                      500
-rCylDelta                                   0.01
+nBeads                                      150
+rCylDelta                                   0.05
 
 lc_beads                                    0.08 
 lc_out                                      0.08 
@@ -41,17 +41,18 @@ fieldExtensionFactor                        1.01
 # reduced                                     1.0
 # booleanOperation                            1
 
-# bridged                                     0.20
-capped                                      0.20
-# bridgeOffsetRatio                           0.96
-# bridgeTol                                   0.04
+bridged                                     0.20
+# capped                                      0.30
+bridgeOffsetRatio                           0.94
+bridgeTol                                   0.008
 
 fragment                                    1
+# dryRun                                      1 # Do not Generate Mesh
 #==============================================#
 
 #== GMSH: {{==================================#
-# Algo  := 1 : Delaunay | 4 : Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
-# Algo3D:= 1 : MeshAdapt | 2: Auto | 5 : Delaunay | 6 : Frontal | 7 : BAMG | 8 : DelQuad
+# Algo   := 1 : MeshAdapt | 2: Auto | 5 : Delaunay | 6 : Frontal | 7 : BAMG | 8 : DelQuad
+# Algo3D := 1 : Delaunay | 4 : Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
 
 Geometry.OCCParallel                        1
 General.NumThreads                          8
@@ -119,7 +120,6 @@ Mesh.OptimizeNetgen                         1
 #Named.beadSurface                           0
 ##===========================================}}}#
 
-# dryRun                                      1 # Do not Generate Mesh
 #outpath                                     output/ # Output folder. Always end with '/'. Must exist prior to run.
 
 # vim: fdm=marker
