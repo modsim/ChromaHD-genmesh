@@ -1,15 +1,15 @@
 #== General ==============================#
 
-##== mono-full: {{{==============================#
-#packing                                     packing/mono-full.xyzd
-##===========================================}}}#
+#== mono-full: {{{==============================#
+packing                                     packing/mono-full.xyzd
+#===========================================}}}#
 ##== mono-cut: {{{==============================#
 #packing                                     packing/mono-cut.xyzd
 ##===========================================}}}#
-#== poly-full: {{{==============================#
-packing                                     packing/poly-full.xyzd
-preScalingFactor                            2.1244954
-#===========================================}}}#
+##== poly-full: {{{==============================#
+#packing                                     packing/poly-full.xyzd
+#preScalingFactor                            2.1244954
+##===========================================}}}#
 ##== poly-cut: {{{==============================#
 #packing                                     packing/poly-cut.xyzd
 #preScalingFactor                            2.1244954
@@ -19,15 +19,15 @@ preScalingFactor                            2.1244954
 #preScalingFactor                            2
 ##===========================================}}}#
 
-nBeads                                      150
-rCylDelta                                   0.04
+nBeads                                      500
+rCylDelta                                   0.01
+inlet                                       3.5
+outlet                                      3.5
 
 meshSizeMethod                              1     # 0: Global Points (for capped mono) 1: Scaled Fields
 lc_beads                                    0.08 
 lc_out                                      0.08 
 fieldExtensionFactor                        1.01
-inlet                                       3.5
-outlet                                      3.5
 
 reduced                                     0.999
 
@@ -37,10 +37,10 @@ reduced                                     0.999
 # # bridged                                     0.20
 # capped                                      0.20
 # bridgeOffsetRatio                           0.98
-# bridgeTol                                   0.08
+# bridgeTol                                   0.008
 
 fragment                                    1
-dryRun                                      1 # Do not Generate Mesh
+# dryRun                                      1 # Do not Generate Mesh
 #==============================================#
 
 #== GMSH: {{==================================#
@@ -56,7 +56,7 @@ Mesh.CharacteristicLengthMin                0
 Mesh.CharacteristicLengthFromCurvature      0
 Mesh.CharacteristicLengthFromPoints         0
 Mesh.Generate                               3
-Mesh.Algorithm                              5 
+Mesh.Algorithm                              2 
 Mesh.Algorithm3D                            10 
 Mesh.Optimize                               1
 Mesh.OptimizeNetgen                         1

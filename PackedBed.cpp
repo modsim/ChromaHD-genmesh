@@ -26,12 +26,12 @@ PackedBed::PackedBed(Parameters * prm)
 {
     this->prm = prm;
     this->getBeads(this->prm->packfile);
-    this->transformBeads();
 
     /* beads.clear(); */
     /* beads.push_back(new Bead(5, 5, 710.5, this->prm->rFactor * 1)); */
     /* beads.push_back(new Bead(6.5, 5,710.5, this->prm->rFactor * 0.50001)); */
 
+    this->transformBeads();
     model::add("PackedBed");
 }
 
@@ -87,6 +87,8 @@ void PackedBed::createGeometry()
     }
     std::cout << "done!" << std::endl;
 
+    int tagBridge;
+
     std::vector<Bead *> remBeads = this->beads;
     std::cout << "Creating Bridges... " << std::flush;
     for(std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
@@ -97,6 +99,7 @@ void PackedBed::createGeometry()
             //check pair with tol
             double dx, dy, dz;
             double x3, y3, z3;
+            double x4, y4, z4;
             double dx3, dy3, dz3;
 
             double x1 = (*iter)->getX();
@@ -123,6 +126,8 @@ void PackedBed::createGeometry()
                 //cylinder radius
                 double rBeadSmallest = (r1 <= r2? r1 : r2);
                 double rBridge = this->prm->relativeBridgeRadius * rBeadSmallest;
+                double r1Bridge = this->prm->relativeBridgeRadius * r1;
+                double r2Bridge = this->prm->relativeBridgeRadius * r2;
 
                 double factor = this->prm->bridgeOffsetRatio;
 
@@ -131,28 +136,57 @@ void PackedBed::createGeometry()
                 y3 = y1 + factor * r1 * dy/dist;
                 z3 = z1 + factor * r1 * dz/dist;
 
+                x4 = x2 - factor * r2 * dx/dist;
+                y4 = y2 - factor * r2 * dy/dist;
+                z4 = z2 - factor * r2 * dz/dist;
+
                 //cylinder length
                 dx3 = dx * (dist - factor * (r1+r2))/dist;
                 dy3 = dy * (dist - factor * (r1+r2))/dist;
                 dz3 = dz * (dist - factor * (r1+r2))/dist;
 
-                int tagBridge = factory::addCylinder(x3, y3, z3, dx3, dy3, dz3, rBridge);
+                if (r1 == r2)
+                    tagBridge = factory::addCylinder(x3, y3, z3, dx3, dy3, dz3, rBridge);
+                else
+                    tagBridge = factory::addCone(x3, y3, z3, dx3, dy3, dz3, r1Bridge, r2Bridge);
 
                 this->dimTagsBridges.push_back({3, tagBridge }) ;
-                this->bridgeTagRadiusPairs.push_back({tagBridge, rBridge});
+                /* this->bridgeTagRadiusPairs.push_back({tagBridge, rBridge}); */
 
 
-                model::mesh::field::add("Cylinder", ++count);
-                model::mesh::field::setNumber(count, "VIn", this->prm->lc_beads * rBeadSmallest/(radius_max) );
-                model::mesh::field::setNumber(count, "VOut", this->prm->lc_out);
-                model::mesh::field::setNumber(count, "XCenter", x3);
-                model::mesh::field::setNumber(count, "YCenter", y3);
-                model::mesh::field::setNumber(count, "ZCenter", z3);
-                model::mesh::field::setNumber(count, "XAxis", dx3);
-                model::mesh::field::setNumber(count, "YAxis", dy3);
-                model::mesh::field::setNumber(count, "ZAxis", dz3);
-                model::mesh::field::setNumber(count, "Radius", this->prm->fieldExtensionFactor * rBridge);
+/*                     model::mesh::field::add("Cylinder", ++count); */
+/*                     model::mesh::field::setNumber(count, "VIn", this->prm->lc_beads * rBeadSmallest/(radius_max) ); */
+/*                     model::mesh::field::setNumber(count, "VOut", this->prm->lc_out); */
+/*                     model::mesh::field::setNumber(count, "XCenter", x3); */
+/*                     model::mesh::field::setNumber(count, "YCenter", y3); */
+/*                     model::mesh::field::setNumber(count, "ZCenter", z3); */
+/*                     model::mesh::field::setNumber(count, "XAxis", dx3); */
+/*                     model::mesh::field::setNumber(count, "YAxis", dy3); */
+/*                     model::mesh::field::setNumber(count, "ZAxis", dz3); */
+/*                     model::mesh::field::setNumber(count, "Radius", this->prm->fieldExtensionFactor * rBridge); */
+/*                     vCount.push_back(count); */
+
+                model::mesh::field::add("Frustum", ++count);
+                model::mesh::field::setNumber(count, "V1_inner", this->prm->lc_beads * rBeadSmallest/(radius_max) );
+                model::mesh::field::setNumber(count, "V2_inner", this->prm->lc_beads * rBeadSmallest/(radius_max) );
+                /* model::mesh::field::setNumber(count, "V1_outer", this->prm->lc_beads * rBeadSmallest/(radius_max) ); */
+                /* model::mesh::field::setNumber(count, "V2_outer", this->prm->lc_beads * rBeadSmallest/(radius_max) ); */
+                model::mesh::field::setNumber(count, "V1_outer", this->prm->lc_out);
+                model::mesh::field::setNumber(count, "V2_outer", this->prm->lc_out);
+                model::mesh::field::setNumber(count, "R1_inner", 0);
+                model::mesh::field::setNumber(count, "R2_inner", 0);
+                model::mesh::field::setNumber(count, "R1_outer", this->prm->fieldExtensionFactor * r1Bridge);
+                model::mesh::field::setNumber(count, "R2_outer", this->prm->fieldExtensionFactor * r2Bridge);
+
+                model::mesh::field::setNumber(count, "X1", x3);
+                model::mesh::field::setNumber(count, "Y1", y3);
+                model::mesh::field::setNumber(count, "Z1", z3);
+                model::mesh::field::setNumber(count, "X2", x4);
+                model::mesh::field::setNumber(count, "Y2", y4);
+                model::mesh::field::setNumber(count, "Z2", z4);
                 vCount.push_back(count);
+
+
 
 
             }
