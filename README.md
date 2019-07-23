@@ -49,9 +49,10 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [x] Improve default.in: folds should allow quick selection of kugelpackung
 - [-] Export geometry before mesh start: [ Possible ].
 - [x] Time spent on booleans
+- [ ] Fix poly capping on larger beads
 - [ ] Save options (so that it can be reloaded and used with exported geometry?)
 - [ ] Improved error handling.
-- [ ] Switch off outputs of mesh fragments
+- [ ] Switch off outputs of mesh fragments / Output surfs and volumes to a separate folder?
 - [ ] Bridges at the cylinder-bead interface
 - [ ] Check for memleaks. No errors. But some blocks are reachable.
 - [ ] Implement enlarged beads
@@ -71,5 +72,5 @@ Known Issues
     - Does this still happen with fields? 
 - Geometry.ScalingFactor doesn't work. Use preScalingFactor instead.
 - In 7k-pre and 6k-pre cases, only a handful of beads were actually captured and meshed. [prescaling issue?]
-- Caps takes too long to generate
-    - Issue with caps (for poly) might be due to bridges being too small for the larger beads. 
+- Caps takes too long to generate with mesh-size-fields.
+- Issue with caps (for poly) might be due to bridges being too small for the larger beads. 

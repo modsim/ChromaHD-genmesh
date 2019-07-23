@@ -58,7 +58,7 @@ void PackedBed::createGeometry()
 
 
     int tag, ctag;
-    std::cout << "Creating beads and mesh fields... " << std::flush;
+    std::cout << "Creating beads... " << std::flush;
     for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++ )
     {
         double x = (*iter)->getX();
@@ -166,18 +166,21 @@ void PackedBed::createGeometry()
     dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
     std::cout << "done!" << std::endl;
 
-    std::string backgroundField;
-    if (this->prm->lc_beads > this->prm->lc_out)
-        backgroundField="Max";
-    else
-        backgroundField="Min";
+    if (this->prm->meshSizeMethod == 1)
+    {
+        std::string backgroundField;
+        if (this->prm->lc_beads > this->prm->lc_out)
+            backgroundField="Max";
+        else
+            backgroundField="Min";
 
-    std::cout << "Setting Background Field: " << backgroundField << std::endl;
+        std::cout << "Setting Background Field: " << backgroundField << std::endl;
 
-    model::mesh::field::add(backgroundField, ++count);
-    model::mesh::field::setNumbers(count, "FieldsList", vCount);
+        model::mesh::field::add(backgroundField, ++count);
+        model::mesh::field::setNumbers(count, "FieldsList", vCount);
 
-    model::mesh::field::setAsBackgroundMesh(count);
+        model::mesh::field::setAsBackgroundMesh(count);
+    }
 
 }
 
@@ -304,7 +307,7 @@ void PackedBed::mesh(std::string outfile)
     /*         model::mesh::embed(0,{(*iter)->getCTag()}, 3, (*iter)->getTag()); */
     /*     } */
     /* } */
-    /* std:: cout << " done!" << std::endl; */
+    /* std:: cout << "done!" << std::endl; */
 
     /* /1* // Set mesh size on cylinder surface *1/ */
     /* model::getBoundary(dimTagsInterstitial, cv, false, false, true ); */
@@ -366,11 +369,16 @@ void PackedBed::mesh(std::string outfile)
         std::cout << "done!" << std::endl;
     }
 
-    /* //Set mesh size globally */
-    /* std::cout << "Setting global mesh size..."; */
-    /* model::getEntities(cv, 0); */
-    /* model::mesh::setSize(cv, this->prm->lc); */
-    /* std:: cout << " done!" << std::endl; */
+    if (this->prm->meshSizeMethod == 0)
+    {
+        //Set mesh size globally
+        std::cout << "Setting global mesh size... ";
+        model::getEntities(cv, 0);
+        model::mesh::setSize(cv, this->prm->lc_beads);
+        std:: cout << "done!" << std::endl;
+    }
+
+    std::cout << std::endl;
 
 
     // Set mesh size for beads
@@ -381,7 +389,7 @@ void PackedBed::mesh(std::string outfile)
     /* std:: cout << "Setting mesh size for surfaces..."; */
     /* model::getBoundary(dimTagsInterstitial, cv, false, false, true); */
     /* model::mesh::setSize(cv, this->prm->lc); */
-    /* std:: cout << " done!" << std::endl; */
+    /* std:: cout << "done!" << std::endl; */
 
     //set mesh size on bead surface
     // maybe use the inside of the interstitial fragment instead?
@@ -581,15 +589,15 @@ void PackedBed::transformBeads()
     double offsety = -yCyl;
     double offsetz = -zBot;
 
-    std::cout << "Translating beads by (" << offsetx << ", "<< offsety << ", " << offsetz << ")"<<  std::flush;
+    std::cout << "Translating beads by (" << offsetx << ", "<< offsety << ", " << offsetz << ")... "<<  std::flush;
     for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
         (*it)->translate(offsetx, offsety, offsetz);
-    std::cout << " done!" << std::endl;
+    std::cout << "done!" << std::endl;
 
-    std::cout << "Scaling beads by " << this->prm->preScalingFactor << std::flush;
+    std::cout << "Scaling beads by " << this->prm->preScalingFactor << "... " << std::flush;
     for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
         (*it)->scale(this->prm->preScalingFactor);
-    std::cout << " done!" << std::endl << std::endl;
+    std::cout << "done!" << std::endl << std::endl;
 
     //Adjust zBot and zTop
     zBot=beads.front()->getZ();

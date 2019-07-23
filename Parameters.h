@@ -32,6 +32,8 @@ public:
     double bridgeTol=-999, relativeBridgeRadius=0.0;
     double bridgeOffsetRatio=0.0;
 
+    int meshSizeMethod=1;
+
     double GeometryScalingFactor=1.0;
     double MeshScalingFactor=1.0;
     double preScalingFactor=1.0;

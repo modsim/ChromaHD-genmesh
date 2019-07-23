@@ -100,6 +100,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "lc_out")                                      lc_out                                     = atof(val.at(0).c_str());
     else if(key == "fieldExtensionFactor")                        fieldExtensionFactor                       = atof(val.at(0).c_str());
     else if(key == "nBeads")                                      nBeads                                     = atoi(val.at(0).c_str());
+    else if(key == "meshSizeMethod")                              meshSizeMethod                             = atoi(val.at(0).c_str());
     else if(key == "bridgeOffsetRatio")                           bridgeOffsetRatio                          = atof(val.at(0).c_str());
     else if(key == "booleanOperation")                            booleanOperation                           = atoi(val.at(0).c_str());
     else if(key == "fragment")                                    fragment                                   = atoi(val.at(0).c_str());
@@ -194,6 +195,7 @@ void Parameters::print()
     std::cout << "inlet                                       "<< this->inlet                                      << std::endl;
     std::cout << "outlet                                      "<< this->outlet                                     << std::endl;
     std::cout << "nBeads                                      "<< this->nBeads                                     << std::endl;
+    std::cout << "meshSizeMethod                              "<< this->meshSizeMethod                             << std::endl;
     std::cout << "rFactor                                     "<< this->rFactor                                    << std::endl;
     std::cout << "preScalingFactor                            "<< this->preScalingFactor                           << std::endl;
     std::cout << "lc                                          "<< this->lc                                         << std::endl;

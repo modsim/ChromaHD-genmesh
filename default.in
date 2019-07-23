@@ -30,24 +30,25 @@ preScalingFactor                            2.1244954
 ##===========================================}}}#
 
 nBeads                                      150
-rCylDelta                                   0.05
+rCylDelta                                   0.04
 
+meshSizeMethod                              1     # 0: Global Points (for capped mono) 1: Scaled Fields
 lc_beads                                    0.08 
 lc_out                                      0.08 
 fieldExtensionFactor                        1.01
 
-# reduced                                     0.999
+reduced                                     0.999
 
 # reduced                                     1.0
 # booleanOperation                            1
 
-bridged                                     0.20
-# capped                                      0.30
-bridgeOffsetRatio                           0.94
-bridgeTol                                   0.008
+# # bridged                                     0.20
+# capped                                      0.20
+# bridgeOffsetRatio                           0.98
+# bridgeTol                                   0.08
 
 fragment                                    1
-# dryRun                                      1 # Do not Generate Mesh
+dryRun                                      1 # Do not Generate Mesh
 #==============================================#
 
 #== GMSH: {{==================================#
