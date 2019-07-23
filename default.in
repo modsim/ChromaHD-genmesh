@@ -2,30 +2,20 @@
 
 ##== mono-full: {{{==============================#
 #packing                                     packing/mono-full.xyzd
-#inlet                                       2.5
-#outlet                                      2.5
 ##===========================================}}}#
 ##== mono-cut: {{{==============================#
 #packing                                     packing/mono-cut.xyzd
-#inlet                                       2.5
-#outlet                                      2.5
 ##===========================================}}}#
 #== poly-full: {{{==============================#
 packing                                     packing/poly-full.xyzd
-inlet                                       2.5
-outlet                                      2.5
 preScalingFactor                            2.1244954
 #===========================================}}}#
 ##== poly-cut: {{{==============================#
 #packing                                     packing/poly-cut.xyzd
-#inlet                                       2.5
-#outlet                                      2.5
 #preScalingFactor                            2.1244954
 ##===========================================}}}#
 ##== poly5: {{{==============================#
 #packing                                     packing/poly5.xyzd
-#inlet                                       2.5
-#outlet                                      2.5
 #preScalingFactor                            2
 ##===========================================}}}#
 
@@ -36,6 +26,8 @@ meshSizeMethod                              1     # 0: Global Points (for capped
 lc_beads                                    0.08 
 lc_out                                      0.08 
 fieldExtensionFactor                        1.01
+inlet                                       3.5
+outlet                                      3.5
 
 reduced                                     0.999
 
