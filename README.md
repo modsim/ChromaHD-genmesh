@@ -1,6 +1,6 @@
 # genmesh
 
-Generate meshes from packing files (xyzd). Depends on OpenCASCADE and GMSH (v4+). 
+Generate meshes from packing files (xyzd). Depends on OpenCASCADE (7.3) and GMSH (v4+). 
 
 ## Installation
 
@@ -51,6 +51,7 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [x] Time spent on booleans
 - [x] Switch for fields vs brep meshing
 - [x] Fix poly capping on larger beads: use cones and frustums
+- [x] output git commit + state into stdout
 - [ ] Save options (so that it can be reloaded and used with exported geometry?)
 - [ ] Improved error handling.
 - [ ] Better argument handling?
@@ -67,7 +68,6 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [ ] Try embedded bead CP and mesh size control
 
 Known Issues
-- After mesh size constraints were applied to only surfaces (and points were used inside beads), the Netgen optimizer crashes randomly.
-    - Does this still happen with fields? 
+- Netgen optimizer crashes sometimes. (After mesh size constraints were applied to surfaces)
 - Geometry.ScalingFactor doesn't work. Use preScalingFactor instead.
 - In 7k-pre and 6k-pre cases, only a handful of beads were actually captured and meshed. [prescaling issue?]

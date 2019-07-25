@@ -29,7 +29,7 @@ PackedBed::PackedBed(Parameters * prm)
 
     /* beads.clear(); */
     /* beads.push_back(new Bead(5, 5, 710.5, this->prm->rFactor * 1)); */
-    /* beads.push_back(new Bead(6.5, 5,710.5, this->prm->rFactor * 0.50001)); */
+    /* beads.push_back(new Bead(6.5, 5,710.5, this->prm->rFactor * 0.50000)); */
 
     this->transformBeads();
     model::add("PackedBed");

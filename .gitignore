@@ -1,3 +1,4 @@
 output/
 mesher
 genmesh
+version.h

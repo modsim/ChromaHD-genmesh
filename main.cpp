@@ -6,6 +6,7 @@ Created : Thu 04 Apr 2019 03:53:10 PM CEST
 
 #include "Parameters.h"
 #include "PackedBed.h"
+#include "version.h"
 #include<gmsh.h>
 
 namespace model = gmsh::model;
@@ -34,6 +35,9 @@ int main(int argc, char** argv) {
         outfile = std::string(argv[2]);
     }
     try{
+
+        std::cout << "# " << GITCOMMIT << " " << GITSTATE << std::endl;
+
 
         Parameters * prm = new Parameters(infile);
 

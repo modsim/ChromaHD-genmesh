@@ -20,23 +20,23 @@ packing                                     packing/mono-full.xyzd
 ##===========================================}}}#
 
 nBeads                                      500
-rCylDelta                                   0.01
-inlet                                       3.5
-outlet                                      3.5
+rCylDelta                                   0.20
+inlet                                       1.5
+outlet                                      1.5
 
 meshSizeMethod                              1     # 0: Global Points (for capped mono) 1: Scaled Fields
 lc_beads                                    0.08 
 lc_out                                      0.08 
 fieldExtensionFactor                        1.01
 
-reduced                                     0.999
+# reduced                                     0.999
 
-# reduced                                     1.0
+reduced                                     0.95
 # booleanOperation                            1
 
-# # bridged                                     0.20
-# capped                                      0.20
-# bridgeOffsetRatio                           0.98
+# bridged                                     0.30
+# capped                                      0.30
+# bridgeOffsetRatio                           0.94
 # bridgeTol                                   0.008
 
 fragment                                    1
