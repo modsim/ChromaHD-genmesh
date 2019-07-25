@@ -40,7 +40,7 @@ reduced                                     0.95
 # bridgeTol                                   0.008
 
 fragment                                    1
-# dryRun                                      1 # Do not Generate Mesh
+dryRun                                      1 # Do not Generate Mesh
 #==============================================#
 
 #== GMSH: {{==================================#

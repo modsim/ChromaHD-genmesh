@@ -14,6 +14,8 @@ namespace factory = gmsh::model::occ;
 
 int main(int argc, char** argv) {
 
+    std::cout << "# GIT STATE: " << GITCOMMIT << " " << GITSTATE << std::endl;
+
     gmsh::initialize();
 
     std::string outfile, infile;
@@ -22,7 +24,7 @@ int main(int argc, char** argv) {
     {
         infile = "default.in";
         outfile = "output.msh2";
-        std::cout << "Will store mesh in output.msh!" << std::endl;
+        std::cout << "# Will store mesh in output.msh!" << std::endl;
     }
     else if (argc == 2)
     {
@@ -36,7 +38,6 @@ int main(int argc, char** argv) {
     }
     try{
 
-        std::cout << "# " << GITCOMMIT << " " << GITSTATE << std::endl;
 
 
         Parameters * prm = new Parameters(infile);
