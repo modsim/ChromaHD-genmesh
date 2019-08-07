@@ -19,8 +19,8 @@ packing                                     packing/mono-full.xyzd
 #preScalingFactor                            2
 ##===========================================}}}#
 
-nBeads                                      500
-rCylDelta                                   0.20
+nBeads                                      200
+rCylDelta                                   0.01
 inlet                                       1.5
 outlet                                      1.5
 
@@ -29,12 +29,12 @@ lc_beads                                    0.08
 lc_out                                      0.08 
 fieldExtensionFactor                        1.01
 
-# reduced                                     0.999
+reduced                                     0.999
 
-reduced                                     0.95
+# reduced                                     0.98
 # booleanOperation                            1
 
-# bridged                                     0.30
+# bridged                                     0.20
 # capped                                      0.30
 # bridgeOffsetRatio                           0.94
 # bridgeTol                                   0.008
@@ -56,10 +56,10 @@ Mesh.CharacteristicLengthMin                0
 Mesh.CharacteristicLengthFromCurvature      0
 Mesh.CharacteristicLengthFromPoints         0
 Mesh.Generate                               3
-Mesh.Algorithm                              2 
+Mesh.Algorithm                              5 
 Mesh.Algorithm3D                            10 
 Mesh.Optimize                               1
-Mesh.OptimizeNetgen                         1
+Mesh.OptimizeNetgen                         0
 
 # Geometry.ScalingFactor                      1 # Doesn't seem to work with OCC.
 # Geometry.Tolerance                          0

@@ -66,8 +66,12 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [ ] Try volume generating
 - [ ] Check if it's possible to import meshes and modify them.
 - [ ] Try embedded bead CP and mesh size control
+- [ ] RCYL is calclated after bead radius modification: Change it to depend on initial packing
+- [ ] Figure out how to calculate mesh volume for different components
 
 Known Issues
 - Netgen optimizer crashes sometimes. (After mesh size constraints were applied to surfaces)
 - Geometry.ScalingFactor doesn't work. Use preScalingFactor instead.
 - In 7k-pre and 6k-pre cases, only a handful of beads were actually captured and meshed. [prescaling issue?]
+- RCYL is calculated after bead radius modification
+- poly5 fails on HXT on local?

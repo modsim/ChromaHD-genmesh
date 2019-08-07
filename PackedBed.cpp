@@ -66,7 +66,7 @@ void PackedBed::createGeometry()
         double z = (*iter)->getZ();
         double r = (*iter)->getR();
 
-        tag = factory::addSphere(x, y, z, this->prm->rFactor * r);
+        tag = factory::addSphere(x, y, z, r);
         /* ctag = factory::addPoint(x, y, z, this->prm->lc_beads, -1); */
 
         (*iter)->setTag(tag);
@@ -478,22 +478,29 @@ void PackedBed::mesh(std::string outfile)
 
         }
 
-        if (this->prm->NamedBeadSurface)
-        {
-            model::getBoundary(bv, cv, false, false,false);
-            tBeads.clear();
-            for ( std::vector<std::pair< int , int>>::iterator it = cv.begin(); it != cv.end(); it++   )
-            {
-                tBeads.push_back((*it).second);
-            }
-            model::addPhysicalGroup(2,tBeads,14);
-            model::setPhysicalName(2,14, "beadSurface");
-        }
+        /* if (this->prm->NamedBeadSurface) */
+        /* { */
+        /*     model::getBoundary(bv, cv, false, false,false); */
+        /*     tBeads.clear(); */
+        /*     for ( std::vector<std::pair< int , int>>::iterator it = cv.begin(); it != cv.end(); it++   ) */
+        /*     { */
+        /*         tBeads.push_back((*it).second); */
+        /*     } */
+        /*     model::addPhysicalGroup(2,tBeads,14); */
+        /*     model::setPhysicalName(2,14, "beadSurface"); */
+        /* } */
 
-        gmsh::write(this->prm->outpath + outfile + "_beads.vtk");
+        gmsh::write(this->prm->outpath + outfile + "_beads.msh2");
 
+        gmsh::plugin::run("NewView");
+        gmsh::plugin::setString("ModifyComponents", "Expression0", "1");
+        gmsh::plugin::run("ModifyComponents");
+        gmsh::plugin::setNumber("Integrate", "Dimension", 3);
+        gmsh::plugin::run("Integrate");
 
     }
+
+
 
 
 }
@@ -532,6 +539,8 @@ void PackedBed::getBeads(std::string packingFilename)
         swapbytes(reinterpret_cast<char*>(&data[0]), data.size(), sizeof (float));
 
     std::cout << "done!" << std::endl << std::endl;
+
+    std::cout << "Note: Bead data stored in the vector is already modified by rFactor." << std::endl;
     std::cout << "Selecting beads in range..." << std::endl;
 
     double cz1 = this->prm->zBot;
@@ -539,6 +548,7 @@ void PackedBed::getBeads(std::string packingFilename)
 
     nBeadsMax = data.size()/4;
 
+    //NOTE: Bead data stored in the vector is already modified by rFactor
     for(size_t i = 0; i < nBeadsMax; ++i)
     {
         double x = data[i * 4 ];
@@ -548,6 +558,7 @@ void PackedBed::getBeads(std::string packingFilename)
 
         beads.push_back(new Bead(x, y, z, this->prm->rFactor * r));
     }
+    std::cout << "done!" << std::endl;
 
     if (beads.size() == 0) {
         std::cerr << "ERROR: No beads found!" << std::endl;
@@ -573,9 +584,9 @@ void PackedBed::transformBeads()
 {
     //Calculate bounding box
     double xCyl = 0, yCyl = 0, rCyl = 0;
-    double xMax = -DBL_MAX, yMax = -DBL_MAX;
-    double xMin = DBL_MAX, yMin = DBL_MAX;
-    double x=0, y=0, r=0;
+    double xMax = -DBL_MAX, yMax = -DBL_MAX, zMax = -DBL_MAX;
+    double xMin = DBL_MAX, yMin = DBL_MAX, zMin = DBL_MAX;
+    double x=0, y=0, r=0, z=0;
     double zBot=0, zTop=0;
     radius_avg=0;
 
@@ -600,7 +611,8 @@ void PackedBed::transformBeads()
 
     xCyl = (xMax + xMin) / 2;
     yCyl = (yMax + yMin) / 2;
-    rCyl = std::max(std::max(xMax, std::abs(xMin)), std::max(yMax, std::abs(yMin) ) ) + this->prm->rCylDelta;
+    rCyl = std::max( ((xMax - xMin) / 2), ((yMax - yMin)/2) ) + this->prm->rCylDelta;
+    /* rCyl = std::max(std::max(xMax, std::abs(xMin)), std::max(yMax, std::abs(yMin) ) ) + this->prm->rCylDelta; */
 
     //Adjust zBot and zTop
     zBot=beads.front()->getZ();
@@ -638,24 +650,34 @@ void PackedBed::transformBeads()
     zTop=beads.back()->getZ();
 
     xCyl = 0, yCyl = 0, rCyl = 0;
-    xMax = -DBL_MAX, yMax = -DBL_MAX;
-    xMin = DBL_MAX, yMin = DBL_MAX;
-    x=0, y=0, r=0;;
+    xMax = -DBL_MAX, yMax = -DBL_MAX, zMax = -DBL_MAX;
+    xMin = DBL_MAX, yMin = DBL_MAX, zMin = DBL_MAX;
+    x=0, y=0, r=0, z=0;
     radius_avg=0;
 
+    double vol_real_beads=0;
+    double vol_geom_beads=0;
+    double vol_real_int=0;
+    double vol_mesh_int=0;
+    double vol_cylinder=0;
 
     for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
     {
         x = (*it)->getX();
         y = (*it)->getY();
+        z = (*it)->getZ();
         r = (*it)->getR();
 
         radius_avg +=  r;
+        vol_real_beads += PI * 4/3 * pow(r * this->prm->MeshScalingFactor * 1/(this->prm->rFactor), 3);
+        vol_geom_beads += PI * 4/3 * pow(r * this->prm->MeshScalingFactor, 3);
 
         if ( (x + r) > xMax ) xMax = x + r;
         if ( (x - r) < xMin ) xMin = x - r;
         if ( (y + r) > yMax ) yMax = y + r;
         if ( (y - r) < yMin ) yMin = y - r;
+        if ( (z + r) > zMax ) zMax = z + r;
+        if ( (z - r) < zMin ) zMin = z - r;
 
         if (r > radius_max) radius_max = r;
         if (r < radius_min) radius_min = r;
@@ -665,7 +687,11 @@ void PackedBed::transformBeads()
 
     xCyl = (xMax + xMin) / 2;
     yCyl = (yMax + yMin) / 2;
-    rCyl = std::max(std::max(xMax, std::abs(xMin)), std::max(yMax, std::abs(yMin) ) ) + this->prm->rCylDelta;
+    rCyl = std::max( ((xMax - xMin) / 2), ((yMax - yMin)/2) ) + this->prm->rCylDelta;
+    /* rCyl = std::max(std::max(xMax, std::abs(xMin)), std::max(yMax, std::abs(yMin) ) ) + this->prm->rCylDelta; */
+
+    vol_cylinder = PI * pow(rCyl * this->prm->MeshScalingFactor, 2) * (zTop - zBot + this->prm->inlet + this->prm->outlet) * this->prm->MeshScalingFactor;
+    vol_real_int = vol_cylinder - vol_real_beads;
 
     this->prm->xCyl = xCyl;
     this->prm->yCyl = yCyl;
@@ -682,11 +708,23 @@ void PackedBed::transformBeads()
     std::cout << "yMax: " << yMax << std::endl;
     std::cout << "yMin: " << yMin << std::endl;
     std::cout << "zBot: " << zBot << std::endl;
-    std::cout << "zTop: " << zTop << std::endl;
-    std::cout << std::endl;
+    std::cout << "zTop: " << zTop << std::endl << std::endl;
 
     std::cout << "average bead radius: " << std::scientific << std::setprecision(10) << radius_avg << std::endl;
     std::cout << "maximum bead radius: " << std::scientific << std::setprecision(10) << radius_max << std::endl;
     std::cout << "minimum bead radius: " << std::scientific << std::setprecision(10) << radius_min << std::endl << std::endl;
+
+    std::cout << "=== After Mesh Scaling ===" << std::endl;
+    std::cout << "Cylinder Volume: "      << vol_cylinder   << std::endl;
+    std::cout << "Real Bead Volume: "     << vol_real_beads << std::endl;
+    /* std::cout << "Real Int Volume: "      << vol_real_int   << std::endl; */
+    std::cout << "Modified Bead Volume: " << vol_geom_beads << std::endl<< std::endl;
+
+    std::cout << "Bed Length: " << (zMax-zMin)*this->prm->MeshScalingFactor << std::endl;
+    std::cout << "Column Length: " << (zTop - zBot + this->prm->inlet + this->prm->outlet) * this->prm->MeshScalingFactor << std::endl<<std::endl;
+
+    std::cout << "Note: Modified Bead Volume is currently only accurate for reduced beads." << std::endl;
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << "Bead Geometry Volume Error: " << (vol_real_beads - vol_geom_beads)/vol_real_beads*100 << "%" << std::endl << std::endl;
 
 }
