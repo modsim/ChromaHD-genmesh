@@ -40,7 +40,6 @@ int main(int argc, char** argv) {
 
 
         Parameters * prm = new Parameters(infile);
-        prm->setGMSHOptions();
 
         PackedBed * packedBed = new PackedBed(prm);
 

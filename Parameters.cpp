@@ -53,6 +53,7 @@ Parameters::Parameters(const std::string& fname)
 
     print();
     update();
+    setGMSHOptions();
 
 
 
