@@ -57,7 +57,7 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [ ] Better argument handling?
 - [ ] Switch off outputs of mesh fragments / Output surfs and volumes to a separate folder?
 - [ ] Bridges at the cylinder-bead interface
-- [ ] Check for memleaks. No errors. But some blocks are reachable.
+- [ ] Check for memleaks. No errors. But some blocks are reachable (beads vector not deleted).
 - [ ] Implement enlarged beads
 - [ ] Write test inputs to run and verify code.
 - [ ] {!}Investigate capped meshes. Why did 400 beads take 5-10 hours? 
@@ -68,6 +68,8 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [ ] Try embedded bead CP and mesh size control
 - [ ] RCYL is calclated after bead radius modification: Change it to depend on initial packing
 - [ ] Figure out how to calculate mesh volume for different components
+- [ ] Allow cylinder constrained creation again
+- [ ] Check gmsh/view/getListData
 
 Known Issues
 - Netgen optimizer crashes sometimes. (After mesh size constraints were applied to surfaces)

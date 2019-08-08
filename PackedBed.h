@@ -34,7 +34,8 @@ class PackedBed{
         double radius_avg = 0.0;
         double radius_max = -1.0;
         double radius_min = 999999;
-        double nBeadsMax = 0;
+        int nBeadsMax = 0;
+        int nBeads = 0;
 
         std::vector<int> tBeads;
         std::vector<int> tBeadCPs;

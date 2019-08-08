@@ -89,6 +89,9 @@ void PackedBed::createGeometry()
 
     int tagBridge;
 
+    /* double vDist[nBeads][nBeads]; */
+    std::vector<std::pair <int, double>> vDist;
+
     std::vector<Bead *> remBeads = this->beads;
     std::cout << "Creating Bridges... " << std::flush;
     for(std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
@@ -123,6 +126,13 @@ void PackedBed::createGeometry()
             if (dist < r1 + r2 + this->prm->bridgeTol)
             {
 
+                /* /1* vDist[iter - beads.begin()][riter - remBeads.begin()] = dist - r1 - r2; *1/ */
+                /* int i = iter -beads.begin(); */
+                /* int j = riter - remBeads.begin(); */
+                /* /1* if(dist-r1-r2 > 1e-12 ) vDist.push_back({i*nBeads+j, dist-r1-r2}); *1/ */
+                /* vDist.push_back({i*nBeads+j, dist-r1-r2}); */
+                /* /1* std::cout << dist - r1 - r2 << std::endl; *1/ */
+
                 //cylinder radius
                 double rBeadSmallest = (r1 <= r2? r1 : r2);
                 double rBridge = this->prm->relativeBridgeRadius * rBeadSmallest;
@@ -153,19 +163,6 @@ void PackedBed::createGeometry()
                 this->dimTagsBridges.push_back({3, tagBridge }) ;
                 /* this->bridgeTagRadiusPairs.push_back({tagBridge, rBridge}); */
 
-
-/*                     model::mesh::field::add("Cylinder", ++count); */
-/*                     model::mesh::field::setNumber(count, "VIn", this->prm->lc_beads * rBeadSmallest/(radius_max) ); */
-/*                     model::mesh::field::setNumber(count, "VOut", this->prm->lc_out); */
-/*                     model::mesh::field::setNumber(count, "XCenter", x3); */
-/*                     model::mesh::field::setNumber(count, "YCenter", y3); */
-/*                     model::mesh::field::setNumber(count, "ZCenter", z3); */
-/*                     model::mesh::field::setNumber(count, "XAxis", dx3); */
-/*                     model::mesh::field::setNumber(count, "YAxis", dy3); */
-/*                     model::mesh::field::setNumber(count, "ZAxis", dz3); */
-/*                     model::mesh::field::setNumber(count, "Radius", this->prm->fieldExtensionFactor * rBridge); */
-/*                     vCount.push_back(count); */
-
                 model::mesh::field::add("Frustum", ++count);
                 model::mesh::field::setNumber(count, "V1_inner", this->prm->lc_beads * rBeadSmallest/(radius_max) );
                 model::mesh::field::setNumber(count, "V2_inner", this->prm->lc_beads * rBeadSmallest/(radius_max) );
@@ -195,6 +192,14 @@ void PackedBed::createGeometry()
     }
 
     std::cout << "done!" << std::endl;
+
+    /* for(std::vector<std::pair<int,double>>::iterator it = vDist.begin(); it != vDist.end(); it++) */
+    /*     std::cout << std::scientific <<std::setprecision(10) << (*it).first/nBeads << "    " << (*it).first%nBeads << "   " << (*it).second << std::endl; */
+    /* std::cout << vDist.size() << std::endl; */
+
+    /* for(int i=0; i<nBeads; i++) */
+    /*     for(int j=0; j<nBeads; j++) */
+    /*         std::cout << i << "    " << j << "    " << vDist[i][j] << std::endl; */
 
     std::cout << "Creating cylinder... " << std::flush;
     dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
@@ -443,6 +448,14 @@ void PackedBed::mesh(std::string outfile)
         // Output Full mesh
         gmsh::write(this->prm->outpath + outfile);
 
+        gmsh::plugin::setNumber("MeshVolume", "Physical", 5);
+        gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
+        gmsh::plugin::run("MeshVolume");
+
+        gmsh::plugin::setNumber("MeshVolume", "Physical", 6);
+        gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
+        gmsh::plugin::run("MeshVolume");
+
         model::removePhysicalGroups();
 
         if (this->prm->NamedInterstitialVolume)
@@ -492,11 +505,13 @@ void PackedBed::mesh(std::string outfile)
 
         gmsh::write(this->prm->outpath + outfile + "_beads.msh2");
 
-        gmsh::plugin::run("NewView");
-        gmsh::plugin::setString("ModifyComponents", "Expression0", "1");
-        gmsh::plugin::run("ModifyComponents");
-        gmsh::plugin::setNumber("Integrate", "Dimension", 3);
-        gmsh::plugin::run("Integrate");
+        //Alternate full volume computation
+        /* gmsh::plugin::run("NewView"); */
+        /* gmsh::plugin::setString("ModifyComponents", "Expression0", "1"); */
+        /* gmsh::plugin::run("ModifyComponents"); */
+        /* gmsh::plugin::setNumber("Integrate", "Dimension", 3); */
+        /* gmsh::plugin::run("Integrate"); */
+
 
     }
 
@@ -573,7 +588,7 @@ void PackedBed::getBeads(std::string packingFilename)
     std::cout << "done!" << std::endl;
 
     //Only store nBeads
-    double nBeads = this->prm->nBeads > nBeadsMax? nBeadsMax: this->prm->nBeads;
+    nBeads = this->prm->nBeads > nBeadsMax? nBeadsMax: this->prm->nBeads;
     beads.erase(beads.begin() + nBeads, beads.end());
 
     std::cout << this->beads.size() << "/" << nBeadsMax << " beads in the selected range." << std::endl;
@@ -717,7 +732,7 @@ void PackedBed::transformBeads()
     std::cout << "=== After Mesh Scaling ===" << std::endl;
     std::cout << "Cylinder Volume: "      << vol_cylinder   << std::endl;
     std::cout << "Real Bead Volume: "     << vol_real_beads << std::endl;
-    /* std::cout << "Real Int Volume: "      << vol_real_int   << std::endl; */
+    std::cout << "Real Int Volume: "      << vol_real_int   << std::endl;
     std::cout << "Modified Bead Volume: " << vol_geom_beads << std::endl<< std::endl;
 
     std::cout << "Bed Length: " << (zMax-zMin)*this->prm->MeshScalingFactor << std::endl;

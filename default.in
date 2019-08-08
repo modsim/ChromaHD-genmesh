@@ -19,7 +19,7 @@ packing                                     packing/mono-full.xyzd
 #preScalingFactor                            2
 ##===========================================}}}#
 
-nBeads                                      200
+nBeads                                      1
 rCylDelta                                   0.01
 inlet                                       1.5
 outlet                                      1.5
@@ -35,12 +35,12 @@ reduced                                     0.999
 # booleanOperation                            1
 
 # bridged                                     0.20
-# capped                                      0.30
+# # capped                                      0.30
 # bridgeOffsetRatio                           0.94
-# bridgeTol                                   0.008
+# bridgeTol                                   0.005
 
 fragment                                    1
-dryRun                                      1 # Do not Generate Mesh
+# dryRun                                      1 # Do not Generate Mesh
 #==============================================#
 
 #== GMSH: {{==================================#
