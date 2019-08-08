@@ -6,6 +6,7 @@ Created : Thu 04 Apr 2019 03:53:10 PM CEST
 
 #include "Parameters.h"
 #include "PackedBed.h"
+#include "Model.h"
 #include "version.h"
 #include<gmsh.h>
 
@@ -38,23 +39,22 @@ int main(int argc, char** argv) {
     }
     try{
 
-
         Parameters * prm = new Parameters(infile);
-
         PackedBed * packedBed = new PackedBed(prm);
+        Model * myColumn = new Model(prm);
 
         long start = gmsh::logger::time();
 
-        packedBed->createGeometry();
-        packedBed->mesh(outfile);
+        myColumn->createGeometry(packedBed, prm);
+        myColumn->mesh(outfile, prm);
 
         long duration = gmsh::logger::time() - start;
 
-        gmsh::logger::write("Wall time: " + std::to_string(duration) + " s", "info");
+        gmsh::logger::write("Wall time: " + std::to_string(duration) + " s (" + std::to_string((double)duration/3600) + " h)", "info");
         gmsh::logger::write("CPU  time: " + std::to_string(gmsh::logger::cputime()) + " s", "info");
 
         delete prm;
-        delete packedBed;
+        delete myColumn;
 
     }catch(mixd::MixdException e)
     { std::cout << e.msg() << std::endl; return 1; }

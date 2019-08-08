@@ -70,6 +70,7 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [ ] Figure out how to calculate mesh volume for different components
 - [ ] Allow cylinder constrained creation again
 - [ ] Check gmsh/view/getListData
+- [ ] git state isn't perfect since it is dirty if default.in is changed before compile
 
 Known Issues
 - Netgen optimizer crashes sometimes. (After mesh size constraints were applied to surfaces)

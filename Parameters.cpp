@@ -1,8 +1,8 @@
 /*
  * File:   Parameters.cpp
- * Author: guowei
+ * Author: Jayghosh Rao
  *
- * Created on September 24, 2012, 10:34 AM
+ * Based on the file created by guowei on September 24, 2012, 10:34 AM
  */
 
 #include "Parameters.h"
@@ -109,9 +109,9 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "Named.beadVolume")                            NamedBeadVolume                            = atoi(val.at(0).c_str());
     else if(key == "Named.interstitialVolume")                    NamedInterstitialVolume                    = atoi(val.at(0).c_str());
     else if(key == "Named.beadSurface")                           NamedBeadSurface                           = atoi(val.at(0).c_str());
-    else if(key == "Named.inlet")                                 NamedInlet                                 = atoi(val.at(0).c_str());
-    else if(key == "Named.outlet")                                NamedOutlet                                = atoi(val.at(0).c_str());
-    else if(key == "Named.wall")                                  NamedWall                                  = atoi(val.at(0).c_str());
+    /* else if(key == "Named.inlet")                                 NamedInlet                                 = atoi(val.at(0).c_str()); */
+    /* else if(key == "Named.outlet")                                NamedOutlet                                = atoi(val.at(0).c_str()); */
+    /* else if(key == "Named.wall")                                  NamedWall                                  = atoi(val.at(0).c_str()); */
     else if(key == "Named.outerSurface")                          NamedOuterSurface                          = atoi(val.at(0).c_str());
     else if(key == "General.NumThreads")                          GeneralNumThreads                          = atoi(val.at(0).c_str());
     else if(key == "Geometry.OCCParallel")                        GeometryOCCParallel                        = atoi(val.at(0).c_str());
@@ -159,27 +159,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
 
     else if(key == "packing") packfile = val.at(0);
     else if(key == "outpath") outpath  = val.at(0);
-
-    /* else if(key == "copybeads") */
-    /* { */
-    /*     if(val.at(0) == "on") copyBeads = true; */
-    /*     else if(val.at(0) == "off") copyBeads = false; */
-    /*     else throw mixd::MixdException("Unknown option for copybeads: " + val.at(0)); */
-    /* } */
-    /* else if(key == "periodic") */
-    /* { */
-    /*     if(val.at(0) == "on") periodic = true; */
-    /*     else if(val.at(0) == "off") periodic = false; */
-    /*     else throw mixd::MixdException("Unknown option for periodic: " + val.at(0)); */
-    /* } */
-    /* else if(key == "dryRun") */
-    /* { */
-    /*     if(val.at(0) == "on") dryRun = true; */
-    /*     else if(val.at(0) == "off") dryRun = false; */
-    /*     else throw mixd::MixdException("Unknown option for dryRun: " + val.at(0)); */
-    /* } */
-    else
-        throw mixd::MixdException("Unknown keyword: " + key);
+    else throw mixd::MixdException("Unknown keyword: " + key);
 
 
 
@@ -239,10 +219,6 @@ void Parameters::print()
     std::cout << "packing                                     "<< this->packfile                                   << std::endl;
     std::cout << "outpath                                     "<< this->outpath                                    << std::endl;
     std::cout << "dryRun                                      "<< this->dryRun                                     << std::endl;
-
-    /* std::cout << "reduced                                     "<< this->reduced                                    << std::endl; */
-    /* std::cout << "bridged                                     "<< this->bridged                                    << std::endl; */
-    /* std::cout << "capped                                      "<< this->capped                                     << std::endl; */
 
 }
 

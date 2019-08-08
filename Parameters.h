@@ -24,76 +24,60 @@ public:
     void update();
     void setGMSHOptions();
 
-    double zBot=0.0, zTop=0.0, rCyl=0.0, xCyl=0.0, yCyl=0.0;
-    /* double zCylMin=1.0, zCylMax=-1.0; */
-    double inlet=-1.0, outlet=-1.0;
-    double radius=0.0, rFactor=1.0;
-    double lc=0.0, lc_beads=0.0;
-    double lc_out = 0.0;
-    double bridgeTol=-999, relativeBridgeRadius=0.0;
-    double bridgeOffsetRatio=0.0;
+    int meshSizeMethod                             = 1;
+    int MeshSmoothing                              = 1;
+    int GeneralNumThreads                          = 8;
+    int MeshCharacteristicLengthExtendFromBoundary = 1;
+    int MeshCharacteristicLengthFromCurvature      = 1;
+    int MeshCharacteristicLengthFromPoints         = 1;
+    int GeometryOCCParallel                        = 1;
+    int MeshAlgorithm                              = 2;
+    int MeshAlgorithm3D                            = 1;
+    int MeshRefineSteps                            = 10;
+    int MeshOptimize                               = 1;
+    int MeshOptimizeNetgen                         = 0;
+    int MeshGenerate                               = 3;
+    int beadType                                   = 0;
+    int booleanOperation                           = 0;
+    int fragment                                   = 1;
+    int NamedBeadVolume                            = 1;
+    int NamedInterstitialVolume                    = 1;
+    int NamedBeadSurface                           = 1;
+    int NamedOuterSurface                          = 1;
+    int nBeads                                     = 0;
+    int dryRun                                     = 0;
+    int MeshMaxNumThreads                          = 0;
+    int MeshMinimumCirclePoints                    = 7;
 
-    int meshSizeMethod=1;
-
-    double GeometryScalingFactor=1.0;
-    double MeshScalingFactor=1.0;
-    double preScalingFactor=1.0;
-
-    int MeshSmoothing=1;
-    double MeshSmoothRatio=1.8;
-
-    double GeometryTolerance = 1e-8;
-    double GeometryToleranceBoolean = 0.0;
-
-    int GeometryOCCParallel=1;
-    int MeshAlgorithm=2, MeshAlgorithm3D=1;
-    int MeshRefineSteps=10;
-    int MeshOptimize=1;
-    int MeshOptimizeNetgen=0;
-    int MeshGenerate=3;
-
-    double fieldExtensionFactor = 1.00;
-
-    int GeneralNumThreads=8;
-
-    int MeshCharacteristicLengthExtendFromBoundary=1;
-    int MeshCharacteristicLengthFromCurvature=1;
-    int MeshCharacteristicLengthFromPoints=1;
-
-    int MeshMaxNumThreads = 0;
-    double MeshCharacteristicLengthFactor = 1;
-    int MeshMinimumCirclePoints = 7;
-    double MeshOptimizeThreshold = 0.3;
-
-    double MeshCharacteristicLengthMin=0;
-    double  MeshCharacteristicLengthMax=1e22;
-
-    double bridged = -1;
-    double reduced = -1;
-    double capped = -1;
-
-    int beadType = 0; //
-
-    int booleanOperation    = 0;
-    /* int fuseBeadsAndBridges = 0; */
-    /* int cutBeadsAndBridges  = 0; */
-    int fragment            = 1;
-
-    int NamedBeadVolume=1;
-    int NamedInterstitialVolume=1;
-    int NamedBeadSurface=1;
-    int NamedOuterSurface=1;
-
-    int NamedInlet;
-    int NamedOutlet;
-    int NamedWall;
-
-    int nBeads=0;
-    int dryRun=0;
-
-    double rCylDelta = 0.0;
-
-    bool copyBeads, periodic;
+    double zBot                                    = 0.0;
+    double zTop                                    = 0.0;
+    double rCyl                                    = 0.0;
+    double xCyl                                    = 0.0;
+    double yCyl                                    = 0.0;
+    double inlet                                   = -1.0;
+    double outlet                                  = -1.0;
+    double rFactor                                 = 1.0;
+    double lc                                      = 0.0;
+    double lc_beads                                = 0.0;
+    double lc_out                                  = 0.0;
+    double bridgeTol                               = -999;
+    double relativeBridgeRadius                    = 0.0;
+    double bridgeOffsetRatio                       = 0.0;
+    double GeometryScalingFactor                   = 1.0;
+    double MeshScalingFactor                       = 1.0;
+    double preScalingFactor                        = 1.0;
+    double MeshSmoothRatio                         = 1.8;
+    double GeometryTolerance                       = 1e-8;
+    double GeometryToleranceBoolean                = 0.0;
+    double fieldExtensionFactor                    = 1.00;
+    double MeshCharacteristicLengthFactor          = 1;
+    double MeshOptimizeThreshold                   = 0.3;
+    double MeshCharacteristicLengthMin             = 0;
+    double MeshCharacteristicLengthMax             = 1e22;
+    double bridged                                 = -1;
+    double reduced                                 = -1;
+    double capped                                  = -1;
+    double rCylDelta                               = 0.0;
 
     std::string packfile, outpath="output/";
 
