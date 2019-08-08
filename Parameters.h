@@ -22,6 +22,7 @@ public:
     void print();
     void write(std::string filename);
     void update();
+    void setGMSHOptions();
 
     double zBot=0.0, zTop=0.0, rCyl=0.0, xCyl=0.0, yCyl=0.0;
     /* double zCylMin=1.0, zCylMax=-1.0; */

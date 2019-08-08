@@ -9,6 +9,7 @@
 #include "mixd.hpp"
 #include <sstream>
 #include <cmath>
+#include<gmsh.h>
 
 Parameters::Parameters(const std::string& fname)
 {
@@ -244,3 +245,43 @@ void Parameters::print()
 
 }
 
+
+void Parameters::setGMSHOptions()
+{
+    gmsh::option::setNumber("General.Terminal", 1);
+    gmsh::option::setNumber("General.NumThreads", this->GeneralNumThreads);
+    gmsh::option::setNumber("Geometry.OCCParallel", this->GeometryOCCParallel);
+    gmsh::option::setNumber("Geometry.ScalingFactor", this->GeometryScalingFactor);
+    gmsh::option::setNumber("Geometry.Tolerance", this->GeometryTolerance);
+    gmsh::option::setNumber("Geometry.ToleranceBoolean", this->GeometryToleranceBoolean);
+    gmsh::option::setNumber("Mesh.ScalingFactor", this->MeshScalingFactor);
+    gmsh::option::setNumber("Mesh.Smoothing", this->MeshSmoothing);
+    gmsh::option::setNumber("Mesh.SmoothRatio", this->MeshSmoothRatio);
+
+    gmsh::option::setNumber("Mesh.CharacteristicLengthExtendFromBoundary", this->MeshCharacteristicLengthExtendFromBoundary);
+
+    gmsh::option::setNumber("Mesh.CharacteristicLengthMin", this->MeshCharacteristicLengthMin);
+    gmsh::option::setNumber("Mesh.CharacteristicLengthMax", this->MeshCharacteristicLengthMax);
+
+    gmsh::option::setNumber("Mesh.CharacteristicLengthFromCurvature", this->MeshCharacteristicLengthFromCurvature);
+    gmsh::option::setNumber("Mesh.CharacteristicLengthFromPoints", this->MeshCharacteristicLengthFromPoints);
+
+    gmsh::option::setNumber("Mesh.MinimumCirclePoints", this->MeshMinimumCirclePoints); //Default = 7
+
+    gmsh::option::setNumber("Mesh.Optimize", this->MeshOptimize); //Default = 1
+    gmsh::option::setNumber("Mesh.OptimizeNetgen", this->MeshOptimizeNetgen); //Default = 0
+    gmsh::option::setNumber("Mesh.RefineSteps", this->MeshRefineSteps); //Default = 10
+
+    gmsh::option::setNumber("Mesh.MaxNumThreads1D", this->MeshMaxNumThreads);
+    gmsh::option::setNumber("Mesh.MaxNumThreads2D", this->MeshMaxNumThreads);
+    gmsh::option::setNumber("Mesh.MaxNumThreads3D", this->MeshMaxNumThreads);
+    gmsh::option::setNumber("Mesh.CharacteristicLengthFactor", this->MeshCharacteristicLengthFactor);
+    gmsh::option::setNumber("Mesh.OptimizeThreshold", this->MeshOptimizeThreshold);
+
+    //1: MeshAdapt | 2: Auto | 5: Delaunay | 6: Frontal | 7: BAMG | 8: DelQuad
+    gmsh::option::setNumber("Mesh.Algorithm", this->MeshAlgorithm); //Default = 2
+
+    //1: Delaunay | 4: Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
+    gmsh::option::setNumber("Mesh.Algorithm3D", this->MeshAlgorithm3D); //Default = 1
+
+}

@@ -19,7 +19,7 @@ packing                                     packing/mono-full.xyzd
 #preScalingFactor                            2
 ##===========================================}}}#
 
-nBeads                                      1
+nBeads                                      120
 rCylDelta                                   0.01
 inlet                                       1.5
 outlet                                      1.5
