@@ -37,6 +37,8 @@ class PackedBed {
 
         int nBeadsMax = 0;
         int nBeads = 0;
+        int uLimit = 0;
+        int lLimit = 0;
 
         void getBeads(Parameters * prm);
         void transformBeads(Parameters * prm);

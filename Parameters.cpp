@@ -84,7 +84,7 @@ void Parameters::update()
 void Parameters::decide (const std::string & key, const std::vector<std::string> & val)
 {
 
-    if(key == "zBot")                                        zBot                                       = atof(val.at(0).c_str());
+    if(key == "zBot")                                             zBot                                       = atof(val.at(0).c_str());
 
     else if(key == "zTop")                                        zTop                                       = atof(val.at(0).c_str());
     else if(key == "rCyl")                                        rCyl                                       = atof(val.at(0).c_str());

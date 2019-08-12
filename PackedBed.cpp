@@ -65,6 +65,8 @@ void PackedBed::getBeads(Parameters * prm)
     nBeadsMax = data.size()/4;
 
     //NOTE: Bead data stored in the vector is already modified by rFactor
+    //Read and store all beads if nbeads > 0
+    //else use zBot and zTop limits
     for(size_t i = 0; i < nBeadsMax; ++i)
     {
         double x = data[i * 4 ];
@@ -72,7 +74,14 @@ void PackedBed::getBeads(Parameters * prm)
         double z = data[i * 4 + 2];
         double r = data[i * 4 + 3] * 0.5;
 
-        beads.push_back(new Bead(x, y, z, prm->rFactor * r));
+        if(prm->nBeads < 0)
+        {
+            if (z >= cz1 && z <= cz2)
+                beads.push_back(new Bead(x, y, z, prm->rFactor * r));
+        }
+        else
+            beads.push_back(new Bead(x, y, z, prm->rFactor * r));
+
     }
     std::cout << "done!" << std::endl;
 
@@ -89,8 +98,11 @@ void PackedBed::getBeads(Parameters * prm)
     std::cout << "done!" << std::endl;
 
     //Only store nBeads
-    nBeads = prm->nBeads > nBeadsMax? nBeadsMax: prm->nBeads;
-    beads.erase(beads.begin() + nBeads, beads.end());
+    if(prm->nBeads >= 0)
+    {
+        nBeads = prm->nBeads > nBeadsMax? nBeadsMax: prm->nBeads;
+        beads.erase(beads.begin() + nBeads, beads.end());
+    }
 
     std::cout << this->beads.size() << "/" << nBeadsMax << " beads in the selected range." << std::endl;
 
@@ -98,7 +110,6 @@ void PackedBed::getBeads(Parameters * prm)
 
 void PackedBed::transformBeads(Parameters * prm)
 {
-    //Calculate bounding box
     xCyl = 0, yCyl = 0, rCyl = 0;
     xMax = -DBL_MAX, yMax = -DBL_MAX, zMax = -DBL_MAX;
     xMin = DBL_MAX, yMin = DBL_MAX, zMin = DBL_MAX;
@@ -106,6 +117,7 @@ void PackedBed::transformBeads(Parameters * prm)
     zBot=0, zTop=0;
     radius_avg=0;
 
+    //Calculate bounding box
     for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
     {
         x = (*it)->getX();
@@ -151,6 +163,7 @@ void PackedBed::transformBeads(Parameters * prm)
     double offsety = -yCyl;
     double offsetz = -zBot;
 
+    //Use computed values to autoscale and translate packed bed
     std::cout << "Translating beads by (" << offsetx << ", "<< offsety << ", " << offsetz << ")... "<<  std::flush;
     for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
         (*it)->translate(offsetx, offsety, offsetz);
@@ -161,10 +174,11 @@ void PackedBed::transformBeads(Parameters * prm)
         (*it)->scale(prm->preScalingFactor);
     std::cout << "done!" << std::endl << std::endl;
 
-    //Adjust zBot and zTop
+    //Get new zBot and zTop
     zBot=beads.front()->getZ();
     zTop=beads.back()->getZ();
 
+    //reset variables
     xCyl = 0, yCyl = 0, rCyl = 0;
     xMax = -DBL_MAX, yMax = -DBL_MAX, zMax = -DBL_MAX;
     xMin = DBL_MAX, yMin = DBL_MAX, zMin = DBL_MAX;
@@ -177,6 +191,7 @@ void PackedBed::transformBeads(Parameters * prm)
     double vol_mesh_int=0;
     double vol_cylinder=0;
 
+    //Get bounding parameters
     for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
     {
         x = (*it)->getX();
