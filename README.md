@@ -52,25 +52,26 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [x] Switch for fields vs brep meshing
 - [x] Fix poly capping on larger beads: use cones and frustums
 - [x] output git commit + state into stdout
+- [x] Switch off outputs of mesh fragments 
+- [x] Better makefile
+- [x] Check if it's possible to import meshes and modify them.
+- [x] Figure out how to calculate mesh volume for different components
+- [x] git state isn't perfect since it is dirty if default.in is changed before compile
 - [ ] Save options (so that it can be reloaded and used with exported geometry?)
 - [ ] Improved error handling.
 - [ ] Better argument handling?
-- [ ] Switch off outputs of mesh fragments / Output surfs and volumes to a separate folder?
+- [ ] Output surfs and volumes to a separate folder?
 - [ ] Bridges at the cylinder-bead interface
 - [ ] Check for memleaks. No errors. But some blocks are reachable (beads vector not deleted).
 - [ ] Implement enlarged beads
 - [ ] Write test inputs to run and verify code.
 - [ ] {!}Investigate capped meshes. Why did 400 beads take 5-10 hours? 
-- [ ] Better makefile
 - [ ] Manual node placement at contact points 
 - [ ] Try volume generating
-- [x] Check if it's possible to import meshes and modify them.
 - [ ] Try embedded bead CP and mesh size control
-- [x] Figure out how to calculate mesh volume for different components
 - [ ] RCYL is calclated after bead radius modification: Change it to depend on initial packing
 - [ ] Allow cylinder constrained creation again
 - [ ] Check gmsh/view/getListData
-- [x] git state isn't perfect since it is dirty if default.in is changed before compile
 - [ ] Scrap the need for ./create.sh. create <file>.log automatically
 
 Known Issues

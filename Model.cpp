@@ -469,49 +469,13 @@ void Model::mesh(std::string outfile, Parameters * prm)
         // Output Full mesh
         gmsh::write(prm->outpath + outfile);
 
-            gmsh::plugin::setNumber("MeshVolume", "Physical", 5);
-            gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
-            gmsh::plugin::run("MeshVolume");
+        gmsh::plugin::setNumber("MeshVolume", "Physical", 5);
+        gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
+        gmsh::plugin::run("MeshVolume");
 
-            gmsh::plugin::setNumber("MeshVolume", "Physical", 6);
-            gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
-            gmsh::plugin::run("MeshVolume");
-
-        model::removePhysicalGroups();
-
-        if (prm->NamedInterstitialVolume)
-        {
-            model::addPhysicalGroup(3,tVInt,15);
-            model::setPhysicalName(3,15,"interstitialVolume");
-        }
-
-        if (prm->NamedOuterSurface)
-        {
-            model::addPhysicalGroup(2,tSWall,13);
-            model::addPhysicalGroup(2,tSOutlet,12);
-            model::addPhysicalGroup(2,tSInlet,11);
-            model::setPhysicalName(2,11, "inlet");
-            model::setPhysicalName(2,12, "outlet");
-            model::setPhysicalName(2,13, "wall");
-        }
-
-        gmsh::write(prm->outpath + outfile + "_interstitial.vtk");
-
-        model::removePhysicalGroups();
-
-        if (prm->NamedBeadVolume)
-        {
-            model::addPhysicalGroup(3,tVBeads,16 );
-            model::setPhysicalName(3,16,"beadVolume");
-        }
-
-        if (prm->NamedBeadSurface)
-        {
-            model::addPhysicalGroup(2,tSBeads,14);
-            model::setPhysicalName(2,14, "beadSurface");
-        }
-
-        gmsh::write(prm->outpath + outfile + "_beads.vtk");
+        gmsh::plugin::setNumber("MeshVolume", "Physical", 6);
+        gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
+        gmsh::plugin::run("MeshVolume");
 
         //Alternate full volume computation
         /* gmsh::plugin::run("NewView"); */
@@ -519,6 +483,48 @@ void Model::mesh(std::string outfile, Parameters * prm)
         /* gmsh::plugin::run("ModifyComponents"); */
         /* gmsh::plugin::setNumber("Integrate", "Dimension", 3); */
         /* gmsh::plugin::run("Integrate"); */
+
+        if (prm->outputFragments == 1)
+        {
+
+            model::removePhysicalGroups();
+
+            if (prm->NamedInterstitialVolume)
+            {
+                model::addPhysicalGroup(3,tVInt,15);
+                model::setPhysicalName(3,15,"interstitialVolume");
+            }
+
+            if (prm->NamedOuterSurface)
+            {
+                model::addPhysicalGroup(2,tSWall,13);
+                model::addPhysicalGroup(2,tSOutlet,12);
+                model::addPhysicalGroup(2,tSInlet,11);
+                model::setPhysicalName(2,11, "inlet");
+                model::setPhysicalName(2,12, "outlet");
+                model::setPhysicalName(2,13, "wall");
+            }
+
+            gmsh::write(prm->outpath + outfile + "_interstitial.vtk");
+
+            model::removePhysicalGroups();
+
+            if (prm->NamedBeadVolume)
+            {
+                model::addPhysicalGroup(3,tVBeads,16 );
+                model::setPhysicalName(3,16,"beadVolume");
+            }
+
+            if (prm->NamedBeadSurface)
+            {
+                model::addPhysicalGroup(2,tSBeads,14);
+                model::setPhysicalName(2,14, "beadSurface");
+            }
+
+            gmsh::write(prm->outpath + outfile + "_beads.vtk");
+
+        }
+
 
     }
 

@@ -25,6 +25,7 @@ public:
     void setGMSHOptions();
 
     int meshSizeMethod                             = 1;
+    int outputFragments                            = 1;
     int MeshSmoothing                              = 1;
     int GeneralNumThreads                          = 8;
     int MeshCharacteristicLengthExtendFromBoundary = 1;

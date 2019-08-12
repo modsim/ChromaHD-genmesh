@@ -103,15 +103,13 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "fieldExtensionFactor")                        fieldExtensionFactor                       = atof(val.at(0).c_str());
     else if(key == "nBeads")                                      nBeads                                     = atoi(val.at(0).c_str());
     else if(key == "meshSizeMethod")                              meshSizeMethod                             = atoi(val.at(0).c_str());
+    else if(key == "outputFragments")                             outputFragments                            = atoi(val.at(0).c_str());
     else if(key == "bridgeOffsetRatio")                           bridgeOffsetRatio                          = atof(val.at(0).c_str());
     else if(key == "booleanOperation")                            booleanOperation                           = atoi(val.at(0).c_str());
     else if(key == "fragment")                                    fragment                                   = atoi(val.at(0).c_str());
     else if(key == "Named.beadVolume")                            NamedBeadVolume                            = atoi(val.at(0).c_str());
     else if(key == "Named.interstitialVolume")                    NamedInterstitialVolume                    = atoi(val.at(0).c_str());
     else if(key == "Named.beadSurface")                           NamedBeadSurface                           = atoi(val.at(0).c_str());
-    /* else if(key == "Named.inlet")                                 NamedInlet                                 = atoi(val.at(0).c_str()); */
-    /* else if(key == "Named.outlet")                                NamedOutlet                                = atoi(val.at(0).c_str()); */
-    /* else if(key == "Named.wall")                                  NamedWall                                  = atoi(val.at(0).c_str()); */
     else if(key == "Named.outerSurface")                          NamedOuterSurface                          = atoi(val.at(0).c_str());
     else if(key == "General.NumThreads")                          GeneralNumThreads                          = atoi(val.at(0).c_str());
     else if(key == "Geometry.OCCParallel")                        GeometryOCCParallel                        = atoi(val.at(0).c_str());
@@ -137,6 +135,11 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "Mesh.RefineSteps")                            MeshRefineSteps                            = atoi(val.at(0).c_str());
     else if(key == "Mesh.Generate")                               MeshGenerate                               = atoi(val.at(0).c_str());
     else if(key == "dryRun")                                      dryRun                                     = atoi(val.at(0).c_str());
+
+    /* else if(key == "Named.inlet")                                 NamedInlet                                 = atoi(val.at(0).c_str()); */
+    /* else if(key == "Named.outlet")                                NamedOutlet                                = atoi(val.at(0).c_str()); */
+    /* else if(key == "Named.wall")                                  NamedWall                                  = atoi(val.at(0).c_str()); */
+
 
     else if(key == "reduced")
     {
@@ -180,6 +183,7 @@ void Parameters::print()
     std::cout << "outlet                                      "<< this->outlet                                     << std::endl;
     std::cout << "nBeads                                      "<< this->nBeads                                     << std::endl;
     std::cout << "meshSizeMethod                              "<< this->meshSizeMethod                             << std::endl;
+    std::cout << "outputFragments                             "<< this->outputFragments                            << std::endl;
     std::cout << "rFactor                                     "<< this->rFactor                                    << std::endl;
     std::cout << "preScalingFactor                            "<< this->preScalingFactor                           << std::endl;
     std::cout << "lc                                          "<< this->lc                                         << std::endl;
