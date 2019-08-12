@@ -27,7 +27,7 @@ Model::Model(Parameters * prm)
     if (prm->geomInfile.empty())
         model::add("Model");
     else
-        gmsh::open(prm->geomInfile);
+        gmsh::open("geometries/" + prm->geomInfile);
 }
 
 
@@ -414,7 +414,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
         model::getEntitiesForPhysicalGroup(2, 2, tSOutlet);
         model::getEntitiesForPhysicalGroup(2, 1, tSInlet);
 
-        std::ofstream pgOutfile (prm->geomOutfile+".pg", std::ios::binary);
+        std::ofstream pgOutfile ("geometries/"+prm->geomOutfile+".pg", std::ios::binary);
 
         writeIntVecToBin(tSInlet, pgOutfile);
         writeIntVecToBin(tSOutlet, pgOutfile);
@@ -424,20 +424,21 @@ void Model::mesh(std::string outfile, Parameters * prm)
         writeIntVecToBin(tVBeads, pgOutfile);
 
         pgOutfile.close();
-        gmsh::write(prm->geomOutfile);
+        gmsh::write("geometries/" + prm->geomOutfile);
 
     }
 
     //if read geometry
     if (!prm->geomInfile.empty())
     {
-        std::ifstream pgInfile (prm->geomInfile+".pg", std::ios::binary);
+        std::ifstream pgInfile ("geometries/"+prm->geomInfile+".pg", std::ios::binary);
         readBinToIntVec(tSInlet, pgInfile);
         readBinToIntVec(tSOutlet, pgInfile);
         readBinToIntVec(tSWall, pgInfile);
         readBinToIntVec(tSBeads, pgInfile);
         readBinToIntVec(tVInt, pgInfile);
         readBinToIntVec(tVBeads, pgInfile);
+        pgInfile.close();
 
         model::addPhysicalGroup(2, tSInlet , 1 );
         model::addPhysicalGroup(2, tSOutlet, 2 );
