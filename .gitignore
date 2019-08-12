@@ -1,4 +1,5 @@
 output/
+logs/
 mesher
 genmesh
 version.h

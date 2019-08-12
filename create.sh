@@ -1,3 +1,3 @@
 #!/bin/bash
 
-nohup ./mesher $1 $2 > output/${2%.*}.log 2>&1 & disown
+nohup ./genmesh $1 $2 > logs/${2%.*}.log 2>&1 & disown
