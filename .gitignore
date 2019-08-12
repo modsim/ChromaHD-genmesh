@@ -5,3 +5,5 @@ version.h
 *.step
 *.brep
 *.pg
+*.in
+
