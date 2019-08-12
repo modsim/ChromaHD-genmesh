@@ -1,4 +1,4 @@
-HOST=$(hostname)
+HOST=$(shell hostname)
 CC=g++
 FLAGS=-O3
 
@@ -6,7 +6,7 @@ SRC=Parameters.cpp PackedBed.cpp Model.cpp Files.cpp Bead.cpp main.cpp
 OBJ=$(SRC:.cpp=.o)
 EXE=genmesh
 
-ifeq (, $(findstring IBT918, $(HOST)))
+ifeq (IBT918, $(findstring IBT918, $(HOST)))
 	INC=
 	LIB=-lgmsh -L/usr/local/lib64
 else
@@ -16,25 +16,17 @@ endif
 
 .PHONY: all local ibt clean
 
-# all: git-check
-# 	g++ Parameters.cpp PackedBed.cpp Model.cpp Files.cpp Bead.cpp main.cpp -L/usr/local/lib64 -lgmsh -o mesher  -O3 
-
-# ibt: git-check
-# 	g++ Parameters.cpp PackedBed.cpp Model.cpp Files.cpp Bead.cpp main.cpp -L../../../tools/gmsh/lib -lgmsh -o mesher -O3 -I../../../tools/gmsh/include -std=c++11 -L../../../tools/occt/lib
-
 all: build 
 
 clean: 
 	@rm -rf *.o $(EXE)
 
 build: git-check $(OBJ)
-	$(CC) $(FLAGS) $(INC) -o $(EXE) $(OBJ) $(LIB)
+	$(CC)  $(OBJ) $(FLAGS) $(INC) $(LIB)  -o $(EXE)
 	@echo "Compiled $(EXE) !" 
 
 %.o: %.cpp
-	$(CC) -c -o $@ $< $(CFLAGS)
-
-
+	$(CC) -c -o $@ $< $(FLAGS) $(INC)
 
 git-check:
 	@echo "#ifndef VERSION_H" > version.h
