@@ -6,4 +6,4 @@ version.h
 *.brep
 *.pg
 *.in
-
+*.o
