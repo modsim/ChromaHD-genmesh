@@ -10,6 +10,7 @@
 #include "Files.h"
 
 #include <gmsh.h>
+#include <assert.h>
 
 #define PI 3.1415926535897932
 
@@ -56,7 +57,6 @@ void PackedBed::getBeads(Parameters * prm)
 
     std::cout << "done!" << std::endl << std::endl;
 
-    std::cout << "Note: Bead data stored in the vector is already modified by rFactor." << std::endl;
     std::cout << "Selecting beads in range..." << std::endl;
 
     double cz1 = prm->zBot;
@@ -64,7 +64,6 @@ void PackedBed::getBeads(Parameters * prm)
 
     nBeadsMax = data.size()/4;
 
-    //NOTE: Bead data stored in the vector is already modified by rFactor
     //Read and store all beads if nbeads > 0
     //else use zBot and zTop limits
     for(size_t i = 0; i < nBeadsMax; ++i)
@@ -77,13 +76,14 @@ void PackedBed::getBeads(Parameters * prm)
         if(prm->nBeads < 0)
         {
             if (z >= cz1 && z <= cz2)
-                beads.push_back(new Bead(x, y, z, prm->rFactor * r));
+                beads.push_back(new Bead(x, y, z, r));
         }
         else
-            beads.push_back(new Bead(x, y, z, prm->rFactor * r));
+            beads.push_back(new Bead(x, y, z, r));
 
     }
     std::cout << "done!" << std::endl;
+
 
     if (beads.size() == 0) {
         std::cerr << "ERROR: No beads found!" << std::endl;
@@ -91,7 +91,7 @@ void PackedBed::getBeads(Parameters * prm)
     }
 
     // sort using a lambda expression
-    std::cout << "Sorting beads according to z-value..." << std::flush;
+    std::cout << "Sorting beads according to z-value... " << std::flush;
     std::sort(beads.begin(), beads.end(), [](const Bead* b1, const Bead* b2) {
             return b1->getZ() < b2->getZ();
     });
@@ -106,16 +106,37 @@ void PackedBed::getBeads(Parameters * prm)
 
     std::cout << this->beads.size() << "/" << nBeadsMax << " beads in the selected range." << std::endl;
 
+    for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
+    {
+        x = (*it)->getX();
+        y = (*it)->getY();
+        r = (*it)->getR();
+
+        if ( (x + r) > xMax ) xMax = x + r;
+        if ( (x - r) < xMin ) xMin = x - r;
+        if ( (y + r) > yMax ) yMax = y + r;
+        if ( (y - r) < yMin ) yMin = y - r;
+
+    }
+    prm->rCyl = std::max( ((xMax - xMin) / 2), ((yMax - yMin)/2) ) + prm->rCylDelta;
+
+    std::cout << "Scaling bead radii in place... " << std::flush;
+    for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
+        (*it)->scaleRadius(prm->rFactor);
+    std::cout << "done!" << std::endl;
+
 }
 
 void PackedBed::transformBeads(Parameters * prm)
 {
-    xCyl = 0, yCyl = 0, rCyl = 0;
+    xCyl = 0, yCyl = 0;
     xMax = -DBL_MAX, yMax = -DBL_MAX, zMax = -DBL_MAX;
     xMin = DBL_MAX, yMin = DBL_MAX, zMin = DBL_MAX;
     x=0, y=0, r=0, z=0;
     zBot=0, zTop=0;
     radius_avg=0;
+
+    rCyl = prm->rCyl;
 
     //Calculate bounding box
     for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
@@ -139,7 +160,7 @@ void PackedBed::transformBeads(Parameters * prm)
 
     xCyl = (xMax + xMin) / 2;
     yCyl = (yMax + yMin) / 2;
-    rCyl = std::max( ((xMax - xMin) / 2), ((yMax - yMin)/2) ) + prm->rCylDelta;
+    /* rCyl = std::max( ((xMax - xMin) / 2), ((yMax - yMin)/2) ) + prm->rCylDelta; */
     /* rCyl = std::max(std::max(xMax, std::abs(xMin)), std::max(yMax, std::abs(yMin) ) ) + prm->rCylDelta; */
 
     //Adjust zBot and zTop
@@ -175,11 +196,13 @@ void PackedBed::transformBeads(Parameters * prm)
     std::cout << "done!" << std::endl << std::endl;
 
     //Get new zBot and zTop
+    prm->rCyl *= prm->preScalingFactor;
+    rCyl *= prm->preScalingFactor;
     zBot=beads.front()->getZ();
     zTop=beads.back()->getZ();
 
     //reset variables
-    xCyl = 0, yCyl = 0, rCyl = 0;
+    xCyl = 0, yCyl = 0;
     xMax = -DBL_MAX, yMax = -DBL_MAX, zMax = -DBL_MAX;
     xMin = DBL_MAX, yMin = DBL_MAX, zMin = DBL_MAX;
     x=0, y=0, r=0, z=0;
@@ -218,7 +241,11 @@ void PackedBed::transformBeads(Parameters * prm)
 
     xCyl = (xMax + xMin) / 2;
     yCyl = (yMax + yMin) / 2;
-    rCyl = std::max( ((xMax - xMin) / 2), ((yMax - yMin)/2) ) + prm->rCylDelta;
+
+    assert ( rCyl >= std::max( ((xMax - xMin) / 2), ((yMax - yMin)/2) ));
+
+
+    /* rCyl = std::max( ((xMax - xMin) / 2), ((yMax - yMin)/2) ) + prm->rCylDelta; */
     /* rCyl = std::max(std::max(xMax, std::abs(xMin)), std::max(yMax, std::abs(yMin) ) ) + prm->rCylDelta; */
 
     vol_cylinder = PI * pow(rCyl * prm->MeshScalingFactor, 2) * (zTop - zBot + prm->inlet + prm->outlet) * prm->MeshScalingFactor;

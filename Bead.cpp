@@ -59,6 +59,11 @@ void Bead::scale(double factor)
     this->r = factor * this->r;
 }
 
+void Bead::scaleRadius(double factor)
+{
+    this->r = factor * this->r;
+}
+
 
 bool Bead::neighbour(Bead * bead, double eps, double &dx, double &dy, double &dz) const{
 

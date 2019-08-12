@@ -58,6 +58,7 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [x] Figure out how to calculate mesh volume for different components
 - [x] git state isn't perfect since it is dirty if default.in is changed before compile
 - [x] Allow cylinder constrained creation again(zbot, ztop)
+- [x] RCYL is calclated after bead radius modification: Change it to depend on initial packing
 - [-] Save options (so that it can be reloaded and used with exported geometry?)
 - [ ] Improved error handling.
 - [ ] Output surfs and volumes to a separate folder?
@@ -69,7 +70,6 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [ ] Manual node placement at contact points 
 - [ ] Try volume generating
 - [ ] Try embedded bead CP and mesh size control
-- [ ] RCYL is calclated after bead radius modification: Change it to depend on initial packing
 - [ ] Scrap the need for ./create.sh. create <file>.log automatically
 - [ ] Modularize, Refactor code.
 
