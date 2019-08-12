@@ -19,14 +19,17 @@ packing                                     packing/mono-full.xyzd
 #preScalingFactor                            2
 ##===========================================}}}#
 
-nBeads                                      120
+nBeads                                      150
 rCylDelta                                   0.01
 inlet                                       1.5
 outlet                                      1.5
 
+geomInfile geom.step
+# geomOutfile geom.step
+
 meshSizeMethod                              1     # 0: Global Points (for capped mono) 1: Scaled Fields
-lc_beads                                    0.08 
-lc_out                                      0.08 
+lc_beads                                    0.10 
+lc_out                                      0.10 
 fieldExtensionFactor                        1.01
 
 reduced                                     0.999

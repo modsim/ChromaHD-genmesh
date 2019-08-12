@@ -2,3 +2,6 @@ output/
 mesher
 genmesh
 version.h
+*.step
+*.brep
+*.pg

@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <iostream>
+
+
 bool isBigEndian() {
     short word = 0x4321;
     if ((* (char*) & word) != 0x21)
@@ -28,4 +31,25 @@ void swapbytes(char *array, int nelem, int elsize) {
 
     delete bytea;
     delete byteb;
+}
+
+void writeIntVecToBin(std::vector<int> vec, std::ofstream& outfile)
+{
+    size_t size = vec.size();
+    outfile.write(reinterpret_cast<char *>(&size), sizeof(size));
+    for (std::vector<int>::iterator it = vec.begin(); it!=vec.end(); it++) outfile.write( reinterpret_cast<char *>(&*it), sizeof(int));
+}
+
+void readBinToIntVec(std::vector<int>& vec, std::ifstream& infile)
+{
+
+    size_t size;
+    infile.read(reinterpret_cast<char *>(&size), sizeof(size));
+    int dummy;
+    for(int i=0; i<size; i++)
+    {
+        infile.read( reinterpret_cast<char *>(&dummy), sizeof(int));
+        vec.push_back(dummy);
+    }
+
 }

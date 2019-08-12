@@ -158,6 +158,8 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     }
 
     else if(key == "packing") packfile = val.at(0);
+    else if(key == "geomInfile") geomInfile = val.at(0);
+    else if(key == "geomOutfile") geomOutfile = val.at(0);
     else if(key == "outpath") outpath  = val.at(0);
     else throw mixd::MixdException("Unknown keyword: " + key);
 
@@ -217,6 +219,8 @@ void Parameters::print()
     std::cout << "Mesh.RefineSteps                            "<< this->MeshRefineSteps                            << std::endl;
     std::cout << "Mesh.Generate                               "<< this->MeshGenerate                               << std::endl;
     std::cout << "packing                                     "<< this->packfile                                   << std::endl;
+    std::cout << "geomInfile                                  "<< this->geomInfile                                 << std::endl;
+    std::cout << "geomOutfile                                 "<< this->geomOutfile                                << std::endl;
     std::cout << "outpath                                     "<< this->outpath                                    << std::endl;
     std::cout << "dryRun                                      "<< this->dryRun                                     << std::endl;
 
@@ -260,5 +264,8 @@ void Parameters::setGMSHOptions()
 
     //1: Delaunay | 4: Frontal | 5: Frontal Delaunay | 6: Frontal Hex | 7: MMG3D | 9: RTree | 10: HXT
     gmsh::option::setNumber("Mesh.Algorithm3D", this->MeshAlgorithm3D); //Default = 1
+
+    gmsh::option::setNumber("Print.GeoLabels", 1); //Default = 1
+    gmsh::option::setNumber("Print.GeoOnlyPhysicals", 1); //Default = 1
 
 }

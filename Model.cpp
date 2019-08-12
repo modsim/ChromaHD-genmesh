@@ -14,6 +14,7 @@
 #include <float.h>
 #include <gmsh.h>
 #include <iostream>
+#include <fstream>
 #include <iterator>
 
 #define PI 3.1415926535897932
@@ -23,15 +24,12 @@ namespace factory = gmsh::model::occ;
 
 Model::Model(Parameters * prm)
 {
-    /* this->getBeads(prm->packfile); */
-
-    /* /1* beads.clear(); *1/ */
-    /* /1* beads.push_back(new Bead(5, 5, 710.5, prm->rFactor * 1)); *1/ */
-    /* /1* beads.push_back(new Bead(6.5, 5,710.5, prm->rFactor * 0.50000)); *1/ */
-
-    /* this->transformBeads(); */
-    model::add("Model");
+    if (prm->geomInfile.empty())
+        model::add("Model");
+    else
+        gmsh::open(prm->geomInfile);
 }
+
 
 Model::~Model()
 {
@@ -66,14 +64,17 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
         double z = (*iter)->getZ();
         double r = (*iter)->getR();
 
-        tag = factory::addSphere(x, y, z, r);
-        /* ctag = factory::addPoint(x, y, z, prm->lc_beads, -1); */
+        if (prm->geomInfile.empty())
+        {
+            tag = factory::addSphere(x, y, z, r);
+            /* ctag = factory::addPoint(x, y, z, prm->lc_beads, -1); */
 
-        (*iter)->setTag(tag);
-        /* (*iter)->setCTag(ctag); */
+            (*iter)->setTag(tag);
+            /* (*iter)->setCTag(ctag); */
 
-        dimTagsBeads.push_back({3, tag});
-        /* tBeadCPs.push_back(ctag); */
+            dimTagsBeads.push_back({3, tag});
+            /* tBeadCPs.push_back(ctag); */
+        }
 
         model::mesh::field::add("Ball", ++count);
         model::mesh::field::setNumber(count, "VIn", r/(pb->radius_max) * prm->lc_beads);
@@ -89,7 +90,6 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
 
     int tagBridge;
 
-    //check pair with tol
     double dx, dy, dz;
     double x4, y4, z4;
     double x3, y3, z3;
@@ -149,13 +149,17 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
                 dy3 = dy * (dist - factor * (r1+r2))/dist;
                 dz3 = dz * (dist - factor * (r1+r2))/dist;
 
-                if (r1 == r2)
-                    tagBridge = factory::addCylinder(x3, y3, z3, dx3, dy3, dz3, rBridge);
-                else
-                    tagBridge = factory::addCone(x3, y3, z3, dx3, dy3, dz3, r1Bridge, r2Bridge);
+                if (prm->geomInfile.empty())
+                {
+                    if (r1 == r2)
+                        tagBridge = factory::addCylinder(x3, y3, z3, dx3, dy3, dz3, rBridge);
+                    else
+                        tagBridge = factory::addCone(x3, y3, z3, dx3, dy3, dz3, r1Bridge, r2Bridge);
 
-                this->dimTagsBridges.push_back({3, tagBridge }) ;
-                /* this->bridgeTagRadiusPairs.push_back({tagBridge, rBridge}); */
+                    this->dimTagsBridges.push_back({3, tagBridge }) ;
+                    /* this->bridgeTagRadiusPairs.push_back({tagBridge, rBridge}); */
+                }
+
 
                 model::mesh::field::add("Frustum", ++count);
                 model::mesh::field::setNumber(count, "V1_inner", prm->lc_beads * rBeadSmallest/(pb->radius_max) );
@@ -188,7 +192,8 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
     std::cout << "done!" << std::endl;
 
     std::cout << "Creating cylinder... " << std::flush;
-    dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
+    if (prm->geomInfile.empty())
+        dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
     std::cout << "done!" << std::endl;
 
     if (prm->meshSizeMethod == 1)
@@ -217,89 +222,63 @@ void Model::mesh(std::string outfile, Parameters * prm)
     std::vector<std::pair<int, int> > cv;
     std::vector<std::vector<std::pair<int, int> > > ovv;
 
-
-    /* // Synchronize gmsh model with geometry kernel. */
-    /* std::cout << "synchronizing... " << std::flush; */
-    /* factory::synchronize(); */
-    /* std::cout << "done!" << std::endl; */
-
-    /* // Set scaled mesh size on beads */
-    /* std::cout << "Setting bead sizes..." << std::endl; */
-    /* std::vector<Bead *>::iterator biter = beads.begin(); */
-    /* for (std::vector<std::pair <int, int >>::iterator it = this->dimTagsBeads.begin(); */
-    /*         it != this->dimTagsBeads.end(); it++) */
-    /* { */
-    /*     model::getBoundary({(*it)}, cv, false, false, true ); */
-    /*     model::mesh::setSize(cv, prm->lc * (*biter)->getR()/radius_max); */
-    /*     /1* model::mesh::setSize({(*it)}, prm->lc * (*biter)->getR()/radius_avg); *1/ */
-    /*     biter++; */
-    /* } */
-
-    /* std::cout << "Setting bridge sizes..." << std::endl; */
-    /* /1* for (std::vector<std::pair <int, int >>::iterator it = this->dimTagsBridges.begin(); *1/ */
-    /* /1*         it != this->dimTagsBridges.end(); it++) *1/ */
-    /* for (std::vector<std::pair <int, double>>::iterator it = this->bridgeTagRadiusPairs.begin(); */
-    /*         it != this->bridgeTagRadiusPairs.end(); it++) */
-    /* { */
-    /*     model::getBoundary({{3,(*it).first}}, cv, false, false, true ); */
-    /*     model::mesh::setSize(cv, prm->lc * (*it).second/(prm->relativeBridgeRadius * radius_max) ); */
-    /*     model::mesh::setSize(cv, prm->lc * (*it).second/(radius_max) ); */
-    /*     /1* model::mesh::setSize({{3,(*it).first}}, prm->lc * (*it).second/(prm->relativeBridgeRadius * radius_avg) ); *1/ */
-    /* } */
-
     long bool_start = gmsh::logger::time();
 
-    /* Fuse beads together (with bridges or without) */
-    if (prm->booleanOperation == 1)
+    if (prm->geomInfile.empty())
     {
-        if (dimTagsBridges.size() == 0) dimTagsBridges = {3, dimTagsBeads.back()};
-
-        std::cout << "Fusing Beads and Bridges... " << std::flush;
-        factory::fuse(dimTagsBeads, dimTagsBridges, ov, ovv );
-        std::cout << "done!" << std::endl;
-    }
-    else if (prm->booleanOperation == 2)
-    {
-        if (dimTagsBridges.size() == 0)
+        /* Fuse beads together (with bridges or without) */
+        if (prm->booleanOperation == 1)
         {
-            std::cout << "Error: No Bridges to cut from beads" << std::endl;
-            exit(-1);
+            if (dimTagsBridges.size() == 0) dimTagsBridges = {3, dimTagsBeads.back()};
+
+            std::cout << "Fusing Beads and Bridges... " << std::flush;
+            factory::fuse(dimTagsBeads, dimTagsBridges, ov, ovv );
+            std::cout << "done!" << std::endl;
+        }
+        else if (prm->booleanOperation == 2)
+        {
+            if (dimTagsBridges.size() == 0)
+            {
+                std::cout << "Error: No Bridges to cut from beads" << std::endl;
+                exit(-1);
+            }
+
+            std::cout << "Capping Beads... " << std::flush;
+            factory::cut(dimTagsBeads, dimTagsBridges, ov, ovv );
+            std::cout << "done!" << std::endl;
+
+        }
+        else
+        {
+            ov = dimTagsBeads;
         }
 
-        std::cout << "Capping Beads... " << std::flush;
-        factory::cut(dimTagsBeads, dimTagsBridges, ov, ovv );
+
+        // Fragment cylinder w.r.t. beads
+        if (prm->fragment)
+        {
+            if (ov.size() == 0) ov = dimTagsBeads;
+
+            std::cout << "Fragmenting Volumes... " << std::flush;
+            factory::fragment(dimTagsCyl, ov, bv, ovv );
+            dimTagsInterstitial.push_back(bv.back());
+            std::cout << "done!" << std::endl;
+        }
+
+        // Synchronize gmsh model with geometry kernel.
+        std::cout << "synchronizing... " << std::flush;
+        factory::synchronize();
         std::cout << "done!" << std::endl;
 
-    }
-    else
-    {
-        ov = dimTagsBeads;
-    }
+        std::cout << std::endl;
 
+        std::cout << "Number of Beads: "            << dimTagsBeads.size()   << std::endl;
+        std::cout << "Number of Bridges: "          << dimTagsBridges.size() << std::endl;
+        std::cout << "Number of internal volumes: " << ov.size()             << std::endl;
 
-    // Fragment cylinder w.r.t. beads
-    if (prm->fragment)
-    {
-        if (ov.size() == 0) ov = dimTagsBeads;
-
-        std::cout << "Fragmenting Volumes... " << std::flush;
-        factory::fragment(dimTagsCyl, ov, bv, ovv );
-        dimTagsInterstitial.push_back(bv.back());
-        std::cout << "done!" << std::endl;
     }
 
     long bool_duration = gmsh::logger::time() - bool_start;
-
-    // Synchronize gmsh model with geometry kernel.
-    std::cout << "synchronizing... " << std::flush;
-    factory::synchronize();
-    std::cout << "done!" << std::endl;
-
-    std::cout << std::endl;
-
-    std::cout << "Number of Beads: "            << dimTagsBeads.size()   << std::endl;
-    std::cout << "Number of Bridges: "          << dimTagsBridges.size() << std::endl;
-    std::cout << "Number of internal volumes: " << ov.size()             << std::endl;
 
     gmsh::logger::write("Boolean time: " + std::to_string(bool_duration) + " s", "info");
     std::cout << std::endl;
@@ -334,64 +313,64 @@ void Model::mesh(std::string outfile, Parameters * prm)
     /* } */
     /* std:: cout << "done!" << std::endl; */
 
-    /* /1* // Set mesh size on cylinder surface *1/ */
-    /* model::getBoundary(dimTagsInterstitial, cv, false, false, true ); */
-    /* cv.erase(cv.begin()+3, cv.end()); */
-    /* model::mesh::setSize(cv, prm->lc); */
-
-
     // ============================
     // Named Physical Groups
-    if (prm->NamedInterstitialVolume)
+
+    // if not reading geometry
+    if (prm->geomInfile.empty())
     {
-        std::cout << "Naming Interstitial Volumes... ";
-        model::addPhysicalGroup(3,{bv.back().second},5);
-        model::setPhysicalName(3,5,"interstitialVolume");
-        std::cout << "done!" << std::endl;
-    }
-
-    if (prm->NamedOuterSurface)
-    {
-        std::cout << "Naming Outer Surfaces... ";
-        model::getBoundary({{3, bv.back().second}}, cv, false, false,false);
-        model::addPhysicalGroup(2,{cv[0].second},3);
-        model::addPhysicalGroup(2,{cv[1].second},2);
-        model::addPhysicalGroup(2,{cv[2].second},1);
-        model::setPhysicalName(2,1, "inlet");
-        model::setPhysicalName(2,2, "outlet");
-        model::setPhysicalName(2,3, "wall");
-        std::cout << "done!" << std::endl;
-    }
-
-
-    bv.pop_back();
-
-    if (prm->NamedBeadVolume)
-    {
-        tBeads.clear();
-        std::cout << "Naming Bead Volumes... ";
-        for ( std::vector<std::pair< int , int>>::iterator it = bv.begin(); it != bv.end(); it++   )
+        if (prm->NamedInterstitialVolume)
         {
-            tBeads.push_back((*it).second);
+            std::cout << "Naming Interstitial Volumes... ";
+            model::addPhysicalGroup(3,{bv.back().second},5);
+            model::setPhysicalName(3,5,"interstitialVolume");
+            std::cout << "done!" << std::endl;
         }
-        model::addPhysicalGroup(3,tBeads,6 );
-        model::setPhysicalName(3,6,"beadVolume");
-        std::cout << "done!" << std::endl;
 
-    }
-
-    if (prm->NamedBeadSurface)
-    {
-        std::cout << "Naming Bead Surfaces... ";
-        model::getBoundary(bv, cv, false, false,false);
-        tBeads.clear();
-        for ( std::vector<std::pair< int , int>>::iterator it = cv.begin(); it != cv.end(); it++   )
+        if (prm->NamedOuterSurface)
         {
-            tBeads.push_back((*it).second);
+            std::cout << "Naming Outer Surfaces... ";
+            model::getBoundary({{3, bv.back().second}}, cv, false, false,false);
+            model::addPhysicalGroup(2,{cv[0].second},3);
+            model::addPhysicalGroup(2,{cv[1].second},2);
+            model::addPhysicalGroup(2,{cv[2].second},1);
+            model::setPhysicalName(2,1, "inlet");
+            model::setPhysicalName(2,2, "outlet");
+            model::setPhysicalName(2,3, "wall");
+            std::cout << "done!" << std::endl;
         }
-        model::addPhysicalGroup(2,tBeads,4);
-        model::setPhysicalName(2,4, "beadSurface");
-        std::cout << "done!" << std::endl;
+
+
+        bv.pop_back();
+
+        if (prm->NamedBeadVolume)
+        {
+            tBeads.clear();
+            std::cout << "Naming Bead Volumes... ";
+            for ( std::vector<std::pair< int , int>>::iterator it = bv.begin(); it != bv.end(); it++   )
+            {
+                tBeads.push_back((*it).second);
+            }
+            model::addPhysicalGroup(3,tBeads,6 );
+            model::setPhysicalName(3,6,"beadVolume");
+            std::cout << "done!" << std::endl;
+
+        }
+
+        if (prm->NamedBeadSurface)
+        {
+            std::cout << "Naming Bead Surfaces... ";
+            model::getBoundary(bv, cv, false, false,false);
+            tBeads.clear();
+            for ( std::vector<std::pair< int , int>>::iterator it = cv.begin(); it != cv.end(); it++   )
+            {
+                tBeads.push_back((*it).second);
+            }
+            model::addPhysicalGroup(2,tBeads,4);
+            model::setPhysicalName(2,4, "beadSurface");
+            std::cout << "done!" << std::endl;
+        }
+
     }
 
     if (prm->meshSizeMethod == 0)
@@ -401,30 +380,86 @@ void Model::mesh(std::string outfile, Parameters * prm)
         model::getEntities(cv, 0);
         model::mesh::setSize(cv, prm->lc_beads);
         std:: cout << "done!" << std::endl;
+
+        // Set mesh size for beads
+        /* model::getBoundary(bv, cv, false, false, true); */
+        /* model::mesh::setSize(cv, prm->lc_beads); */
+
+        /* // Set mesh size for interstitial */
+        /* std:: cout << "Setting mesh size for surfaces..."; */
+        /* model::getBoundary(dimTagsInterstitial, cv, false, false, true); */
+        /* model::mesh::setSize(cv, prm->lc); */
+        /* std:: cout << "done!" << std::endl; */
+
+        //set mesh size on bead surface
+        // maybe use the inside of the interstitial fragment instead?
+        /* model::getBoundary(dimTagsInterstitial, cv, false, false, false); */
+        /* model::getBoundary(bv, cv, false, false, false); */
+        /* model::getBoundary(cv, ov, false, false, true); */
+        /* model::mesh::setSize(ov, prm->lc); */
+
     }
 
     std::cout << std::endl;
 
+    std::vector<int> tVBeads, tVInt, tSBeads, tSWall, tSOutlet, tSInlet;
 
-    // Set mesh size for beads
-    /* model::getBoundary(bv, cv, false, false, true); */
-    /* model::mesh::setSize(cv, prm->lc_beads); */
+    //if write geometry
+    if (prm->geomInfile.empty() && !prm->geomOutfile.empty())
+    {
+        model::getEntitiesForPhysicalGroup(3, 6, tVBeads);
+        model::getEntitiesForPhysicalGroup(3, 5, tVInt);
+        model::getEntitiesForPhysicalGroup(2, 4, tSBeads);
+        model::getEntitiesForPhysicalGroup(2, 3, tSWall);
+        model::getEntitiesForPhysicalGroup(2, 2, tSOutlet);
+        model::getEntitiesForPhysicalGroup(2, 1, tSInlet);
 
-    /* // Set mesh size for interstitial */
-    /* std:: cout << "Setting mesh size for surfaces..."; */
-    /* model::getBoundary(dimTagsInterstitial, cv, false, false, true); */
-    /* model::mesh::setSize(cv, prm->lc); */
-    /* std:: cout << "done!" << std::endl; */
+        std::ofstream pgOutfile (prm->geomOutfile+".pg", std::ios::binary);
 
-    //set mesh size on bead surface
-    // maybe use the inside of the interstitial fragment instead?
-    /* model::getBoundary(dimTagsInterstitial, cv, false, false, false); */
-    /* model::getBoundary(bv, cv, false, false, false); */
-    /* model::getBoundary(cv, ov, false, false, true); */
-    /* model::mesh::setSize(ov, prm->lc); */
+        writeIntVecToBin(tSInlet, pgOutfile);
+        writeIntVecToBin(tSOutlet, pgOutfile);
+        writeIntVecToBin(tSWall, pgOutfile);
+        writeIntVecToBin(tSBeads, pgOutfile);
+        writeIntVecToBin(tVInt, pgOutfile);
+        writeIntVecToBin(tVBeads, pgOutfile);
 
-    /* gmsh::write(prm->outpath + "geometry.brep" ); */
+        pgOutfile.close();
+        gmsh::write(prm->geomOutfile);
 
+    }
+
+    //if read geometry
+    if (!prm->geomInfile.empty())
+    {
+        std::ifstream pgInfile (prm->geomInfile+".pg", std::ios::binary);
+        readBinToIntVec(tSInlet, pgInfile);
+        readBinToIntVec(tSOutlet, pgInfile);
+        readBinToIntVec(tSWall, pgInfile);
+        readBinToIntVec(tSBeads, pgInfile);
+        readBinToIntVec(tVInt, pgInfile);
+        readBinToIntVec(tVBeads, pgInfile);
+
+        model::addPhysicalGroup(2, tSInlet , 1 );
+        model::addPhysicalGroup(2, tSOutlet, 2 );
+        model::addPhysicalGroup(2, tSWall  , 3 );
+        model::addPhysicalGroup(2, tSBeads , 4 );
+        model::addPhysicalGroup(3, tVInt   , 5 );
+        model::addPhysicalGroup(3, tVBeads , 6 );
+
+        model::setPhysicalName(2,1,"inlet");
+        model::setPhysicalName(2,2,"outlet");
+        model::setPhysicalName(2,3,"wall");
+        model::setPhysicalName(2,4,"beadSurface");
+        model::setPhysicalName(3,5,"interstitialVolume");
+        model::setPhysicalName(3,6,"beadVolume");
+
+    }
+
+
+    // Synchronize gmsh model with geometry kernel.
+    std::cout << "synchronizing... " << std::flush;
+    factory::synchronize();
+    std::cout << "done!" << std::endl;
 
     if(!prm->dryRun)
     {
@@ -434,28 +469,27 @@ void Model::mesh(std::string outfile, Parameters * prm)
         // Output Full mesh
         gmsh::write(prm->outpath + outfile);
 
-        gmsh::plugin::setNumber("MeshVolume", "Physical", 5);
-        gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
-        gmsh::plugin::run("MeshVolume");
+            gmsh::plugin::setNumber("MeshVolume", "Physical", 5);
+            gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
+            gmsh::plugin::run("MeshVolume");
 
-        gmsh::plugin::setNumber("MeshVolume", "Physical", 6);
-        gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
-        gmsh::plugin::run("MeshVolume");
+            gmsh::plugin::setNumber("MeshVolume", "Physical", 6);
+            gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
+            gmsh::plugin::run("MeshVolume");
 
         model::removePhysicalGroups();
 
         if (prm->NamedInterstitialVolume)
         {
-            model::addPhysicalGroup(3,{dimTagsInterstitial.back().second},15);
+            model::addPhysicalGroup(3,tVInt,15);
             model::setPhysicalName(3,15,"interstitialVolume");
         }
 
         if (prm->NamedOuterSurface)
         {
-            model::getBoundary(dimTagsInterstitial, cv, false, false,false);
-            model::addPhysicalGroup(2,{cv[0].second},13);
-            model::addPhysicalGroup(2,{cv[1].second},12);
-            model::addPhysicalGroup(2,{cv[2].second},11);
+            model::addPhysicalGroup(2,tSWall,13);
+            model::addPhysicalGroup(2,tSOutlet,12);
+            model::addPhysicalGroup(2,tSInlet,11);
             model::setPhysicalName(2,11, "inlet");
             model::setPhysicalName(2,12, "outlet");
             model::setPhysicalName(2,13, "wall");
@@ -467,29 +501,17 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
         if (prm->NamedBeadVolume)
         {
-            tBeads.clear();
-            for ( std::vector<std::pair< int , int>>::iterator it = bv.begin(); it != bv.end(); it++   )
-            {
-                tBeads.push_back((*it).second);
-            }
-            model::addPhysicalGroup(3,tBeads,16 );
+            model::addPhysicalGroup(3,tVBeads,16 );
             model::setPhysicalName(3,16,"beadVolume");
-
         }
 
         if (prm->NamedBeadSurface)
         {
-            model::getBoundary(bv, cv, false, false,false);
-            tBeads.clear();
-            for ( std::vector<std::pair< int , int>>::iterator it = cv.begin(); it != cv.end(); it++   )
-            {
-                tBeads.push_back((*it).second);
-            }
-            model::addPhysicalGroup(2,tBeads,14);
+            model::addPhysicalGroup(2,tSBeads,14);
             model::setPhysicalName(2,14, "beadSurface");
         }
 
-        gmsh::write(prm->outpath + outfile + "_beads.msh2");
+        gmsh::write(prm->outpath + outfile + "_beads.vtk");
 
         //Alternate full volume computation
         /* gmsh::plugin::run("NewView"); */

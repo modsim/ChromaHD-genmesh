@@ -20,22 +20,11 @@ class Model{
     public:
         Model();
         Model(Parameters * prm);
+        Model(Parameters * prm, std::string geometryFile);
         virtual ~Model();
 
-        /* std::vector<Bead *> beads; */
         void createGeometry(PackedBed * packedBed, Parameters * prm);
-        /* void printPacking(); */
         void mesh(std::string outfile, Parameters * prm);
-        /* void createBridge(double relativeBridgeRadius, double eps); */
-        /* void createGMSHSphere(double x, double y, double z, double r, double lc_surface, double lc_center, std::vector<int> &shells, std::vector<int> &volumes); */
-        /* void GMSHGeom(std::string outfile); */
-
-        /* int tCyl; */
-        /* double radius_avg = 0.0; */
-        /* double radius_max = -1.0; */
-        /* double radius_min = 999999; */
-        /* int nBeadsMax = 0; */
-        /* int nBeads = 0; */
 
         std::vector<int> tBeads;
         std::vector<int> tBeadCPs;
@@ -45,11 +34,6 @@ class Model{
         std::vector<std::pair<int, int>> dimTagsInterstitial;
 
         std::vector<std::pair <int, double>> bridgeTagRadiusPairs;
-
-    /* private: */
-    /*     Parameters * prm; */
-    /*     void getBeads(std::string packingFilename); */
-    /*     void transformBeads(); */
 
 };
 

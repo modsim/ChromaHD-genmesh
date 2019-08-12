@@ -79,7 +79,10 @@ public:
     double capped                                  = -1;
     double rCylDelta                               = 0.0;
 
-    std::string packfile, outpath="output/";
+    std::string packfile;
+    std::string geomOutfile;
+    std::string geomInfile;
+    std::string outpath="output/";
 
 
 private:
