@@ -25,6 +25,7 @@ class Model{
 
         void createGeometry(PackedBed * packedBed, Parameters * prm);
         void mesh(std::string outfile, Parameters * prm);
+        void createNamedGroups(std::vector<std::pair<int,int>> ov);
 
         std::vector<int> tBeads;
         std::vector<int> tBeadCPs;
@@ -33,6 +34,7 @@ class Model{
         std::vector<std::pair<int, int>> dimTagsBridges;
         std::vector<std::pair<int, int>> dimTagsInterstitial;
 
+        std::vector<int> tVBeads, tVInt, tSBeads, tSWall, tSOutlet, tSInlet;
         std::vector<std::pair <int, double>> bridgeTagRadiusPairs;
 
 };

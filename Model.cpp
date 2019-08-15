@@ -24,10 +24,7 @@ namespace factory = gmsh::model::occ;
 
 Model::Model(Parameters * prm)
 {
-    if (prm->geomInfile.empty())
-        model::add("Model");
-    else
-        gmsh::open("geometries/" + prm->geomInfile);
+    model::add("Model");
 }
 
 
@@ -253,7 +250,6 @@ void Model::mesh(std::string outfile, Parameters * prm)
             ov = dimTagsBeads;
         }
 
-
         // Fragment cylinder w.r.t. beads
         if (prm->fragment)
         {
@@ -318,60 +314,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
     // if not reading geometry
     if (prm->geomInfile.empty())
-    {
-        if (prm->NamedInterstitialVolume)
-        {
-            std::cout << "Naming Interstitial Volumes... ";
-            model::addPhysicalGroup(3,{bv.back().second},5);
-            model::setPhysicalName(3,5,"interstitialVolume");
-            std::cout << "done!" << std::endl;
-        }
-
-        if (prm->NamedOuterSurface)
-        {
-            std::cout << "Naming Outer Surfaces... ";
-            model::getBoundary({{3, bv.back().second}}, cv, false, false,false);
-            model::addPhysicalGroup(2,{cv[0].second},3);
-            model::addPhysicalGroup(2,{cv[1].second},2);
-            model::addPhysicalGroup(2,{cv[2].second},1);
-            model::setPhysicalName(2,1, "inlet");
-            model::setPhysicalName(2,2, "outlet");
-            model::setPhysicalName(2,3, "wall");
-            std::cout << "done!" << std::endl;
-        }
-
-
-        bv.pop_back();
-
-        if (prm->NamedBeadVolume)
-        {
-            tBeads.clear();
-            std::cout << "Naming Bead Volumes... ";
-            for ( std::vector<std::pair< int , int>>::iterator it = bv.begin(); it != bv.end(); it++   )
-            {
-                tBeads.push_back((*it).second);
-            }
-            model::addPhysicalGroup(3,tBeads,6 );
-            model::setPhysicalName(3,6,"beadVolume");
-            std::cout << "done!" << std::endl;
-
-        }
-
-        if (prm->NamedBeadSurface)
-        {
-            std::cout << "Naming Bead Surfaces... ";
-            model::getBoundary(bv, cv, false, false,false);
-            tBeads.clear();
-            for ( std::vector<std::pair< int , int>>::iterator it = cv.begin(); it != cv.end(); it++   )
-            {
-                tBeads.push_back((*it).second);
-            }
-            model::addPhysicalGroup(2,tBeads,4);
-            model::setPhysicalName(2,4, "beadSurface");
-            std::cout << "done!" << std::endl;
-        }
-
-    }
+        createNamedGroups(bv);
 
     if (prm->meshSizeMethod == 0)
     {
@@ -402,60 +345,24 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
     std::cout << std::endl;
 
-    std::vector<int> tVBeads, tVInt, tSBeads, tSWall, tSOutlet, tSInlet;
-
     //if write geometry
-    if (prm->geomInfile.empty() && !prm->geomOutfile.empty())
-    {
-        model::getEntitiesForPhysicalGroup(3, 6, tVBeads);
-        model::getEntitiesForPhysicalGroup(3, 5, tVInt);
-        model::getEntitiesForPhysicalGroup(2, 4, tSBeads);
-        model::getEntitiesForPhysicalGroup(2, 3, tSWall);
-        model::getEntitiesForPhysicalGroup(2, 2, tSOutlet);
-        model::getEntitiesForPhysicalGroup(2, 1, tSInlet);
-
-        std::ofstream pgOutfile ("geometries/"+prm->geomOutfile+".pg", std::ios::binary);
-
-        writeIntVecToBin(tSInlet, pgOutfile);
-        writeIntVecToBin(tSOutlet, pgOutfile);
-        writeIntVecToBin(tSWall, pgOutfile);
-        writeIntVecToBin(tSBeads, pgOutfile);
-        writeIntVecToBin(tVInt, pgOutfile);
-        writeIntVecToBin(tVBeads, pgOutfile);
-
-        pgOutfile.close();
+    if(!prm->geomOutfile.empty())
         gmsh::write("geometries/" + prm->geomOutfile);
-
-    }
 
     //if read geometry
     if (!prm->geomInfile.empty())
     {
-        std::ifstream pgInfile ("geometries/"+prm->geomInfile+".pg", std::ios::binary);
-        readBinToIntVec(tSInlet, pgInfile);
-        readBinToIntVec(tSOutlet, pgInfile);
-        readBinToIntVec(tSWall, pgInfile);
-        readBinToIntVec(tSBeads, pgInfile);
-        readBinToIntVec(tVInt, pgInfile);
-        readBinToIntVec(tVBeads, pgInfile);
-        pgInfile.close();
+        std::cout << "Importing geometry: " << prm->geomInfile << "... " << std::flush;
+        factory::importShapes("geometries/" + prm->geomInfile, bv);
+        std::cout << "done!" << std::endl;
 
-        model::addPhysicalGroup(2, tSInlet , 1 );
-        model::addPhysicalGroup(2, tSOutlet, 2 );
-        model::addPhysicalGroup(2, tSWall  , 3 );
-        model::addPhysicalGroup(2, tSBeads , 4 );
-        model::addPhysicalGroup(3, tVInt   , 5 );
-        model::addPhysicalGroup(3, tVBeads , 6 );
+        // Synchronize gmsh model with geometry kernel.
+        std::cout << "synchronizing... " << std::flush;
+        factory::synchronize();
+        std::cout << "done!" << std::endl;
 
-        model::setPhysicalName(2,1,"inlet");
-        model::setPhysicalName(2,2,"outlet");
-        model::setPhysicalName(2,3,"wall");
-        model::setPhysicalName(2,4,"beadSurface");
-        model::setPhysicalName(3,5,"interstitialVolume");
-        model::setPhysicalName(3,6,"beadVolume");
-
+        createNamedGroups(bv);
     }
-
 
     // Synchronize gmsh model with geometry kernel.
     std::cout << "synchronizing... " << std::flush;
@@ -529,5 +436,57 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
     }
 
+
+}
+
+void Model::createNamedGroups(std::vector<std::pair<int,int>> bv)
+{
+    std::cout <<"entered function.." << std::endl;
+
+    std::vector<std::pair<int,int>> cv;
+    std::cout << "Listing Interstitial Volume... " << std::flush;
+    tVInt.push_back(bv.back().second);
+    bv.pop_back();
+    std::cout << "done!" << std::endl;
+
+    std::cout << "Listing Outer Surfaces... " << std::flush;
+    model::getBoundary({{3,tVInt[0]}}, cv, false, false, false);
+    tSWall = {cv[0].second};
+    tSOutlet= {cv[1].second};
+    tSInlet = {cv[2].second};
+    std::cout << "done!" << std::endl;
+
+    std::cout << "Listing Bead Volumes... " << std::flush;
+    for (auto it = bv.begin(); it != bv.end(); it++)
+    {
+        tVBeads.push_back((*it).second);
+    }
+    std::cout << "done!" << std::endl;
+
+    std::cout << "Listing Bead Surfaces... " << std::flush;
+    model::getBoundary(bv, cv, false, false, false);
+    for ( std::vector<std::pair< int , int>>::iterator it = cv.begin(); it != cv.end(); it++   )
+    {
+        tSBeads.push_back((*it).second);
+    }
+    std::cout << "done!" << std::endl;
+
+    std::cout << "Adding Physical Groups... " << std::flush;
+    model::addPhysicalGroup(2, tSInlet , 1 );
+    model::addPhysicalGroup(2, tSOutlet, 2 );
+    model::addPhysicalGroup(2, tSWall  , 3 );
+    model::addPhysicalGroup(2, tSBeads , 4 );
+    model::addPhysicalGroup(3, tVInt   , 5 );
+    model::addPhysicalGroup(3, tVBeads , 6 );
+    std::cout << "done!" << std::endl;
+
+    std::cout << "Setting Physical Names... " << std::flush;
+    model::setPhysicalName(2,1,"inlet");
+    model::setPhysicalName(2,2,"outlet");
+    model::setPhysicalName(2,3,"wall");
+    model::setPhysicalName(2,4,"beadSurface");
+    model::setPhysicalName(3,5,"interstitialVolume");
+    model::setPhysicalName(3,6,"beadVolume");
+    std::cout << "done!" << std::endl;
 
 }

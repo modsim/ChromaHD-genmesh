@@ -1,32 +1,34 @@
-# genmesh
+genmesh
 
 Generate meshes from packing files (xyzd). Depends on OpenCASCADE (7.3) and GMSH (v4+). 
 
-## Installation
+# Installation
 
 1. Install OpenCASCADE (v 7.30 tested)
-2. Install GMSH with OpenCASCADE link (v 4.2.2)
-3. Compile genmesh with GMSH link.
+2. Install GMSH with OpenCASCADE linked (v 4.4.1)
+3. Compile genmesh with GMSH linked.
 
 Note: Ensure that \$LD_LIBRARY_PATH points to the OpenCASCADE libs.
 
-## Workflow
+# Workflow
 
 A rough concept of execution is as follows:
 
 - Read input file (default.in) for parameters.
 - Read packing.xyzd file and store bead data.
 - Sort beads by z co-ordinate and save only nBeads beads.
-- Generate geometries (Cylinder, Beads, and Bridges) with applied preScalingFactor. 
+- transform beads
+- Generate geometries (Cylinder, Beads, and Bridges) 
 - Perform specified boolean operations: fuse/cut + fragment.
 - Generate Named Physical Groups for different features.
+- save/load geometry
 - Generate mesh.
 - Write full mesh to specified output file. 
 - Write individual domains (interstitial and beads) to vtk files. 
 
-Here, the term 'bridges' is used to denote cylindrical objects between individual neighbouring beads. Bridges may be used to 'cap' or 'bridge' the beads they connect. 
+Here, the term 'bridges' is used to denote conical/cylindrical objects between individual neighbouring beads. Bridges may be used to 'cap' or 'bridge' the beads they connect. 
 
-## Usage
+# Usage
 
 ``` 
 ./genmesh <input file> <optional output filename with extension> 
@@ -34,7 +36,7 @@ Here, the term 'bridges' is used to denote cylindrical objects between individua
 
 This should create the mesh in the required format in the `outpath` directory. Additionally, two vtk files of the two domains are generated to allow easier examination of the mesh. 
 
-## Todo
+# Todo
 
 - [x] Number of bridges, minimum bead size
 - [x] Scale polydisperse bead meshes to smaller beads. -> set lc for individual beads.
@@ -47,7 +49,7 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [x] Implement auto cylinder boundaries
 - [x] Cleaner outputs/logging.
 - [x] Improve default.in: folds should allow quick selection of kugelpackung
-- [-] Export geometry before mesh start: [ Possible ].
+- [x] Export geometry before mesh start: [ Possible ].
 - [x] Time spent on booleans
 - [x] Switch for fields vs brep meshing
 - [x] Fix poly capping on larger beads: use cones and frustums
@@ -60,11 +62,11 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [x] Allow cylinder constrained creation again(zbot, ztop)
 - [x] RCYL is calclated after bead radius modification: Change it to depend on initial packing
 - [-] Save options (so that it can be reloaded and used with exported geometry?)
+- [x] Implement enlarged beads
 - [ ] Improved error handling.
 - [ ] Output surfs and volumes to a separate folder?
 - [ ] Bridges at the cylinder-bead interface
 - [ ] Check for memleaks. No errors. But some blocks are reachable (beads vector not deleted).
-- [ ] Implement enlarged beads
 - [ ] Write test inputs to run and verify code.
 - [ ] {!}Investigate capped meshes. Why did 400 beads take 5-10 hours? 
 - [ ] Manual node placement at contact points 
@@ -72,6 +74,7 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [ ] Try embedded bead CP and mesh size control
 - [ ] Scrap the need for ./create.sh. create <file>.log automatically
 - [ ] Modularize, Refactor code.
+- [ ] Enlarged beads don't work at 0.001: Fix the rcyl assertion.
 
 Known Issues
 - Netgen optimizer crashes sometimes. (After mesh size constraints were applied to surfaces)
@@ -79,4 +82,3 @@ Known Issues
 - In 7k-pre and 6k-pre cases, only a handful of beads were actually captured and meshed. [prescaling issue?]
 - RCYL is calculated after bead radius modification
 - poly5 fails on HXT on local?
-- Directly produced and geometry-restored meshes are not identical. (File format dependent?)
