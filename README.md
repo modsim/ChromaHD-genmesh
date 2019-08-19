@@ -5,10 +5,16 @@ Generate meshes from packing files (xyzd). Depends on OpenCASCADE (7.3) and GMSH
 # Installation
 
 1. Install OpenCASCADE (v 7.30 tested)
-2. Install GMSH with OpenCASCADE linked (v 4.4.1)
-3. Compile genmesh with GMSH linked.
+3. Install GMSH with OpenCASCADE linked (v 4.4.1)
+4. Compile genmesh with GMSH linked.
 
 Note: Ensure that \$LD_LIBRARY_PATH points to the OpenCASCADE libs.
+
+## Snippets
+`freetype2, mesa/opengl dev pacakges, libXmu, libXi`
+`./configure --enable-gcc --enable-shared --enable-threads --prefix=/home/IBT/rao/tools/tcl --enable-64bit`
+`./configure --enable-gcc --enable-shared --enable-threads --prefix=/home/IBT/rao/tools/tk --enable-64bit --with-tcl=/home/IBT/rao/tools/tcl/lib`                                                                                
+`cmake -DCMAKE_INSTALL_PREFIX=../../occt -D3RDPARTY_TCL_LIBRARY_DIR=../../tcl/lib/ -D3RDPARTY_TK_LIBRARY_DIR=../../tk/lib/ -D3RDPARTY_TK_INCLUDE_DIR=../../tk/include/ ..`                                                       
 
 # Workflow
 
@@ -75,10 +81,10 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [ ] Scrap the need for ./create.sh. create <file>.log automatically
 - [ ] Modularize, Refactor code.
 - [ ] Enlarged beads don't work at 0.001: Fix the rcyl assertion.
+- [ ] Use OCC-fix for modified beads!!
 
 Known Issues
 - Netgen optimizer crashes sometimes. (After mesh size constraints were applied to surfaces)
 - Geometry.ScalingFactor doesn't work. Use preScalingFactor instead.
 - In 7k-pre and 6k-pre cases, only a handful of beads were actually captured and meshed. [prescaling issue?]
-- RCYL is calculated after bead radius modification
 - poly5 fails on HXT on local?

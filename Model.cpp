@@ -377,20 +377,25 @@ void Model::mesh(std::string outfile, Parameters * prm)
         // Output Full mesh
         gmsh::write(prm->outpath + outfile);
 
+        std::cout << std::endl;
+        std::cout << "Calculating mesh volumes. Note: Multiply outputs by " << std::scientific << std::setprecision(2) << pow(prm->MeshScalingFactor, 3) << std::endl;
+        std::cout << "[ Column Volume ]" << std::endl;
+        gmsh::plugin::setNumber("MeshVolume", "Physical", -1);
+        gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
+        gmsh::plugin::run("MeshVolume");
+        std::cout << std::endl;
+
+        std::cout << "[ Interstitial Volume ]" << std::endl;
         gmsh::plugin::setNumber("MeshVolume", "Physical", 5);
         gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
         gmsh::plugin::run("MeshVolume");
+        std::cout << std::endl;
 
+        std::cout << "[ Bead Volume ]" << std::endl;
         gmsh::plugin::setNumber("MeshVolume", "Physical", 6);
         gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
         gmsh::plugin::run("MeshVolume");
-
-        //Alternate full volume computation
-        /* gmsh::plugin::run("NewView"); */
-        /* gmsh::plugin::setString("ModifyComponents", "Expression0", "1"); */
-        /* gmsh::plugin::run("ModifyComponents"); */
-        /* gmsh::plugin::setNumber("Integrate", "Dimension", 3); */
-        /* gmsh::plugin::run("Integrate"); */
+        std::cout << std::endl;
 
         if (prm->outputFragments == 1)
         {

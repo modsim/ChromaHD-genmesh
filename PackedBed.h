@@ -32,6 +32,11 @@ class PackedBed {
         double zBot=0, zTop=0;
         double radius_avg=0, radius_min = 0, radius_max = 0;
 
+        double bedLength = 0;
+        double vol_bed_cyl = 0;
+        double por_real_bed  = 0;
+        double por_geom_bed  = 0;
+
     private:
         int tCyl;
 

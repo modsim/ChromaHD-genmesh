@@ -167,6 +167,7 @@ void PackedBed::transformBeads(Parameters * prm)
     zBot=beads.front()->getZ();
     zTop=beads.back()->getZ();
 
+    std::cout << std::setprecision(4);
     std::cout << std::endl;
     std::cout << "== Before Transform ==" << std::endl;
     std::cout << "xCyl: " << xCyl << std::endl;
@@ -268,22 +269,34 @@ void PackedBed::transformBeads(Parameters * prm)
     std::cout << "zBot: " << zBot << std::endl;
     std::cout << "zTop: " << zTop << std::endl << std::endl;
 
-    std::cout << "average bead radius: " << std::scientific << std::setprecision(10) << radius_avg << std::endl;
-    std::cout << "maximum bead radius: " << std::scientific << std::setprecision(10) << radius_max << std::endl;
-    std::cout << "minimum bead radius: " << std::scientific << std::setprecision(10) << radius_min << std::endl << std::endl;
+    std::cout << std::scientific << std::setprecision(4);
+    std::cout << "average bead radius: " << radius_avg << std::endl;
+    std::cout << "maximum bead radius: " << radius_max << std::endl;
+    std::cout << "minimum bead radius: " << radius_min << std::endl << std::endl;
 
     std::cout << "=== After Mesh Scaling ===" << std::endl;
     std::cout << "Cylinder Volume: "      << vol_cylinder   << std::endl;
-    std::cout << "Real Bead Volume: "     << vol_real_beads << std::endl;
     std::cout << "Real Int Volume: "      << vol_real_int   << std::endl;
-    std::cout << "Modified Bead Volume: " << vol_geom_beads << std::endl<< std::endl;
+    std::cout << "Real Bead Volume: "     << vol_real_beads << std::endl;
 
-    std::cout << "Bed Length: " << (zMax-zMin)*prm->MeshScalingFactor << std::endl;
-    std::cout << "Column Length: " << (zTop - zBot + prm->inlet + prm->outlet) * prm->MeshScalingFactor << std::endl<<std::endl;
-
-    std::cout << "Note: Modified Bead Volume is currently only accurate for reduced beads." << std::endl;
+    std::cout << "Modified Bead Volume: (without bridges) " << vol_geom_beads << std::endl<< std::endl;
     std::cout << std::fixed << std::setprecision(2);
     std::cout << "Bead Geometry Volume Error: " << (vol_real_beads - vol_geom_beads)/vol_real_beads*100 << "%" << std::endl << std::endl;
+
+    bedLength = (zMax-zMin)*prm->MeshScalingFactor;
+    vol_bed_cyl = PI * pow(rCyl * prm->MeshScalingFactor, 2) * bedLength;
+    por_real_bed  =  ((vol_bed_cyl - vol_real_beads))  / vol_bed_cyl;
+    por_geom_bed  =  ((vol_bed_cyl - vol_geom_beads)) / vol_bed_cyl;
+
+    std::cout << std::scientific << std::setprecision(4);
+    std::cout << "Column Length: " << (zTop - zBot + prm->inlet + prm->outlet) * prm->MeshScalingFactor << std::endl<<std::endl;
+    std::cout << "Bed Length: " << (zMax-zMin)*prm->MeshScalingFactor << std::endl;
+    std::cout << "Bed Cylinder Volume: " << vol_bed_cyl << std::endl;
+
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << "Real Porosity: " << por_real_bed << std::endl;
+    std::cout << "Modified Porosity (without bridges): " << por_geom_bed << std::endl << std::endl;
+
 
 }
 
