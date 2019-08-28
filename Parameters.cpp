@@ -78,6 +78,9 @@ void Parameters::update()
     lc        = preScalingFactor * lc;
     lc_beads  = preScalingFactor * lc_beads;
     lc_out    = preScalingFactor * lc_out;
+    zBot      = zBot / preScalingFactor;
+    zTop      = zTop / preScalingFactor;
+
 
 }
 

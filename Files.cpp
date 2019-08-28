@@ -1,8 +1,8 @@
 #include "Files.h"
 #include <stdlib.h>
-#include <string.h>
 
 #include <iostream>
+#include <sys/stat.h>
 
 
 bool isBigEndian() {
@@ -51,5 +51,32 @@ void readBinToIntVec(std::vector<int>& vec, std::ifstream& infile)
         infile.read( reinterpret_cast<char *>(&dummy), sizeof(int));
         vec.push_back(dummy);
     }
+
+}
+
+std::string remove_extension(const std::string& filename)
+{
+    size_t lastdot = filename.find_last_of(".");
+    if (lastdot == std::string::npos) return filename;
+    return filename.substr(0, lastdot);
+}
+
+
+void create_directory(const std::string& path)
+{
+        if (mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1)
+        {
+            if( errno == EEXIST )
+            {
+                // alredy exists
+                std::cout << "Output directory exists!" << std::endl;
+            }
+            else
+            {
+                // something else
+                std::cout << "Error creating output directory! " << strerror(errno) << std::endl;
+                /* throw std::runtime_exception( strerror(errno) ); */
+            }
+        }
 
 }

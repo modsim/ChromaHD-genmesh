@@ -8,7 +8,9 @@ Created : Thu 04 Apr 2019 03:53:10 PM CEST
 #include "PackedBed.h"
 #include "Model.h"
 #include "version.h"
-#include<gmsh.h>
+#include "Files.h"
+#include <gmsh.h>
+
 
 namespace model = gmsh::model;
 namespace factory = gmsh::model::occ;
@@ -19,7 +21,7 @@ int main(int argc, char** argv) {
 
     gmsh::initialize();
 
-    std::string outfile, infile;
+    std::string outfile, infile, outpath;
 
     if (argc == 1)
     {
@@ -40,6 +42,9 @@ int main(int argc, char** argv) {
     try{
 
         Parameters * prm = new Parameters(infile);
+        prm->outpath += "/" + remove_extension(outfile);
+        create_directory(prm->outpath);
+
         PackedBed * packedBed = new PackedBed(prm);
         Model * myColumn = new Model(prm);
 
@@ -54,6 +59,7 @@ int main(int argc, char** argv) {
         gmsh::logger::write("CPU  time: " + std::to_string(gmsh::logger::cputime()) + " s", "info");
 
         delete prm;
+        delete packedBed;
         delete myColumn;
 
     }catch(mixd::MixdException e)

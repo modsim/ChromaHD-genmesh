@@ -375,7 +375,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
         model::mesh::generate(prm->MeshGenerate);
 
         // Output Full mesh
-        gmsh::write(prm->outpath + outfile);
+        gmsh::write(prm->outpath + "/"+ outfile);
 
         std::cout << std::endl;
         std::cout << "Calculating mesh volumes. Note: Multiply outputs by " << std::scientific << std::setprecision(2) << pow(prm->MeshScalingFactor, 3) << std::endl;
@@ -418,7 +418,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
                 model::setPhysicalName(2,13, "wall");
             }
 
-            gmsh::write(prm->outpath + outfile + "_interstitial.vtk");
+            gmsh::write(prm->outpath + "/" + outfile + "_interstitial.vtk");
 
             model::removePhysicalGroups();
 
@@ -434,7 +434,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
                 model::setPhysicalName(2,14, "beadSurface");
             }
 
-            gmsh::write(prm->outpath + outfile + "_beads.vtk");
+            gmsh::write(prm->outpath + "/" + outfile + "_beads.vtk");
 
         }
 
@@ -446,8 +446,6 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
 void Model::createNamedGroups(std::vector<std::pair<int,int>> bv)
 {
-    std::cout <<"entered function.." << std::endl;
-
     std::vector<std::pair<int,int>> cv;
     std::cout << "Listing Interstitial Volume... " << std::flush;
     tVInt.push_back(bv.back().second);

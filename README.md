@@ -42,6 +42,8 @@ Here, the term 'bridges' is used to denote conical/cylindrical objects between i
 
 This should create the mesh in the required format in the `outpath` directory. Additionally, two vtk files of the two domains are generated to allow easier examination of the mesh. 
 
+I use preScalingFactor to convert meshes to a size such that bead size = 1, consistent with the mono-full
+
 # Todo
 
 - [x] Number of bridges, minimum bead size
@@ -67,8 +69,10 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [x] git state isn't perfect since it is dirty if default.in is changed before compile
 - [x] Allow cylinder constrained creation again(zbot, ztop)
 - [x] RCYL is calclated after bead radius modification: Change it to depend on initial packing
-- [-] Save options (so that it can be reloaded and used with exported geometry?)
 - [x] Implement enlarged beads
+- [-] Save options (so that it can be reloaded and used with exported geometry?)
+- [-] Use OCC-fix for modified beads!!: Caused crashes
+- [-] Try volume generating: Unnecessary
 - [ ] Improved error handling.
 - [ ] Output surfs and volumes to a separate folder?
 - [ ] Bridges at the cylinder-bead interface
@@ -76,15 +80,19 @@ This should create the mesh in the required format in the `outpath` directory. A
 - [ ] Write test inputs to run and verify code.
 - [ ] {!}Investigate capped meshes. Why did 400 beads take 5-10 hours? 
 - [ ] Manual node placement at contact points 
-- [ ] Try volume generating
 - [ ] Try embedded bead CP and mesh size control
 - [ ] Scrap the need for ./create.sh. create <file>.log automatically
-- [ ] Modularize, Refactor code.
 - [ ] Enlarged beads don't work at 0.001: Fix the rcyl assertion.
-- [ ] Use OCC-fix for modified beads!!
+- [ ] meshSizeMethod=0 doesn't work
+- [x] write meshes to individual folders. Including logs.
+- [ ] Extract mesh volume data into variables to output the mesh-scaled volume in stdout.
+- [ ] Mesh Sensitivity
+    - [ ] Mesh.RandomFactor(3D)
+    - [ ] Mesh.ToleranceInitialDelaunay
 
 Known Issues
 - Netgen optimizer crashes sometimes. (After mesh size constraints were applied to surfaces)
 - Geometry.ScalingFactor doesn't work. Use preScalingFactor instead.
 - In 7k-pre and 6k-pre cases, only a handful of beads were actually captured and meshed. [prescaling issue?]
-- poly5 fails on HXT on local?
+- poly5 fails (beads peek out of container). Just use poly-full.
+- meshSizeMethod = 0 doesn't work

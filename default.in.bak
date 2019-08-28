@@ -19,28 +19,34 @@ packing                                     packing/mono-full.xyzd
 #preScalingFactor                            2
 ##===========================================}}}#
 
-nBeads                                      150
+outputFragments                             1
+
+nBeads                                      1
+zBot                                        0
+zTop                                        99
+
 rCylDelta                                   0.01
 inlet                                       1.5
 outlet                                      1.5
 
-geomInfile geom.step
-# geomOutfile geom.step
+# geomInfile geom.brep
+# geomOutfile geom.brep
 
 meshSizeMethod                              1     # 0: Global Points (for capped mono) 1: Scaled Fields
-lc_beads                                    0.10 
-lc_out                                      0.10 
+lc_beads                                    0.09 
+lc_out                                      0.09 
 fieldExtensionFactor                        1.01
 
 reduced                                     0.999
+# reduced                                     1.001
 
 # reduced                                     0.98
 # booleanOperation                            1
 
 # bridged                                     0.20
-# # capped                                      0.30
+# capped                                      0.20
 # bridgeOffsetRatio                           0.94
-# bridgeTol                                   0.005
+# bridgeTol                                   0.01
 
 fragment                                    1
 # dryRun                                      1 # Do not Generate Mesh
@@ -57,12 +63,12 @@ Mesh.ScalingFactor                          0.0001
 Mesh.CharacteristicLengthExtendFromBoundary 0
 Mesh.CharacteristicLengthMin                0
 Mesh.CharacteristicLengthFromCurvature      0
-Mesh.CharacteristicLengthFromPoints         0
+Mesh.CharacteristicLengthFromPoints         1
 Mesh.Generate                               3
-Mesh.Algorithm                              5 
-Mesh.Algorithm3D                            10 
+Mesh.Algorithm                              2
+Mesh.Algorithm3D                            10
 Mesh.Optimize                               1
-Mesh.OptimizeNetgen                         0
+Mesh.OptimizeNetgen                         1
 
 # Geometry.ScalingFactor                      1 # Doesn't seem to work with OCC.
 # Geometry.Tolerance                          0
