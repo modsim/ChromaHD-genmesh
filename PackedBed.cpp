@@ -118,7 +118,7 @@ void PackedBed::getBeads(Parameters * prm)
         if ( (y - r) < yMin ) yMin = y - r;
 
     }
-    prm->rCyl = std::max( ((xMax - xMin) / 2), ((yMax - yMin)/2) ) + prm->rCylDelta;
+    prm->rCyl = std::max( ((xMax - xMin) / 2), ((yMax - yMin)/2) );
 
     std::cout << "Scaling bead radii in place... " << std::flush;
     for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
@@ -177,6 +177,7 @@ void PackedBed::transformBeads(Parameters * prm)
     std::cout << "xMin: " << xMin << std::endl;
     std::cout << "yMax: " << yMax << std::endl;
     std::cout << "yMin: " << yMin << std::endl;
+    std::cout << std::setprecision(10);
     std::cout << "zBot: " << zBot << std::endl;
     std::cout << "zTop: " << zTop << std::endl;
     std::cout << std::endl;
@@ -198,7 +199,7 @@ void PackedBed::transformBeads(Parameters * prm)
 
     //Get new zBot and zTop
     prm->rCyl *= prm->preScalingFactor;
-    rCyl *= prm->preScalingFactor;
+    rCyl *= prm->preScalingFactor + prm->rCylDelta;;
     zBot=beads.front()->getZ();
     zTop=beads.back()->getZ();
 

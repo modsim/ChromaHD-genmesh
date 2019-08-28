@@ -85,6 +85,8 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [ ] Enlarged beads don't work at 0.001: Fix the rcyl assertion.
 - [ ] meshSizeMethod=0 doesn't work
 - [x] write meshes to individual folders. Including logs.
+- [ ] allow setting rCyl directly?
+- [x] set rCylDelta after transform-scaling
 - [ ] Extract mesh volume data into variables to output the mesh-scaled volume in stdout.
 - [ ] Mesh Sensitivity
     - [ ] Mesh.RandomFactor(3D)
