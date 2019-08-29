@@ -176,6 +176,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
 void Parameters::print()
 {
 
+    std::cout << std::setprecision(10);
     std::cout << "zBot                                        "<< this->zBot                                       << std::endl;
     std::cout << "zTop                                        "<< this->zTop                                       << std::endl;
     std::cout << "rCyl                                        "<< this->rCyl                                       << std::endl;

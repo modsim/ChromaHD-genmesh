@@ -91,6 +91,7 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [ ] Mesh Sensitivity
     - [ ] Mesh.RandomFactor(3D)
     - [ ] Mesh.ToleranceInitialDelaunay
+- [ ] clean duplicate local variables in packedbed.transform()
 
 Known Issues
 - Netgen optimizer crashes sometimes. (After mesh size constraints were applied to surfaces)
@@ -98,3 +99,4 @@ Known Issues
 - In 7k-pre and 6k-pre cases, only a handful of beads were actually captured and meshed. [prescaling issue?]
 - poly5 fails (beads peek out of container). Just use poly-full.
 - meshSizeMethod = 0 doesn't work
+- even if zbot, ztop are specified, a mono and poly (with different scales) are not going to have the exact same column length: Beads are sliced out, then scaled, then ztop, zbot calculated again, and used for the column. maybe transform and then slice will work? Maybe it's just because of the bead arrangement, at some layer

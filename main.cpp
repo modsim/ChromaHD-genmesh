@@ -41,6 +41,7 @@ int main(int argc, char** argv) {
     }
     try{
 
+        std::cout << std::scientific;
         Parameters * prm = new Parameters(infile);
         prm->outpath += "/" + remove_extension(outfile);
         create_directory(prm->outpath);
