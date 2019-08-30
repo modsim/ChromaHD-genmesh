@@ -198,7 +198,6 @@ void PackedBed::transformBeads(Parameters * prm)
     std::cout << "done!" << std::endl << std::endl;
 
     //Get new zBot and zTop
-    prm->rCyl *= prm->preScalingFactor;
     rCyl = rCyl * prm->preScalingFactor + prm->rCylDelta;;
     zBot=beads.front()->getZ();
     zTop=beads.back()->getZ();

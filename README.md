@@ -42,7 +42,7 @@ Here, the term 'bridges' is used to denote conical/cylindrical objects between i
 
 This should create the mesh in the required format in the `outpath` directory. Additionally, two vtk files of the two domains are generated to allow easier examination of the mesh. 
 
-I use preScalingFactor to convert meshes to a size such that bead size = 1, consistent with the mono-full
+I use preScalingFactor to convert meshes to a size such that bead size = 1, consistent with the mono-full packing.
 
 # Todo
 
@@ -70,10 +70,12 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [x] Allow cylinder constrained creation again(zbot, ztop)
 - [x] RCYL is calclated after bead radius modification: Change it to depend on initial packing
 - [x] Implement enlarged beads
-- [-] Save options (so that it can be reloaded and used with exported geometry?)
+- [x] Save options (so that it can be reloaded and used with exported geometry?): Using logs now.
 - [-] Use OCC-fix for modified beads!!: Caused crashes
 - [-] Try volume generating: Unnecessary
-- [ ] Improved error handling.
+- [x] write meshes to individual folders. Including logs.
+- [x] set rCylDelta after transform-scaling
+- [x] FIX: minimum bead radius is zero
 - [ ] Output surfs and volumes to a separate folder?
 - [ ] Bridges at the cylinder-bead interface
 - [ ] Check for memleaks. No errors. But some blocks are reachable (beads vector not deleted).
@@ -84,9 +86,6 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [ ] Scrap the need for ./create.sh. create <file>.log automatically
 - [ ] Enlarged beads don't work at 0.001: Fix the rcyl assertion.
 - [ ] meshSizeMethod=0 doesn't work
-- [x] write meshes to individual folders. Including logs.
-- [ ] allow setting rCyl directly?
-- [x] set rCylDelta after transform-scaling
 - [ ] Extract mesh volume data into variables to output the mesh-scaled volume in stdout.
 - [ ] Mesh Sensitivity
     - [ ] Mesh.RandomFactor(3D)

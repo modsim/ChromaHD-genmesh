@@ -74,10 +74,14 @@ void Parameters::update()
     //in the constructor allows us to print the parameters in the stdout
     //and re-use the parameters directly in the next simulation.
 
-    bridgeTol = preScalingFactor * bridgeTol;
-    lc        = preScalingFactor * lc;
-    lc_beads  = preScalingFactor * lc_beads;
-    lc_out    = preScalingFactor * lc_out;
+    //remnants of a previous way to handle packings with different scales
+    /* bridgeTol = preScalingFactor * bridgeTol; */
+    /* lc        = preScalingFactor * lc; */
+    /* lc_beads  = preScalingFactor * lc_beads; */
+    /* lc_out    = preScalingFactor * lc_out; */
+
+
+    // zBot and zTop in the inputs are based on the column with bead size = 1
     zBot      = zBot / preScalingFactor;
     zTop      = zTop / preScalingFactor;
 

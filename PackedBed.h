@@ -30,7 +30,7 @@ class PackedBed {
         double yMax = -DBL_MAX, yMin = DBL_MAX;
         double zMax = -DBL_MAX, zMin = DBL_MAX;
         double zBot=0, zTop=0;
-        double radius_avg=0, radius_min = 0, radius_max = 0;
+        double radius_avg=0, radius_min = DBL_MAX, radius_max = -DBL_MAX;
 
         double bedLength = 0;
         double vol_bed_cyl = 0;
