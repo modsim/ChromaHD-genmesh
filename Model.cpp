@@ -74,7 +74,7 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
         }
 
         model::mesh::field::add("Ball", ++count);
-        model::mesh::field::setNumber(count, "VIn", r/(pb->radius_max) * prm->lc_beads);
+        model::mesh::field::setNumber(count, "VIn", r/(prm->refBeadRadius) * prm->lc_beads);
         model::mesh::field::setNumber(count, "VOut", prm->lc_out);
         model::mesh::field::setNumber(count, "XCenter", x);
         model::mesh::field::setNumber(count, "YCenter", y);
@@ -159,8 +159,8 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
 
 
                 model::mesh::field::add("Frustum", ++count);
-                model::mesh::field::setNumber(count, "V1_inner", prm->lc_beads * rBeadSmallest/(pb->radius_max) );
-                model::mesh::field::setNumber(count, "V2_inner", prm->lc_beads * rBeadSmallest/(pb->radius_max) );
+                model::mesh::field::setNumber(count, "V1_inner", prm->lc_beads * rBeadSmallest/(prm->refBeadRadius) );
+                model::mesh::field::setNumber(count, "V2_inner", prm->lc_beads * rBeadSmallest/(prm->refBeadRadius) );
                 /* model::mesh::field::setNumber(count, "V1_outer", prm->lc_beads * rBeadSmallest/(radius_max) ); */
                 /* model::mesh::field::setNumber(count, "V2_outer", prm->lc_beads * rBeadSmallest/(radius_max) ); */
                 model::mesh::field::setNumber(count, "V1_outer", prm->lc_out);

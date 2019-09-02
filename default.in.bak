@@ -25,6 +25,9 @@ nBeads                                      1
 zBot                                        0
 zTop                                        99
 
+refBeadSize                                 max
+# refBeadRadius                               5
+
 rCylDelta                                   0.01
 inlet                                       1.5
 outlet                                      1.5

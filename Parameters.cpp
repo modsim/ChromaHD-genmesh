@@ -85,7 +85,6 @@ void Parameters::update()
     zBot      = zBot / preScalingFactor;
     zTop      = zTop / preScalingFactor;
 
-
 }
 
 void Parameters::decide (const std::string & key, const std::vector<std::string> & val)
@@ -107,6 +106,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "lc")                                          lc                                         = atof(val.at(0).c_str());
     else if(key == "lc_beads")                                    lc_beads                                   = atof(val.at(0).c_str());
     else if(key == "lc_out")                                      lc_out                                     = atof(val.at(0).c_str());
+    else if(key == "refBeadRadius")                               refBeadRadius                              = atof(val.at(0).c_str());
     else if(key == "fieldExtensionFactor")                        fieldExtensionFactor                       = atof(val.at(0).c_str());
     else if(key == "nBeads")                                      nBeads                                     = atoi(val.at(0).c_str());
     else if(key == "meshSizeMethod")                              meshSizeMethod                             = atoi(val.at(0).c_str());
@@ -171,6 +171,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "geomInfile") geomInfile = val.at(0);
     else if(key == "geomOutfile") geomOutfile = val.at(0);
     else if(key == "outpath") outpath  = val.at(0);
+    else if(key == "refBeadSize") refBeadSize = val.at(0);
     else throw mixd::MixdException("Unknown keyword: " + key);
 
 
@@ -181,6 +182,7 @@ void Parameters::print()
 {
 
     std::cout << std::setprecision(10);
+
     std::cout << "zBot                                        "<< this->zBot                                       << std::endl;
     std::cout << "zTop                                        "<< this->zTop                                       << std::endl;
     std::cout << "rCyl                                        "<< this->rCyl                                       << std::endl;
@@ -197,6 +199,8 @@ void Parameters::print()
     std::cout << "lc                                          "<< this->lc                                         << std::endl;
     std::cout << "lc_beads                                    "<< this->lc_beads                                   << std::endl;
     std::cout << "lc_out                                      "<< this->lc_out                                     << std::endl;
+    std::cout << "refBeadRadius                               "<< this->refBeadRadius                              << std::endl;
+    std::cout << "refBeadSize                                 "<< this->refBeadSize                                << std::endl;
     std::cout << "fieldExtensionFactor                        "<< this->fieldExtensionFactor                       << std::endl;
     std::cout << "bridgeTol                                   "<< this->bridgeTol                                  << std::endl;
     std::cout << "relativeBridgeRadius                        "<< this->relativeBridgeRadius                       << std::endl;

@@ -240,6 +240,13 @@ void PackedBed::transformBeads(Parameters * prm)
     }
     radius_avg /= beads.size();
 
+    if ( prm->refBeadSize == "avg")
+        prm->refBeadRadius = radius_avg;
+    else if ( prm->refBeadSize == "max" )
+        prm->refBeadRadius = radius_max;
+    else if ( prm->refBeadSize == "min" )
+        prm->refBeadRadius = radius_min;
+
     xCyl = (xMax + xMin) / 2;
     yCyl = (yMax + yMin) / 2;
 

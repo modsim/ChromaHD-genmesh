@@ -61,6 +61,7 @@ public:
     double lc                                      = 0.0;
     double lc_beads                                = 0.0;
     double lc_out                                  = 0.0;
+    double refBeadRadius                           = 0.0;
     double bridgeTol                               = -999;
     double relativeBridgeRadius                    = 0.0;
     double bridgeOffsetRatio                       = 0.0;
@@ -84,6 +85,7 @@ public:
     std::string geomOutfile;
     std::string geomInfile;
     std::string outpath="output/";
+    std::string refBeadSize = "avg";
 
 
 private:
