@@ -64,22 +64,33 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
         if (prm->geomInfile.empty())
         {
             tag = factory::addSphere(x, y, z, r);
-            /* ctag = factory::addPoint(x, y, z, prm->lc_beads, -1); */
+            ctag = factory::addPoint(x, y, z, prm->lc_beads, -1);
 
             (*iter)->setTag(tag);
-            /* (*iter)->setCTag(ctag); */
+            (*iter)->setCTag(ctag);
 
             dimTagsBeads.push_back({3, tag});
-            /* tBeadCPs.push_back(ctag); */
+            tBeadCPs.push_back(ctag);
         }
 
-        model::mesh::field::add("Ball", ++count);
-        model::mesh::field::setNumber(count, "VIn", r/(prm->refBeadRadius) * prm->lc_beads);
-        model::mesh::field::setNumber(count, "VOut", prm->lc_out);
-        model::mesh::field::setNumber(count, "XCenter", x);
-        model::mesh::field::setNumber(count, "YCenter", y);
-        model::mesh::field::setNumber(count, "ZCenter", z);
-        model::mesh::field::setNumber(count, "Radius", prm->fieldExtensionFactor * r);
+        /* model::mesh::field::add("Ball", ++count); */
+        /* model::mesh::field::setNumber(count, "VIn", r/(prm->refBeadRadius) * prm->lc_beads); */
+        /* model::mesh::field::setNumber(count, "VOut", prm->lc_out); */
+        /* model::mesh::field::setNumber(count, "XCenter", x); */
+        /* model::mesh::field::setNumber(count, "YCenter", y); */
+        /* model::mesh::field::setNumber(count, "ZCenter", z); */
+        /* model::mesh::field::setNumber(count, "Radius", prm->fieldExtensionFactor * r); */
+        /* vCount.push_back(count); */
+
+        model::mesh::field::add("Distance", ++count);
+        model::mesh::field::setNumbers(count, "NodesList", {double(ctag)});
+
+        model::mesh::field::add("Threshold", ++count);
+        model::mesh::field::setNumber(count, "IField", count-1);
+        model::mesh::field::setNumber(count, "LcMin", prm->lc_beads);
+        model::mesh::field::setNumber(count, "LcMax", prm->lc_out);
+        model::mesh::field::setNumber(count, "DistMin", prm->fieldThresholdMinFactor * r);
+        model::mesh::field::setNumber(count, "DistMax", prm->fieldThresholdMaxFactor * r);
         vCount.push_back(count);
 
     }
@@ -167,8 +178,8 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
                 model::mesh::field::setNumber(count, "V2_outer", prm->lc_out);
                 model::mesh::field::setNumber(count, "R1_inner", 0);
                 model::mesh::field::setNumber(count, "R2_inner", 0);
-                model::mesh::field::setNumber(count, "R1_outer", prm->fieldExtensionFactor * r1Bridge);
-                model::mesh::field::setNumber(count, "R2_outer", prm->fieldExtensionFactor * r2Bridge);
+                model::mesh::field::setNumber(count, "R1_outer", prm->fieldThresholdMaxFactor * r1Bridge);
+                model::mesh::field::setNumber(count, "R2_outer", prm->fieldThresholdMaxFactor * r2Bridge);
 
                 model::mesh::field::setNumber(count, "X1", x3);
                 model::mesh::field::setNumber(count, "Y1", y3);

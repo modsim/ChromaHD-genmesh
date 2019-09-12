@@ -107,7 +107,8 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "lc_beads")                                    lc_beads                                   = atof(val.at(0).c_str());
     else if(key == "lc_out")                                      lc_out                                     = atof(val.at(0).c_str());
     else if(key == "refBeadRadius")                               refBeadRadius                              = atof(val.at(0).c_str());
-    else if(key == "fieldExtensionFactor")                        fieldExtensionFactor                       = atof(val.at(0).c_str());
+    else if(key == "fieldThresholdMinFactor")                     fieldThresholdMinFactor                    = atof(val.at(0).c_str());
+    else if(key == "fieldThresholdMaxFactor")                     fieldThresholdMaxFactor                    = atof(val.at(0).c_str());
     else if(key == "nBeads")                                      nBeads                                     = atoi(val.at(0).c_str());
     else if(key == "meshSizeMethod")                              meshSizeMethod                             = atoi(val.at(0).c_str());
     else if(key == "outputFragments")                             outputFragments                            = atoi(val.at(0).c_str());
@@ -201,7 +202,8 @@ void Parameters::print()
     std::cout << "lc_out                                      "<< this->lc_out                                     << std::endl;
     std::cout << "refBeadRadius                               "<< this->refBeadRadius                              << std::endl;
     std::cout << "refBeadSize                                 "<< this->refBeadSize                                << std::endl;
-    std::cout << "fieldExtensionFactor                        "<< this->fieldExtensionFactor                       << std::endl;
+    std::cout << "fieldThresholdMinFactor                     "<< this->fieldThresholdMinFactor                    << std::endl;
+    std::cout << "fieldThresholdMaxFactor                     "<< this->fieldThresholdMaxFactor                    << std::endl;
     std::cout << "bridgeTol                                   "<< this->bridgeTol                                  << std::endl;
     std::cout << "relativeBridgeRadius                        "<< this->relativeBridgeRadius                       << std::endl;
     std::cout << "bridgeOffsetRatio                           "<< this->bridgeOffsetRatio                          << std::endl;

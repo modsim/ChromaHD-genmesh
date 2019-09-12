@@ -86,8 +86,9 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [ ] Scrap the need for ./create.sh. create <file>.log automatically
 - [ ] Enlarged beads don't work at 0.001: Fix the rcyl assertion.
 - [ ] meshSizeMethod=0 doesn't work
-- [ ] Extract mesh volume data into variables to output the mesh-scaled volume in stdout.
+- [x] Extract mesh volume data into variables to output the mesh-scaled volume in stdout.
 - [x] Allow changing bead mesh scaling reference value: max/avg or number
+- [ ] Porosity should use bed length from bead centers not ends.
 - [ ] Mesh Sensitivity
     - [ ] Mesh.RandomFactor(3D)
     - [ ] Mesh.ToleranceInitialDelaunay
@@ -98,5 +99,4 @@ Known Issues
 - Geometry.ScalingFactor doesn't work. Use preScalingFactor instead.
 - In 7k-pre and 6k-pre cases, only a handful of beads were actually captured and meshed. [prescaling issue?]
 - poly5 fails (beads peek out of container). Just use poly-full.
-- meshSizeMethod = 0 doesn't work
-- even if zbot, ztop are specified, a mono and poly (with different scales) are not going to have the exact same column length: Beads are sliced out, then scaled, then ztop, zbot calculated again, and used for the column. maybe transform and then slice will work? Maybe it's just because of the bead arrangement, at some layer
+- A few features do not work in conjunction with HXT mesh algorithm. This is an upstream issue with GMSH.

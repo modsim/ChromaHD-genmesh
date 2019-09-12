@@ -71,7 +71,8 @@ public:
     double MeshSmoothRatio                         = 1.8;
     double GeometryTolerance                       = 1e-8;
     double GeometryToleranceBoolean                = 0.0;
-    double fieldExtensionFactor                    = 1.00;
+    double fieldThresholdMinFactor                 = 1.00;
+    double fieldThresholdMaxFactor                 = 1.00;
     double MeshCharacteristicLengthFactor          = 1;
     double MeshOptimizeThreshold                   = 0.3;
     double MeshCharacteristicLengthMin             = 0;
