@@ -36,6 +36,8 @@ public:
     int MeshAlgorithm3D                            = 1;
     int MeshRefineSteps                            = 10;
     int MeshOptimize                               = 1;
+    int MeshHighOrderOptimize                      = 0;
+    int MeshElementOrder                           = 1;
     int MeshOptimizeNetgen                         = 0;
     int MeshGenerate                               = 3;
     int beadType                                   = 0;

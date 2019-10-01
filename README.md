@@ -76,6 +76,7 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [x] write meshes to individual folders. Including logs.
 - [x] set rCylDelta after transform-scaling
 - [x] FIX: minimum bead radius is zero
+- [x] Implement Higher order mesh generation
 - [ ] Output surfs and volumes to a separate folder?
 - [ ] Bridges at the cylinder-bead interface
 - [ ] Check for memleaks. No errors. But some blocks are reachable (beads vector not deleted).
@@ -100,3 +101,4 @@ Known Issues
 - In 7k-pre and 6k-pre cases, only a handful of beads were actually captured and meshed. [prescaling issue?]
 - poly5 fails (beads peek out of container). Just use poly-full.
 - A few features do not work in conjunction with HXT mesh algorithm. This is an upstream issue with GMSH.
+- Netgen optimizer might not work well with mesh field gradients: It might make the meshes too uniform somehow

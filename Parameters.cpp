@@ -139,6 +139,8 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "Mesh.Algorithm")                              MeshAlgorithm                              = atoi(val.at(0).c_str());
     else if(key == "Mesh.Algorithm3D")                            MeshAlgorithm3D                            = atoi(val.at(0).c_str());
     else if(key == "Mesh.Optimize")                               MeshOptimize                               = atoi(val.at(0).c_str());
+    else if(key == "Mesh.HighOrderOptimize")                               MeshHighOrderOptimize                               = atoi(val.at(0).c_str());
+    else if(key == "Mesh.ElementOrder")                               MeshElementOrder                               = atoi(val.at(0).c_str());
     else if(key == "Mesh.OptimizeNetgen")                         MeshOptimizeNetgen                         = atoi(val.at(0).c_str());
     else if(key == "Mesh.RefineSteps")                            MeshRefineSteps                            = atoi(val.at(0).c_str());
     else if(key == "Mesh.Generate")                               MeshGenerate                               = atoi(val.at(0).c_str());
@@ -233,6 +235,8 @@ void Parameters::print()
     std::cout << "Mesh.Algorithm                              "<< this->MeshAlgorithm                              << std::endl;
     std::cout << "Mesh.Algorithm3D                            "<< this->MeshAlgorithm3D                            << std::endl;
     std::cout << "Mesh.Optimize                               "<< this->MeshOptimize                               << std::endl;
+    std::cout << "Mesh.HighOrderOptimize                      "<< this->MeshHighOrderOptimize                      << std::endl;
+    std::cout << "Mesh.ElementOrder                           "<< this->MeshElementOrder                           << std::endl;
     std::cout << "Mesh.OptimizeNetgen                         "<< this->MeshOptimizeNetgen                         << std::endl;
     std::cout << "Mesh.RefineSteps                            "<< this->MeshRefineSteps                            << std::endl;
     std::cout << "Mesh.Generate                               "<< this->MeshGenerate                               << std::endl;
@@ -268,6 +272,8 @@ void Parameters::setGMSHOptions()
     gmsh::option::setNumber("Mesh.MinimumCirclePoints", this->MeshMinimumCirclePoints); //Default = 7
 
     gmsh::option::setNumber("Mesh.Optimize", this->MeshOptimize); //Default = 1
+    gmsh::option::setNumber("Mesh.ElementOrder", this->MeshElementOrder); //Default = 1
+    gmsh::option::setNumber("Mesh.HighOrderOptimize", this->MeshHighOrderOptimize); //Default = 0
     gmsh::option::setNumber("Mesh.OptimizeNetgen", this->MeshOptimizeNetgen); //Default = 0
     gmsh::option::setNumber("Mesh.RefineSteps", this->MeshRefineSteps); //Default = 10
 
