@@ -5,8 +5,10 @@ Generate meshes from packing files (xyzd). Depends on OpenCASCADE (7.3) and GMSH
 # Installation
 
 1. Install OpenCASCADE (v 7.30 tested)
-3. Install GMSH with OpenCASCADE linked (v 4.4.1)
-4. Compile genmesh with GMSH linked.
+2. Install GMSH with OpenCASCADE linked (v 4.4.1)
+3. Compile genmesh with GMSH linked.
+
+Check out `install.sh` for a template on what to do.
 
 Note: Ensure that \$LD_LIBRARY_PATH points to the OpenCASCADE libs.
 
@@ -41,6 +43,8 @@ Here, the term 'bridges' is used to denote conical/cylindrical objects between i
 ```
 
 This should create the mesh in the required format in the `outpath` directory. Additionally, two vtk files of the two domains are generated to allow easier examination of the mesh. 
+
+Using the `create.sh` script also redirects output to a log file in the output directory.
 
 I use preScalingFactor to convert meshes to a size such that bead size = 1, consistent with the mono-full packing.
 
@@ -83,7 +87,7 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [ ] Write test inputs to run and verify code.
 - [ ] {!}Investigate capped meshes. Why did 400 beads take 5-10 hours? 
 - [ ] Manual node placement at contact points 
-- [ ] Try embedded bead CP and mesh size control
+- [x] Try embedded bead CP and mesh size control: not supported for HXT
 - [ ] Scrap the need for ./create.sh. create <file>.log automatically
 - [ ] Enlarged beads don't work at 0.001: Fix the rcyl assertion.
 - [ ] meshSizeMethod=0 doesn't work
@@ -96,6 +100,7 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [ ] clean duplicate local variables in packedbed.transform()
 
 Known Issues
+
 - Netgen optimizer crashes sometimes. (After mesh size constraints were applied to surfaces)
 - Geometry.ScalingFactor doesn't work. Use preScalingFactor instead.
 - In 7k-pre and 6k-pre cases, only a handful of beads were actually captured and meshed. [prescaling issue?]

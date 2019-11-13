@@ -36,3 +36,4 @@ git-check:
 	@echo "#define GITSTATE \"$$(git diff --quiet || echo '(dirty!)')\""  >>version.h
 	@echo  >> version.h
 	@echo "#endif /* VERSION_H */" >>version.h
+
