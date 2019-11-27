@@ -98,6 +98,7 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
     - [ ] Mesh.RandomFactor(3D)
     - [ ] Mesh.ToleranceInitialDelaunay
 - [ ] clean duplicate local variables in packedbed.transform()
+- [x] Allow changing fragment output formats
 
 Known Issues
 

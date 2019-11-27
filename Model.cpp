@@ -429,7 +429,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
                 model::setPhysicalName(2,13, "wall");
             }
 
-            gmsh::write(prm->outpath + "/" + outfile + "_interstitial.vtk");
+            gmsh::write(prm->outpath + "/" + outfile + "_interstitial." + prm->fragmentFormat);
 
             model::removePhysicalGroups();
 
@@ -445,7 +445,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
                 model::setPhysicalName(2,14, "beadSurface");
             }
 
-            gmsh::write(prm->outpath + "/" + outfile + "_beads.vtk");
+            gmsh::write(prm->outpath + "/" + outfile + "_beads." + prm->fragmentFormat);
 
         }
 

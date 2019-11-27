@@ -139,8 +139,8 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "Mesh.Algorithm")                              MeshAlgorithm                              = atoi(val.at(0).c_str());
     else if(key == "Mesh.Algorithm3D")                            MeshAlgorithm3D                            = atoi(val.at(0).c_str());
     else if(key == "Mesh.Optimize")                               MeshOptimize                               = atoi(val.at(0).c_str());
-    else if(key == "Mesh.HighOrderOptimize")                               MeshHighOrderOptimize                               = atoi(val.at(0).c_str());
-    else if(key == "Mesh.ElementOrder")                               MeshElementOrder                               = atoi(val.at(0).c_str());
+    else if(key == "Mesh.HighOrderOptimize")                      MeshHighOrderOptimize                      = atoi(val.at(0).c_str());
+    else if(key == "Mesh.ElementOrder")                           MeshElementOrder                           = atoi(val.at(0).c_str());
     else if(key == "Mesh.OptimizeNetgen")                         MeshOptimizeNetgen                         = atoi(val.at(0).c_str());
     else if(key == "Mesh.RefineSteps")                            MeshRefineSteps                            = atoi(val.at(0).c_str());
     else if(key == "Mesh.Generate")                               MeshGenerate                               = atoi(val.at(0).c_str());
@@ -175,6 +175,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "geomOutfile") geomOutfile = val.at(0);
     else if(key == "outpath") outpath  = val.at(0);
     else if(key == "refBeadSize") refBeadSize = val.at(0);
+    else if(key == "fragmentFormat") fragmentFormat = val.at(0);
     else throw mixd::MixdException("Unknown keyword: " + key);
 
 
@@ -244,6 +245,7 @@ void Parameters::print()
     std::cout << "geomInfile                                  "<< this->geomInfile                                 << std::endl;
     std::cout << "geomOutfile                                 "<< this->geomOutfile                                << std::endl;
     std::cout << "outpath                                     "<< this->outpath                                    << std::endl;
+    std::cout << "fragmentFormat                              "<< this->fragmentFormat                             << std::endl;
     std::cout << "dryRun                                      "<< this->dryRun                                     << std::endl;
 
 }

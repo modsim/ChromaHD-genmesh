@@ -89,6 +89,7 @@ public:
     std::string geomInfile;
     std::string outpath="output/";
     std::string refBeadSize = "avg";
+    std::string fragmentFormat = "vtk";
 
 
 private:
