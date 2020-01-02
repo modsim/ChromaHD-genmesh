@@ -11,12 +11,17 @@ Generate meshes from packing files (xyzd). Depends on OpenCASCADE (7.3) and GMSH
 Check out `install.sh` for a template on what to do.
 
 Note: Ensure that \$LD_LIBRARY_PATH points to the OpenCASCADE libs.
+Note: Ensure that you use the same compiler version for all dependencies.
 
 ## Snippets
-`freetype2, mesa/opengl dev pacakges, libXmu, libXi`
-`./configure --enable-gcc --enable-shared --enable-threads --prefix=/home/IBT/rao/tools/tcl --enable-64bit`
-`./configure --enable-gcc --enable-shared --enable-threads --prefix=/home/IBT/rao/tools/tk --enable-64bit --with-tcl=/home/IBT/rao/tools/tcl/lib`                                                                                
-`cmake -DCMAKE_INSTALL_PREFIX=../../occt -D3RDPARTY_TCL_LIBRARY_DIR=../../tcl/lib/ -D3RDPARTY_TK_LIBRARY_DIR=../../tk/lib/ -D3RDPARTY_TK_INCLUDE_DIR=../../tk/include/ ..`                                                       
+```
+freetype2, mesa/opengl dev pacakges, libXmu, libXi
+./configure --enable-gcc --enable-shared --enable-threads --prefix=/home/IBT/rao/tools/tcl --enable-64bit
+./configure --enable-gcc --enable-shared --enable-threads --prefix=/home/IBT/rao/tools/tk --enable-64bit --with-tcl=/home/IBT/rao/tools/tcl/lib
+cmake -DCMAKE_INSTALL_PREFIX=../../occt -D3RDPARTY_TCL_LIBRARY_DIR=../../tcl/lib/ -D3RDPARTY_TK_LIBRARY_DIR=../../tk/lib/ -D3RDPARTY_TK_INCLUDE_DIR=../../tk/include/ ..
+cmake -DCMAKE_PREFIX_PATH=<path to occt install>
+```
+
 
 # Workflow
 
@@ -99,6 +104,8 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
     - [ ] Mesh.ToleranceInitialDelaunay
 - [ ] clean duplicate local variables in packedbed.transform()
 - [x] Allow changing fragment output formats
+- [x] Makefile depends on relative folder structure, fix it.
+- [ ] boost endian conversion is not available easily on JURECA: remove dependency
 
 Known Issues
 
