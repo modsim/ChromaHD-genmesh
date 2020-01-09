@@ -105,6 +105,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "relativeBridgeRadius")                        relativeBridgeRadius                       = atof(val.at(0).c_str());
     else if(key == "lc")                                          lc                                         = atof(val.at(0).c_str());
     else if(key == "lc_beads")                                    lc_beads                                   = atof(val.at(0).c_str());
+    else if(key == "lc_bridge")                                   lc_bridge                                  = atof(val.at(0).c_str());
     else if(key == "lc_out")                                      lc_out                                     = atof(val.at(0).c_str());
     else if(key == "refBeadRadius")                               refBeadRadius                              = atof(val.at(0).c_str());
     else if(key == "fieldThresholdMinFactor")                     fieldThresholdMinFactor                    = atof(val.at(0).c_str());
@@ -202,6 +203,7 @@ void Parameters::print()
     std::cout << "preScalingFactor                            "<< this->preScalingFactor                           << std::endl;
     std::cout << "lc                                          "<< this->lc                                         << std::endl;
     std::cout << "lc_beads                                    "<< this->lc_beads                                   << std::endl;
+    std::cout << "lc_bridge                                   "<< this->lc_bridge                                  << std::endl;
     std::cout << "lc_out                                      "<< this->lc_out                                     << std::endl;
     std::cout << "refBeadRadius                               "<< this->refBeadRadius                              << std::endl;
     std::cout << "refBeadSize                                 "<< this->refBeadSize                                << std::endl;

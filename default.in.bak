@@ -36,9 +36,11 @@ outlet                                      1.5
 # geomOutfile geom.brep
 
 meshSizeMethod                              1     # 0: Global Points (for capped mono) 1: Scaled Fields
+
 lc_beads                                    0.09 
 lc_out                                      0.09 
-fieldExtensionFactor                        1.01
+lc_bridge                                   0.05
+
 
 reduced                                     0.999
 # reduced                                     1.001

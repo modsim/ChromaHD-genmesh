@@ -170,8 +170,8 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
 
 
                 model::mesh::field::add("Frustum", ++count);
-                model::mesh::field::setNumber(count, "V1_inner", prm->lc_beads * rBeadSmallest/(prm->refBeadRadius) );
-                model::mesh::field::setNumber(count, "V2_inner", prm->lc_beads * rBeadSmallest/(prm->refBeadRadius) );
+                model::mesh::field::setNumber(count, "V1_inner", prm->lc_bridge * rBeadSmallest/(prm->refBeadRadius) );
+                model::mesh::field::setNumber(count, "V2_inner", prm->lc_bridge * rBeadSmallest/(prm->refBeadRadius) );
                 /* model::mesh::field::setNumber(count, "V1_outer", prm->lc_beads * rBeadSmallest/(radius_max) ); */
                 /* model::mesh::field::setNumber(count, "V2_outer", prm->lc_beads * rBeadSmallest/(radius_max) ); */
                 model::mesh::field::setNumber(count, "V1_outer", prm->lc_out);

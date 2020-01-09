@@ -62,6 +62,7 @@ public:
     double rFactor                                 = 1.0;
     double lc                                      = 0.0;
     double lc_beads                                = 0.0;
+    double lc_bridge                               = 0.0;
     double lc_out                                  = 0.0;
     double refBeadRadius                           = 0.0;
     double bridgeTol                               = -999;
