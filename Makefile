@@ -7,7 +7,7 @@ OBJ=$(SRC:.cpp=.o)
 EXE=genmesh
 
 INC=-I${GMSH_ROOT}/include
-LIB=-L${GMSH_ROOT}/lib64 -L${GMSH_ROOT}/lib -lgmsh -L${OCCT_ROOT}/lib
+LIB=-L${GMSH_ROOT}/lib -lgmsh -L${OCCT_ROOT}/lib
 
 # ifeq (IBT918, $(findstring IBT918, $(HOST)))
 # 	INC=

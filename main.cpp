@@ -49,15 +49,15 @@ int main(int argc, char** argv) {
         PackedBed * packedBed = new PackedBed(prm);
         Model * myColumn = new Model(prm);
 
-        long start = gmsh::logger::time();
+        long start = gmsh::logger::getWallTime();
 
         myColumn->createGeometry(packedBed, prm);
         myColumn->mesh(outfile, prm);
 
-        long duration = gmsh::logger::time() - start;
+        long duration = gmsh::logger::getWallTime() - start;
 
         gmsh::logger::write("Wall time: " + std::to_string(duration) + " s (" + std::to_string((double)duration/3600) + " h)", "info");
-        gmsh::logger::write("CPU  time: " + std::to_string(gmsh::logger::cputime()) + " s", "info");
+        gmsh::logger::write("CPU  time: " + std::to_string(gmsh::logger::getCpuTime()) + " s", "info");
 
         delete prm;
         delete packedBed;

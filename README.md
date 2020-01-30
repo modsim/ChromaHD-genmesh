@@ -91,7 +91,6 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [ ] Check for memleaks. No errors. But some blocks are reachable (beads vector not deleted).
 - [ ] Write test inputs to run and verify code.
 - [ ] {!}Investigate capped meshes. Why did 400 beads take 5-10 hours? 
-- [ ] Manual node placement at contact points 
 - [x] Try embedded bead CP and mesh size control: not supported for HXT
 - [ ] Scrap the need for ./create.sh. create <file>.log automatically
 - [ ] Enlarged beads don't work at 0.001: Fix the rcyl assertion.
@@ -106,6 +105,11 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [x] Allow changing fragment output formats
 - [x] Makefile depends on relative folder structure, fix it.
 - [ ] boost endian conversion is not available easily on JURECA: remove dependency
+- [ ] OCC parallel boolean uses up all cores
+- [ ] Update to OCC-7.4 in all systems
+- [ ] Plugin(AnalyseCurvedMesh)
+- [ ] Plugin(DiscretizationError) 
+- [ ] Implement porosity control: manipulate porosity by adding/removing beads
 
 Known Issues
 

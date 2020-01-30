@@ -230,7 +230,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
     std::vector<std::pair<int, int> > cv;
     std::vector<std::vector<std::pair<int, int> > > ovv;
 
-    long bool_start = gmsh::logger::time();
+    long bool_start = gmsh::logger::getWallTime();
 
     if (prm->geomInfile.empty())
     {
@@ -285,7 +285,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
     }
 
-    long bool_duration = gmsh::logger::time() - bool_start;
+    long bool_duration = gmsh::logger::getWallTime() - bool_start;
 
     gmsh::logger::write("Boolean time: " + std::to_string(bool_duration) + " s", "info");
     std::cout << std::endl;
@@ -391,19 +391,19 @@ void Model::mesh(std::string outfile, Parameters * prm)
         std::cout << std::endl;
         std::cout << "Calculating mesh volumes. Note: Multiply outputs by " << pow(prm->MeshScalingFactor, 3) << std::endl;
         std::cout << "[ Column Volume ]" << std::endl;
-        gmsh::plugin::setNumber("MeshVolume", "Physical", -1);
+        gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", -1);
         gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
         gmsh::plugin::run("MeshVolume");
         std::cout << std::endl;
 
         std::cout << "[ Interstitial Volume ]" << std::endl;
-        gmsh::plugin::setNumber("MeshVolume", "Physical", 5);
+        gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", 5);
         gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
         gmsh::plugin::run("MeshVolume");
         std::cout << std::endl;
 
         std::cout << "[ Bead Volume ]" << std::endl;
-        gmsh::plugin::setNumber("MeshVolume", "Physical", 6);
+        gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", 6);
         gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
         gmsh::plugin::run("MeshVolume");
         std::cout << std::endl;
