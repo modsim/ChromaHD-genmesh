@@ -47,6 +47,7 @@ class PackedBed {
 
         void getBeads(Parameters * prm);
         void transformBeads(Parameters * prm);
+        void updateBounds();
 };
 
 

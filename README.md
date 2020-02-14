@@ -39,7 +39,11 @@ A rough concept of execution is as follows:
 - Write full mesh to specified output file. 
 - Write individual domains (interstitial and beads) to vtk files. 
 
-Here, the term 'bridges' is used to denote conical/cylindrical objects between individual neighbouring beads. Bridges may be used to 'cap' or 'bridge' the beads they connect. 
+Note: 
+
+- preScalingFactor is used because packings might be generated at different scales.
+- the preScalingFactor is used on zTop and zBot *before* selecting the beads. This means that the zTop and zBot given by the user will roughly correspond to the size of the packed bed *AFTER* prescaling the bed. 
+- Here, the term 'bridges' is used to denote conical/cylindrical objects between individual neighbouring beads. Bridges may be used to 'cap' or 'bridge' the beads they connect. 
 
 # Usage
 
@@ -110,6 +114,7 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [ ] Plugin(AnalyseCurvedMesh)
 - [ ] Plugin(DiscretizationError) 
 - [ ] Implement porosity control: manipulate porosity by adding/removing beads
+- [ ] Implement debug/release version handling
 
 Known Issues
 
