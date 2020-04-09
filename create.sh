@@ -11,4 +11,4 @@ LOG="$DIR/$TITLE.log"
 mkdir -p "$DIR"
 nohup ./genmesh "$CFG" "$2" > "$LOG" 2>&1 & disown
 sleep 2
-watch -n 1 tail -n 25 "$LOG"
+watch -n 1 tail -n $(tput lines) "$LOG"
