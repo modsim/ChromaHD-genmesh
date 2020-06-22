@@ -28,7 +28,6 @@ public:
     void setCTag(int ctag);
     int getTag();
     int getCTag();
-private:
     double x, y, z, r;
     int tag;
     int ctag;

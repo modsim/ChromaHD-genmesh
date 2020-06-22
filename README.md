@@ -115,6 +115,11 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [ ] Plugin(DiscretizationError) 
 - [ ] Implement porosity control: manipulate porosity by adding/removing beads
 - [ ] Implement debug/release version handling
+- [ ] it might be neater to scale bed, updatebounds, then translate bed
+- [ ] Incorporate packbin.py in code. Output binning required by CADET-GE for poly.
+- [ ] Make changes necessary for XNS Generic Implementation of Chromatography
+- [ ] Consider creating a mesh.info output with all the mesh data (lengths, volumes, quality etc) in json format
+- [ ] print exact version of gmsh and occt used
 
 Known Issues
 
@@ -124,3 +129,55 @@ Known Issues
 - poly5 fails (beads peek out of container). Just use poly-full.
 - A few features do not work in conjunction with HXT mesh algorithm. This is an upstream issue with GMSH.
 - Netgen optimizer might not work well with mesh field gradients: It might make the meshes too uniform somehow
+
+# Keywords in config.in
+- packing: path to packing file xyzd in single precision binary little endian format
+- por_target: target value of real porosity to attain. By default, beads are removed from the top of the bed.
+- por_eps: tolerance for achieving por_target.
+- nBeads: number of beads to slice starting from the bottom of the packed bed. If negative, the zBot/zTop values are used to slice the packing data.
+- zBot/zTop: slice limits for the packing data on bead centers.
+- refBeadSize: <min|avg|max> reference bead size used while scaling mesh elements in beads
+- refBeadRadius: <double> same as above, more precise control.
+- rCylDelta: Extra radius added to the cylinder to avoid overlap with beads.
+- inlet/outlet: additional space at inlet and outlet. Considers 1 unit = bead diameter.
+- geomInfile/geomOutfile: geometry file to input/output while meshing to save time on OCC operations.
+- meshSizeMethod: <0|1> global points vs scaled fields
+- lc_beads/lc_out/lc_bridge: mesh sizes
+- fieldThresholdMinFactor/fieldThresholdMaxFactor: lc_beads vs lc_out threshold along the bead radius. [0 to 1]
+- outputFragments: <0|1> output fragments or not
+- fragment: use the fragment operation: <0|1> (necessary)
+- dryRun: <0|1>
+- reduced: multiplicative shrink factor for beads in place (rFactor)
+- bridged/capped: <double> relativeBridgeRadius, while bridgeOffsetRatio and bridgeTol are set automatically
+- and other GMSH settings such as Mesh.NumThreads that are sent to GMSH.
+
+
+# Application Design
+- These are incomplete notes on how the program works.
+- Parameters class holds information about the model. Taken from the input config file and then modified based on those inputs. Defaults are specified in the header file. Some defaults are set during runtime.
+- Bead class holds information about a single individual bead: x,y,z,r etc. The class can then apply scale and translate operations on the data. And check for neighbouring beads.
+- PackedBed class 
+    - reads input file
+    - slices packing based on input
+    - shrinks beads
+    - transforms beads (scale and offset)
+    - computes new bounds
+    - computes porosities
+- Model class
+    - create/save/load geometry (using OCCT)
+        - create beads/bridges/cylinder
+        - create mesh fields for entities
+    - generate/save mesh 
+        - appropriate boolean operations
+        - set named groups
+        - meshing
+
+## Notes
+- xCyl, yCyl, rCyl are modified in PackedBed::transformBeads()
+- if `nBeads > 0`, column length is not restricted
+- if `nBeads < 0`, column length AND bead packing is calculated by using zTop and zBot
+- it is not possible to control the column size if nBeads is positive
+- inlet/outlet volumes are added w.r.t. zTop/zBot, not zMax/zMin.
+- Porosity control is only done by REMOVING beads. Adding beads is not yet supported. There are two methods of porosity control. Currently there is no interface to switch between the methods.
+    - Remove beads from the top (default). This method works best as it doesn't modify the packing in the bulk of the packed bed.
+    - Remove beads by closest radius. This method finds the closest value of the radius to be removed, and removes it. This will be more accurate, but will also remove beads from the bulk of the packed bed. Not recommended. 
