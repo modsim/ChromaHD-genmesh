@@ -1,6 +1,6 @@
 HOST=$(shell hostname)
-CC=g++
 FLAGS=-O3
+CXX := $(if $(CXX),$(CXX),g++)
 
 SRC=Parameters.cpp PackedBed.cpp Model.cpp Files.cpp Bead.cpp main.cpp
 OBJ=$(SRC:.cpp=.o)
@@ -25,11 +25,11 @@ clean:
 	@rm -rf *.o $(EXE)
 
 build: git-check $(OBJ)
-	$(CC)  $(OBJ) $(FLAGS) $(INC) $(LIB)  -o $(EXE)
+	$(CXX)  $(OBJ) $(FLAGS) $(INC) $(LIB)  -o $(EXE)
 	@echo "Compiled $(EXE) !" 
 
 %.o: %.cpp
-	$(CC) -c -o $@ $< $(FLAGS) $(INC)
+	$(CXX) -c -o $@ $< $(FLAGS) $(INC)
 
 git-check:
 	@echo "#ifndef VERSION_H" > version.h
