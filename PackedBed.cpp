@@ -309,11 +309,13 @@ void PackedBed::geometryStats(Parameters * prm)
 {
     std::cout << std::endl;
     std::cout << "=== After Mesh Scaling ===" << std::endl;
-    std::cout << "Mesh Scaling Factor: " << prm->MeshScalingFactor        << std::endl;
-    std::cout << "Cylinder Radius: "     << rCyl * prm->MeshScalingFactor << std::endl;
-    std::cout << "Cylinder Volume: "     << vol_cylinder                  << std::endl;
-    std::cout << "Real Int Volume: "     << vol_real_int                  << std::endl;
-    std::cout << "Real Bead Volume: "    << vol_real_beads                << std::endl;
+
+    std::cout << "Mesh Scaling Factor: " << prm->MeshScalingFactor              << std::endl;
+    std::cout << "Avg Bead Radius: "     << radius_avg * prm->MeshScalingFactor << std::endl;
+    std::cout << "Cylinder Radius: "     << rCyl * prm->MeshScalingFactor       << std::endl;
+    std::cout << "Cylinder Volume: "     << vol_cylinder                        << std::endl;
+    std::cout << "Real Int Volume: "     << vol_real_int                        << std::endl;
+    std::cout << "Real Bead Volume: "    << vol_real_beads                      << std::endl;
 
     std::cout << "Modified Bead Volume: (without bridges) " << vol_geom_beads << std::endl<< std::endl;
     /* std::cout << std::fixed << std::setprecision(2); */

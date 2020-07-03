@@ -382,6 +382,12 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
     if(!prm->dryRun)
     {
+        for(int i=1; i<prm->MeshGenerate; i++)
+        {
+            model::mesh::generate(i);
+            gmsh::write(prm->outpath + "/"+ std::to_string(i) + "D_" + outfile );
+
+        }
         // Generate mesh
         model::mesh::generate(prm->MeshGenerate);
 

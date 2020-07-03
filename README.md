@@ -22,7 +22,6 @@ cmake -DCMAKE_INSTALL_PREFIX=../../occt -D3RDPARTY_TCL_LIBRARY_DIR=../../tcl/lib
 cmake -DCMAKE_PREFIX_PATH=<path to occt install>
 ```
 
-
 # Workflow
 
 A rough concept of execution is as follows:
@@ -101,7 +100,6 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [ ] meshSizeMethod=0 doesn't work
 - [x] Extract mesh volume data into variables to output the mesh-scaled volume in stdout.
 - [x] Allow changing bead mesh scaling reference value: max/avg or number
-- [ ] Porosity should use bed length from bead centers not ends.
 - [ ] Mesh Sensitivity
     - [ ] Mesh.RandomFactor(3D)
     - [ ] Mesh.ToleranceInitialDelaunay
@@ -113,20 +111,27 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [ ] Update to OCC-7.4 in all systems
 - [ ] Plugin(AnalyseCurvedMesh)
 - [ ] Plugin(DiscretizationError) 
-- [ ] Implement porosity control: manipulate porosity by adding/removing beads
-- [ ] Implement debug/release version handling
+- [ ] Improve scripts to be user friendly
+- [o] Implement porosity control: manipulate porosity by adding/removing beads
+    - [X] Removing beads
+    - [ ] Adding beads
+- [ ] Implement debug/release version handling?
 - [ ] it might be neater to scale bed, updatebounds, then translate bed
-- [ ] Incorporate packbin.py in code. Output binning required by CADET-GE for poly.
 - [ ] Make changes necessary for XNS Generic Implementation of Chromatography
 - [ ] Consider creating a mesh.info output with all the mesh data (lengths, volumes, quality etc) in json format
 - [ ] print exact version of gmsh and occt used
+- [ ] Checkpoint saves for 1D & 2D Meshes
+- [ ] Check that the output format is viable before starting the mesh
+- [ ] Output gmsh version in log file somehow
+- [ ] Improved centering algorithm for packed bed translation to origin
 
 Known Issues
 
 - Netgen optimizer crashes sometimes. (After mesh size constraints were applied to surfaces)
 - Geometry.ScalingFactor doesn't work. Use preScalingFactor instead.
-- In 7k-pre and 6k-pre cases, only a handful of beads were actually captured and meshed. [prescaling issue?]
 - poly5 fails (beads peek out of container). Just use poly-full.
+    - This problem persists with poly-full for certain sections. Can be fixed by a better centering method instead of only x/y based centering
+    - It can be sidestepped by running genmesh with coarse element size, and checking if any beads are meshed AFTER the cylinder/planes & have a higher entity number.
 - A few features do not work in conjunction with HXT mesh algorithm. This is an upstream issue with GMSH.
 - Netgen optimizer might not work well with mesh field gradients: It might make the meshes too uniform somehow
 
