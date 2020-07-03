@@ -17,6 +17,7 @@ import struct
 import itertools
 import numpy as np
 from matplotlib import pyplot as plt
+import matplotlib
 
 def main():
     packing = sys.argv[1]
@@ -48,10 +49,10 @@ def main():
 
     r = [x/2 * scaling_factor * rFactor * meshScalingFactor for x in d]
     V=[4*np.pi*x*x*x/3 for x in r]
-    h,e = np.histogram(r, bins=20, density=True, weights=V)
+    h,e = np.histogram(r, bins=10, density=True, weights=V)
 
     frac=[x/sum(h) for x in h]
-    print(sum(frac))
+    # print(sum(frac))
     print(frac)
     # print(h)
     # print(e)
@@ -61,10 +62,24 @@ def main():
     print(list(avg))
 
 
-    # plt.hist(r, bins=20)
-    # plt.savefig('histogram.pdf')
-    # plt.show()
+    # with plt.style.context(['science']):
+    #     matplotlib.rcParams['font.sans-serif'] = "Verdana"
+    #     matplotlib.rcParams['font.family'] = "sans-serif"
 
+    #     # # plt.rc('axes', prop_cycle=(cycler('color', ['#0C5DA5', '#00B945', '#FF9500', '#FF2C00', '#845B97', '#474747', '#9e9e9e']) ))
+    #     # plt.rc('axes', prop_cycle=(cycler('color', ['#0C5DA5', '#00B945']) ))
+
+    #     fig, ax = plt.subplots()
+    #     ax.hist(r, bins=10)
+
+    #     # ax.legend(loc='lower center', bbox_to_anchor=(0.5,-0.7), shadow=True)
+    #     # ax.set(title='Chromatogram')
+    #     # ax.set(xlabel='Time (s)', fontname="Arial")
+    #     ax.set_xlabel('Bead Radius ($m$)')
+    #     ax.set(ylabel='Frequency')
+    #     # ax.autoscale(tight=True)
+    #     fig.savefig('histogram.pdf')
+    #     # fig.savefig(filename+'.jpg', dpi=300)
 
     # V_beads=0
     # for i in range(len(d)):
