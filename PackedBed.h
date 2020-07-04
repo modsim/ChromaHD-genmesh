@@ -52,6 +52,7 @@ class PackedBed {
         int uLimit = 0;
         int lLimit = 0;
 
+        template<typename T> std::vector<double> readPacking(Parameters * prm);
         void getBeads(Parameters * prm);
         void transformBeads(Parameters * prm);
         void updateBounds();

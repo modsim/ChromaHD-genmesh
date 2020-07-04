@@ -41,25 +41,42 @@ PackedBed::~PackedBed()
 
 }
 
-
-void PackedBed::getBeads(Parameters * prm)
+template<typename T>
+std::vector<double> PackedBed::readPacking(Parameters * prm)
 {
     /* Read packing data */
     std::ifstream file(prm->packfile.c_str(), std::ios::binary);
     file.unsetf(std::ios::skipws);
 
     file.seekg(0, std::ios::end);
-    const size_t num_elements = file.tellg() / sizeof(float);
+    const size_t num_elements = file.tellg() / prm->packingPrecision;
     file.seekg(0, std::ios::beg);
+    std::vector<T> data(num_elements);
 
     std::cout << "reading packing ... " << std::flush;
-    std::vector<float> data(num_elements);
-    file.read(reinterpret_cast<char*>(&data[0]), num_elements*sizeof(float));
-
+    file.read(reinterpret_cast<char*>(&data[0]), num_elements*sizeof(T));
     if (isBigEndian())
-        swapbytes(reinterpret_cast<char*>(&data[0]), data.size(), sizeof (float));
+        swapbytes(reinterpret_cast<char*>(&data[0]), data.size(), sizeof (T));
+
+    std::vector<double> doubleVec(data.begin(), data.end());
 
     std::cout << "done!" << std::endl << std::endl;
+    return doubleVec;
+}
+
+
+void PackedBed::getBeads(Parameters * prm)
+{
+    std::vector<double> data;
+    if (prm->packingPrecision == 4)
+        data = readPacking<float>(prm);
+    else if (prm->packingPrecision == 8)
+        data = readPacking<double>(prm);
+    else
+    {
+        std::cout << "Invalid Packing Precision. Should be 4 or 8." << std::endl;
+        exit(-1);
+    }
 
     /* Select beads by number or range [zBot,zTop] */
     std::cout << "Selecting beads in range..." << std::flush;

@@ -52,6 +52,7 @@ public:
     int dryRun                                      = 0;
     int MeshMaxNumThreads                           = 0;
     int MeshMinimumCirclePoints                     = 7;
+    int packingPrecision                            = 4;
 
     double zBot                                     = 0.0;
     double zTop                                     = 0.0;

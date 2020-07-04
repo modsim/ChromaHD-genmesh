@@ -177,6 +177,19 @@ Known Issues
         - set named groups
         - meshing
 
+# Redesign
+- [X] Save Geom, Low Dim Meshes, Mesh, Fragments
+- [ ] Allow Meshing with & without Container
+- [ ] Allow container type = Cylinder or rectangle
+- [ ] Allow periodic meshes
+- [X] Allow double/single precision packing data input
+- [ ] More intuitive input parameters for dimensions etc. 
+    - [ ] zBot/zTop
+    - [ ] inlet/outlet
+    - [ ] nBeads
+    - [ ] Porosity Control
+- [ ] Simpler Dry Run
+
 ## Notes
 - xCyl, yCyl, rCyl are modified in PackedBed::transformBeads()
 - if `nBeads > 0`, column length is not restricted

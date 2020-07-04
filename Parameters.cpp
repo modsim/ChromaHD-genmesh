@@ -90,8 +90,10 @@ void Parameters::update()
 void Parameters::decide (const std::string & key, const std::vector<std::string> & val)
 {
 
+    // TODO: Switch statement
     if(key == "zBot")                                             zBot                                       = atof(val.at(0).c_str());
 
+    else if(key == "packingPrecision")                             packingPrecision                             = atoi(val.at(0).c_str());
     else if(key == "zTop")                                         zTop                                         = atof(val.at(0).c_str());
     else if(key == "rCyl")                                         rCyl                                         = atof(val.at(0).c_str());
     else if(key == "rCylDelta")                                    rCylDelta                                    = atof(val.at(0).c_str());
@@ -190,6 +192,7 @@ void Parameters::print()
 
     std::cout << std::setprecision(10);
 
+    std::cout << "packingPrecision                            "<< this->packingPrecision                           << std::endl;
     std::cout << "zBot                                        "<< this->zBot                                       << std::endl;
     std::cout << "zTop                                        "<< this->zTop                                       << std::endl;
     std::cout << "rCyl                                        "<< this->rCyl                                       << std::endl;
