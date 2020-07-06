@@ -199,9 +199,20 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
 
     std::cout << "done!" << std::endl;
 
-    std::cout << "Creating cylinder... " << std::flush;
+    std::cout << "Creating container... " << std::flush;
     if (prm->geomInfile.empty())
-        dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
+    {
+        if (prm->containerShape == 0)
+            dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
+        else if (prm->containerShape == 1)
+            dimTagsCyl.push_back( {3, factory::addBox(pb->xMin - prm->rCylDelta,pb->yMin - prm->rCylDelta,zCylBot -prm->rCylDelta, pb->xMax - pb->xMin + prm->rCylDelta,pb->yMax - pb->yMin + prm->rCylDelta, zCylTop-zCylBot + prm->rCylDelta)});
+        else
+        {
+            std::cout << "Invalid Container Shape. Use 0 for Cylinder, 1 for Box." << std::endl;
+            exit(-1);
+        }
+
+    }
     std::cout << "done!" << std::endl;
 
     if (prm->meshSizeMethod == 1)

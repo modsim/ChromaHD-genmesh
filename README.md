@@ -179,9 +179,11 @@ Known Issues
 
 # Redesign
 - [X] Save Geom, Low Dim Meshes, Mesh, Fragments
+- [ ] Cleaner & More intuitive use of Save Geom (Remove all the if(saveGeom) as much as possible to streamline the code)
 - [ ] Allow Meshing with & without Container
-- [ ] Allow container type = Cylinder or rectangle
-- [ ] Allow periodic meshes
+- [X] Allow container type = Cylinder or rectangle
+- [ ] Named Groups for Rectangular Container
+- [ ] Generate periodic meshes
 - [X] Allow double/single precision packing data input
 - [ ] More intuitive input parameters for dimensions etc. 
     - [ ] zBot/zTop

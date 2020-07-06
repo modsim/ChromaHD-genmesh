@@ -53,6 +53,7 @@ public:
     int MeshMaxNumThreads                           = 0;
     int MeshMinimumCirclePoints                     = 7;
     int packingPrecision                            = 4;
+    int containerShape                              = 0;
 
     double zBot                                     = 0.0;
     double zTop                                     = 0.0;
