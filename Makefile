@@ -2,6 +2,8 @@ HOST=$(shell hostname)
 FLAGS=-O3
 CXX := $(if $(CXX),$(CXX),g++)
 
+PREFIX=$(HOME)/local
+
 SRC=Parameters.cpp PackedBed.cpp Model.cpp Files.cpp Bead.cpp main.cpp
 OBJ=$(SRC:.cpp=.o)
 EXE=genmesh
@@ -17,7 +19,7 @@ LIB=-L${GMSH_ROOT}/lib -lgmsh -L${OCCT_ROOT}/lib
 # 	LIB=-L../../../tools/gmsh/lib -lgmsh -L../../../tools/occt/lib
 # endif
 
-.PHONY: all local ibt clean
+.PHONY: all local ibt clean install
 
 all: build 
 
@@ -40,3 +42,5 @@ git-check:
 	@echo  >> version.h
 	@echo "#endif /* VERSION_H */" >>version.h
 
+install: 
+	cp genmesh $(PREFIX)/bin	

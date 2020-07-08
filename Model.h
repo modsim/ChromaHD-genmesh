@@ -25,7 +25,7 @@ class Model{
 
         void createGeometry(PackedBed * packedBed, Parameters * prm);
         void mesh(std::string outfile, Parameters * prm);
-        void createNamedGroups(std::vector<std::pair<int,int>> ov);
+        void createNamedGroups(std::vector<std::pair<int,int>> ov, int containerShape);
 
         std::vector<int> tBeads;
         std::vector<int> tBeadCPs;

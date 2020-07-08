@@ -178,11 +178,13 @@ Known Issues
         - meshing
 
 # Redesign
+- [ ] Check if rectangular mesh sims run or not
+
 - [X] Save Geom, Low Dim Meshes, Mesh, Fragments
 - [ ] Cleaner & More intuitive use of Save Geom (Remove all the if(saveGeom) as much as possible to streamline the code)
-- [ ] Allow Meshing with & without Container
+- [ ] Allow Meshing with & without Container more easily
 - [X] Allow container type = Cylinder or rectangle
-- [ ] Named Groups for Rectangular Container
+- [X] Fix Named Groups for Rectangular Container
 - [ ] Generate periodic meshes
 - [X] Allow double/single precision packing data input
 - [ ] More intuitive input parameters for dimensions etc. 
@@ -191,6 +193,7 @@ Known Issues
     - [ ] nBeads
     - [ ] Porosity Control
 - [ ] Simpler Dry Run
+- [ ] Intuitive control & code for mesh sizing
 
 ## Notes
 - xCyl, yCyl, rCyl are modified in PackedBed::transformBeads()

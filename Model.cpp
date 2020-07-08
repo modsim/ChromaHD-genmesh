@@ -279,7 +279,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
             std::cout << "Fragmenting Volumes... " << std::flush;
             factory::fragment(dimTagsCyl, ov, bv, ovv );
-            dimTagsInterstitial.push_back(bv.back());
+            /* dimTagsInterstitial.push_back(bv.back()); */
             std::cout << "done!" << std::endl;
         }
 
@@ -301,42 +301,12 @@ void Model::mesh(std::string outfile, Parameters * prm)
     gmsh::logger::write("Boolean time: " + std::to_string(bool_duration) + " s", "info");
     std::cout << std::endl;
 
-    /* std:: cout << "Embedding control points within spheres..." << std::flush; */
-    /* model::mesh::embed(0,tBeadCPs, 3, ov[0].second); */
-
-    /* std:: cout << "Embedding control points within spheres..." << std::flush; */
-    /* //Embed points in beads to control element size within them */
-    /* if (prm->booleanOperation == 1) */
-    /* { */
-    /*     // if fuse: embed all bead centers into the bead fragment */
-    /*     /1* std::cout << bv.size() << std::endl; *1/ */
-    /*     if (bv.size() == 0) bv = ov; */
-    /*     std::cout << ov.size() << std::endl; */
-    /*     std::cout << bv.size() << std::endl; */
-
-
-    /*     for (std::vector<std::pair<int,int>>::iterator iter = bv.begin(); iter != bv.end(); iter++ ) */
-    /*     { */
-    /*         std::cout << "inside loop.." << std::endl; */
-    /*         model::mesh::embed(0,tBeadCPs, 3, (*iter).second); */
-    /*     } */
-    /* } */
-    /* else */
-    /* { */
-    /*     //if cap or reduce, embed into beads themeselves. */
-    /*     for (std::vector<Bead *>::iterator iter = beads.begin(); iter != beads.end(); iter++ ) */
-    /*     { */
-    /*         model::mesh::embed(0,{(*iter)->getCTag()}, 3, (*iter)->getTag()); */
-    /*     } */
-    /* } */
-    /* std:: cout << "done!" << std::endl; */
-
     // ============================
     // Named Physical Groups
 
     // if not reading geometry
     if (prm->geomInfile.empty())
-        createNamedGroups(bv);
+        createNamedGroups(bv, prm->containerShape);
 
     if (prm->meshSizeMethod == 0)
     {
@@ -345,24 +315,6 @@ void Model::mesh(std::string outfile, Parameters * prm)
         model::getEntities(cv, 0);
         model::mesh::setSize(cv, prm->lc_beads);
         std:: cout << "done!" << std::endl;
-
-        // Set mesh size for beads
-        /* model::getBoundary(bv, cv, false, false, true); */
-        /* model::mesh::setSize(cv, prm->lc_beads); */
-
-        /* // Set mesh size for interstitial */
-        /* std:: cout << "Setting mesh size for surfaces..."; */
-        /* model::getBoundary(dimTagsInterstitial, cv, false, false, true); */
-        /* model::mesh::setSize(cv, prm->lc); */
-        /* std:: cout << "done!" << std::endl; */
-
-        //set mesh size on bead surface
-        // maybe use the inside of the interstitial fragment instead?
-        /* model::getBoundary(dimTagsInterstitial, cv, false, false, false); */
-        /* model::getBoundary(bv, cv, false, false, false); */
-        /* model::getBoundary(cv, ov, false, false, true); */
-        /* model::mesh::setSize(ov, prm->lc); */
-
     }
 
     std::cout << std::endl;
@@ -383,7 +335,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
         factory::synchronize();
         std::cout << "done!" << std::endl;
 
-        createNamedGroups(bv);
+        createNamedGroups(bv, prm->containerShape);
     }
 
     // Synchronize gmsh model with geometry kernel.
@@ -438,11 +390,11 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
             if (prm->NamedOuterSurface)
             {
-                model::addPhysicalGroup(2,tSWall,13);
-                model::addPhysicalGroup(2,tSOutlet,12);
                 model::addPhysicalGroup(2,tSInlet,11);
                 model::setPhysicalName(2,11, "inlet");
+                model::addPhysicalGroup(2,tSOutlet,12);
                 model::setPhysicalName(2,12, "outlet");
+                model::addPhysicalGroup(2,tSWall,13);
                 model::setPhysicalName(2,13, "wall");
             }
 
@@ -472,21 +424,34 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
 }
 
-void Model::createNamedGroups(std::vector<std::pair<int,int>> bv)
+void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerShape)
 {
+    // bv is the vector storing dimtags after fragmentation.
+    // the last entry should be the interstitial volume
     std::vector<std::pair<int,int>> cv;
     std::cout << "Listing Interstitial Volume... " << std::flush;
     tVInt.push_back(bv.back().second);
     bv.pop_back();
     std::cout << "done!" << std::endl;
 
+    // Extract surfaces from interstitial volume
     std::cout << "Listing Outer Surfaces... " << std::flush;
     model::getBoundary({{3,tVInt[0]}}, cv, false, false, false);
-    tSWall = {cv[0].second};
-    tSOutlet= {cv[1].second};
-    tSInlet = {cv[2].second};
+    if(containerShape == 0)
+    {
+        tSWall = {cv[0].second};
+        tSOutlet= {cv[1].second};
+        tSInlet = {cv[2].second};
+    }
+    else if (containerShape == 1)
+    {
+        tSWall = {cv[0].second, cv[1].second, cv[3].second, cv[5].second};
+        tSOutlet= {cv[2].second};
+        tSInlet = {cv[4].second};
+    }
     std::cout << "done!" << std::endl;
 
+    // The remaining entries in bv are bead volumes
     std::cout << "Listing Bead Volumes... " << std::flush;
     for (auto it = bv.begin(); it != bv.end(); it++)
     {
