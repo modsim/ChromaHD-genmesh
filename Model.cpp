@@ -35,6 +35,8 @@ Model::~Model()
 
 void Model::createGeometry(PackedBed * pb, Parameters * prm)
 {
+    if(prm->dryRun)
+        return;
 
     std::vector<Bead *> beads = pb->beads;
 
@@ -203,17 +205,22 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
     if (prm->geomInfile.empty())
     {
         if (prm->containerShape == 0)
+        {
+            std::cout << "Creating cylindrical container." << std::endl;
             dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
+
+        }
         else if (prm->containerShape == 1)
+        {
+            std::cout << "Creating rectangular container." << std::endl;
             dimTagsCyl.push_back( {3, factory::addBox(pb->xMin - prm->rCylDelta,pb->yMin - prm->rCylDelta,zCylBot -prm->rCylDelta, pb->xMax - pb->xMin + prm->rCylDelta,pb->yMax - pb->yMin + prm->rCylDelta, zCylTop-zCylBot + prm->rCylDelta)});
+        }
         else
         {
-            std::cout << "Invalid Container Shape. Use 0 for Cylinder, 1 for Box." << std::endl;
-            exit(-1);
+            std::cout << "Skipping container creation." << std::endl;
         }
 
     }
-    std::cout << "done!" << std::endl;
 
     if (prm->meshSizeMethod == 1)
     {
@@ -231,10 +238,14 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
         model::mesh::field::setAsBackgroundMesh(count);
     }
 
+
 }
 
 void Model::mesh(std::string outfile, Parameters * prm)
 {
+    if(prm->dryRun)
+        return;
+
     // Store dimTags and dimTagsMap
     std::vector<std::pair<int, int> > ov;
     std::vector<std::pair<int, int> > bv;
@@ -307,6 +318,19 @@ void Model::mesh(std::string outfile, Parameters * prm)
     // if not reading geometry
     if (prm->geomInfile.empty())
         createNamedGroups(bv, prm->containerShape);
+    else
+    {
+        std::cout << "Importing geometry: " << prm->geomInfile << "... " << std::flush;
+        factory::importShapes("geometries/" + prm->geomInfile, bv);
+        std::cout << "done!" << std::endl;
+
+        // Synchronize gmsh model with geometry kernel.
+        std::cout << "synchronizing... " << std::flush;
+        factory::synchronize();
+        std::cout << "done!" << std::endl;
+
+        createNamedGroups(bv, prm->containerShape);
+    }
 
     if (prm->meshSizeMethod == 0)
     {
@@ -321,103 +345,83 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
     //if write geometry
     if(!prm->geomOutfile.empty())
-        gmsh::write("geometries/" + prm->geomOutfile);
-
-    //if read geometry
-    if (!prm->geomInfile.empty())
-    {
-        std::cout << "Importing geometry: " << prm->geomInfile << "... " << std::flush;
-        factory::importShapes("geometries/" + prm->geomInfile, bv);
-        std::cout << "done!" << std::endl;
-
-        // Synchronize gmsh model with geometry kernel.
-        std::cout << "synchronizing... " << std::flush;
-        factory::synchronize();
-        std::cout << "done!" << std::endl;
-
-        createNamedGroups(bv, prm->containerShape);
-    }
+        gmsh::write(prm->outpath + "/"+ prm->geomOutfile );
 
     // Synchronize gmsh model with geometry kernel.
     std::cout << "synchronizing... " << std::flush;
     factory::synchronize();
     std::cout << "done!" << std::endl;
 
-    if(!prm->dryRun)
+    for(int i=1; i<prm->MeshGenerate; i++)
     {
-        for(int i=1; i<prm->MeshGenerate; i++)
+        model::mesh::generate(i);
+        gmsh::write(prm->outpath + "/"+ std::to_string(i) + "D_" + outfile );
+
+    }
+    // Generate mesh
+    model::mesh::generate(prm->MeshGenerate);
+
+    // Output Full mesh
+    gmsh::write(prm->outpath + "/"+ outfile);
+
+    std::cout << std::endl;
+    std::cout << "Calculating mesh volumes. Note: Multiply outputs by " << pow(prm->MeshScalingFactor, 3) << std::endl;
+    std::cout << "[ Column Volume ]" << std::endl;
+    gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", -1);
+    gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
+    gmsh::plugin::run("MeshVolume");
+    std::cout << std::endl;
+
+    std::cout << "[ Interstitial Volume ]" << std::endl;
+    gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", 5);
+    gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
+    gmsh::plugin::run("MeshVolume");
+    std::cout << std::endl;
+
+    std::cout << "[ Bead Volume ]" << std::endl;
+    gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", 6);
+    gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
+    gmsh::plugin::run("MeshVolume");
+    std::cout << std::endl;
+
+    if (prm->outputFragments == 1)
+    {
+
+        model::removePhysicalGroups();
+
+        if (prm->NamedInterstitialVolume)
         {
-            model::mesh::generate(i);
-            gmsh::write(prm->outpath + "/"+ std::to_string(i) + "D_" + outfile );
-
-        }
-        // Generate mesh
-        model::mesh::generate(prm->MeshGenerate);
-
-        // Output Full mesh
-        gmsh::write(prm->outpath + "/"+ outfile);
-
-        std::cout << std::endl;
-        std::cout << "Calculating mesh volumes. Note: Multiply outputs by " << pow(prm->MeshScalingFactor, 3) << std::endl;
-        std::cout << "[ Column Volume ]" << std::endl;
-        gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", -1);
-        gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
-        gmsh::plugin::run("MeshVolume");
-        std::cout << std::endl;
-
-        std::cout << "[ Interstitial Volume ]" << std::endl;
-        gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", 5);
-        gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
-        gmsh::plugin::run("MeshVolume");
-        std::cout << std::endl;
-
-        std::cout << "[ Bead Volume ]" << std::endl;
-        gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", 6);
-        gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
-        gmsh::plugin::run("MeshVolume");
-        std::cout << std::endl;
-
-        if (prm->outputFragments == 1)
-        {
-
-            model::removePhysicalGroups();
-
-            if (prm->NamedInterstitialVolume)
-            {
-                model::addPhysicalGroup(3,tVInt,15);
-                model::setPhysicalName(3,15,"interstitialVolume");
-            }
-
-            if (prm->NamedOuterSurface)
-            {
-                model::addPhysicalGroup(2,tSInlet,11);
-                model::setPhysicalName(2,11, "inlet");
-                model::addPhysicalGroup(2,tSOutlet,12);
-                model::setPhysicalName(2,12, "outlet");
-                model::addPhysicalGroup(2,tSWall,13);
-                model::setPhysicalName(2,13, "wall");
-            }
-
-            gmsh::write(prm->outpath + "/" + outfile + "_interstitial." + prm->fragmentFormat);
-
-            model::removePhysicalGroups();
-
-            if (prm->NamedBeadVolume)
-            {
-                model::addPhysicalGroup(3,tVBeads,16 );
-                model::setPhysicalName(3,16,"beadVolume");
-            }
-
-            if (prm->NamedBeadSurface)
-            {
-                model::addPhysicalGroup(2,tSBeads,14);
-                model::setPhysicalName(2,14, "beadSurface");
-            }
-
-            gmsh::write(prm->outpath + "/" + outfile + "_beads." + prm->fragmentFormat);
-
+            model::addPhysicalGroup(3,tVInt,15);
+            model::setPhysicalName(3,15,"interstitialVolume");
         }
 
+        if (prm->NamedOuterSurface)
+        {
+            model::addPhysicalGroup(2, tSInlet  , 11      );
+            model::addPhysicalGroup(2, tSOutlet , 12      );
+            model::addPhysicalGroup(2, tSWall   , 13      );
+            model::setPhysicalName (2, 11       , "inlet" );
+            model::setPhysicalName (2, 12       , "outlet");
+            model::setPhysicalName (2, 13       , "wall"  );
+        }
+
+        gmsh::write(prm->outpath + "/" + outfile + "_interstitial." + prm->fragmentFormat);
+
+        model::removePhysicalGroups();
+
+        if (prm->NamedBeadVolume)
+        {
+            model::addPhysicalGroup(3,tVBeads,16 );
+            model::setPhysicalName(3,16,"beadVolume");
+        }
+
+        if (prm->NamedBeadSurface)
+        {
+            model::addPhysicalGroup(2,tSBeads,14);
+            model::setPhysicalName(2,14, "beadSurface");
+        }
+
+        gmsh::write(prm->outpath + "/" + outfile + "_beads." + prm->fragmentFormat);
 
     }
 
@@ -426,6 +430,12 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
 void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerShape)
 {
+    if(containerShape == -1)
+    {
+        std::cout << ">>> Not creating Named Groups!!" << std::endl;
+        return;
+    }
+
     // bv is the vector storing dimtags after fragmentation.
     // the last entry should be the interstitial volume
     std::vector<std::pair<int,int>> cv;
