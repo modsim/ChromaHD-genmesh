@@ -36,10 +36,11 @@ build: git-check $(OBJ)
 git-check:
 	@echo "#ifndef VERSION_H" > version.h
 	@echo "#define VERSION_H" >>version.h
-	@echo  >> version.h
+	@echo  >>version.h
 	@echo "#define GITCOMMIT \"$$(git rev-parse --verify HEAD)\"" >>version.h
 	@echo "#define GITSTATE \"$$(git diff --quiet || echo '(dirty!)')\""  >>version.h
-	@echo  >> version.h
+	@echo "#define GMSHVERSION \"$$($$GMSH_ROOT/bin/gmsh --version 2>&1 > /dev/null)\"" >>version.h
+	@echo  >>version.h
 	@echo "#endif /* VERSION_H */" >>version.h
 
 install: 

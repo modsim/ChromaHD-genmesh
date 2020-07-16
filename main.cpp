@@ -18,6 +18,7 @@ namespace factory = gmsh::model::occ;
 int main(int argc, char** argv) {
 
     std::cout << "# GIT STATE: " << GITCOMMIT << " " << GITSTATE << std::endl;
+    std::cout << "# GMSH VERSION: " << GMSHVERSION << std::endl;
 
     gmsh::initialize();
 
