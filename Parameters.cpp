@@ -100,6 +100,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "rCylDelta")                                   rCylDelta                                  = atof(val.at(0).c_str());
     else if(key == "por_target")                                  por_target                                 = atof(val.at(0).c_str());
     else if(key == "por_eps")                                     por_eps                                    = atof(val.at(0).c_str());
+    else if(key == "fixPorosityMethod")                           fixPorosityMethod                          = atoi(val.at(0).c_str());
     else if(key == "xCyl")                                        xCyl                                       = atof(val.at(0).c_str());
     else if(key == "yCyl")                                        yCyl                                       = atof(val.at(0).c_str());
     else if(key == "inlet")                                       inlet                                      = atof(val.at(0).c_str());
@@ -201,6 +202,7 @@ void Parameters::print()
     std::cout << "rCylDelta                                   "<< this->rCylDelta                                  << std::endl;
     std::cout << "por_target                                  "<< this->por_target                                 << std::endl;
     std::cout << "por_eps                                     "<< this->por_eps                                    << std::endl;
+    std::cout << "fixPorosityMethod                           "<< this->fixPorosityMethod                          << std::endl;
     std::cout << "xCyl                                        "<< this->xCyl                                       << std::endl;
     std::cout << "yCyl                                        "<< this->yCyl                                       << std::endl;
     std::cout << "inlet                                       "<< this->inlet                                      << std::endl;

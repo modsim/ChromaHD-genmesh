@@ -350,12 +350,15 @@ void PackedBed::fixPorosity(Parameters * prm)
     std::cout << "Modifying column porosity..." <<std::endl;
     calcPorosity(prm);
 
-    // useful for removing beads based on volume. But changes the bulk of the packed bed.
-    /* std::cout << "Sorting beads according to r-value... " << std::flush; */
-    /* std::sort(beads.begin(), beads.end(), [](const Bead* b1, const Bead* b2) { */
-    /*         return b1->getR() < b2->getR(); */
-    /*         }); */
-    /* std::cout << "done!" << std::endl; */
+    if (prm->fixPorosityMethod == 0)
+    {
+        // useful for removing beads based on volume. But changes the bulk of the packed bed.
+        std::cout << "Sorting beads according to r-value... " << std::flush;
+        std::sort(beads.begin(), beads.end(), [](const Bead* b1, const Bead* b2) {
+                return b1->getR() < b2->getR();
+                });
+        std::cout << "done!" << std::endl;
+    }
 
     std::vector<double> vBeadRads;
 
@@ -377,16 +380,26 @@ void PackedBed::fixPorosity(Parameters * prm)
         std::cout << "Volume to be removed: " << vol_bead_removal << std::endl;
         std::cout << "Radius to be removed: " << rad_bead_removal << std::endl;
 
-        // Requires sorting!!
-        // useful for removing beads based on volume. But changes the bulk of the packed bed.
-        /* int index = findBeadWithRadius(rad_bead_removal, vBeadRads); */
-        /* std::cout << "==> Removing bead " << index << " with radius " << vBeadRads[index] << std::endl; */
-        /* vBeadRads.erase(vBeadRads.begin() + index); */
-        /* beads.erase(beads.begin() + index); */
-
-        std::cout << "Removing last bead..." << std::endl;
-        vBeadRads.pop_back();
-        beads.pop_back();
+        if (prm->fixPorosityMethod == 0)
+        {
+            // Requires sorting!!
+            // useful for removing beads based on volume. But changes the bulk of the packed bed.
+            int index = findBeadWithRadius(rad_bead_removal, vBeadRads);
+            std::cout << "==> Removing bead " << index << " with radius " << vBeadRads[index] << std::endl;
+            vBeadRads.erase(vBeadRads.begin() + index);
+            beads.erase(beads.begin() + index);
+        }
+        else if (prm->fixPorosityMethod == 1)
+        {
+            std::cout << "Removing last bead..." << std::endl;
+            vBeadRads.pop_back();
+            beads.pop_back();
+        }
+        else
+        {
+            std::cout << "Invalid fixPorosityMethod input!" << std::endl;
+            exit(-1);
+        }
 
         calcPorosity(prm);
         std::cout << "Target porosity: " << prm->por_target << std::endl;
