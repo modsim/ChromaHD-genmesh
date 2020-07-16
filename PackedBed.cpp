@@ -350,6 +350,9 @@ void PackedBed::fixPorosity(Parameters * prm)
     std::cout << "Modifying column porosity..." <<std::endl;
     calcPorosity(prm);
 
+    std::vector<std::pair<int,Bead*>> endZoneBeads ;
+    std::vector<double> endZoneBeadRads;
+
     if (prm->fixPorosityMethod == 0)
     {
         // useful for removing beads based on volume. But changes the bulk of the packed bed.
@@ -358,6 +361,24 @@ void PackedBed::fixPorosity(Parameters * prm)
                 return b1->getR() < b2->getR();
                 });
         std::cout << "done!" << std::endl;
+    }
+    else if (prm->fixPorosityMethod == 2)
+    {
+        std::cout << "Finding End Zone Beads..." << std::flush;
+        for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
+            if (((*it)->getZ() >= zTop - radius_max) || ((*it)->getZ() <= zBot + radius_max) )
+                endZoneBeads.push_back(std::pair<int,Bead*>(std::distance(beads.begin(),it), *it));
+        std::cout << "done!" << std::endl;
+
+        std::cout << "Sorting endZoneBeads..." << std::flush;
+        std::sort(endZoneBeads.begin(), endZoneBeads.end(), [](const std::pair<int,Bead*> b1, const std::pair<int,Bead*> b2) {
+                return b1.second->getR() < b2.second->getR();
+                });
+        std::cout << "done!" << std::endl;
+
+        for (std::vector<std::pair<int,Bead*>>::iterator it = endZoneBeads.begin(); it != endZoneBeads.end(); it++)
+            endZoneBeadRads.push_back((*it).second->getR() * prm->MeshScalingFactor);
+
     }
 
     std::vector<double> vBeadRads;
@@ -395,6 +416,20 @@ void PackedBed::fixPorosity(Parameters * prm)
             vBeadRads.pop_back();
             beads.pop_back();
         }
+        else if (prm->fixPorosityMethod == 2)
+        {
+            std::cout << "Radius Max is " << radius_max << std::endl;
+
+
+            int indexEndZoneRads = findBeadWithRadius(rad_bead_removal, endZoneBeadRads);
+            int indexvBeadRads = endZoneBeads[indexEndZoneRads].first;
+
+            endZoneBeadRads.erase(endZoneBeadRads.begin() + indexEndZoneRads);
+            endZoneBeads.erase(endZoneBeads.begin() + indexEndZoneRads);
+            vBeadRads.erase(vBeadRads.begin() + indexvBeadRads);
+            beads.erase(beads.begin() + indexvBeadRads);
+
+        }
         else
         {
             std::cout << "Invalid fixPorosityMethod input!" << std::endl;
@@ -404,6 +439,18 @@ void PackedBed::fixPorosity(Parameters * prm)
         calcPorosity(prm);
         std::cout << "Target porosity: " << prm->por_target << std::endl;
     }
+
+    //unsort??
+    /* if (prm->fixPorosityMethod == 0) */
+    /* { */
+    /*     // useful for removing beads based on volume. But changes the bulk of the packed bed. */
+    /*     std::cout << "Sorting Beads by z-value..." << std::flush; */
+    /*     std::sort(beads.begin(), beads.end(), [](const Bead* b1, const Bead* b2) { */
+    /*             return b1->getR() < b2->getR(); */
+    /*             }); */
+    /*     std::cout << "done!" << std::endl; */
+    /* } */
+
 
     std::cout << beads.size() << " beads remaining after porosity control." << std::endl;
 
