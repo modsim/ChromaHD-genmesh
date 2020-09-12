@@ -18,6 +18,7 @@
 # TODO: read genmesh input file??
 # TODO: Handle rho == eta edge cases
 # TODO: Auto handle scaling_factor: (Updatebounds, scale to fit Cyl Radius = 5)
+# TODO: Better parallelization?
 
 import sys
 import struct
@@ -44,6 +45,10 @@ class Bead:
 
     def volume(self):
         return 4/3 * np.pi * self.r**3
+
+    def distance(self, other):
+        return sqrt((self.x-other.x)**2 + (self.y-other.y)**2 + (self.z-other.z)**2)
+
 
 
 class PackedBed:
@@ -92,6 +97,7 @@ class PackedBed:
         self.zmin = min(zpr)
         self.R = max(self.xmax, -self.xmin, self.ymax, -self.ymin)
         self.h = self.zmax - self.zmin
+        self.CylinderVolume = pi * self.R**2 * self.h
 
     def moveBedtoCenter(self):
         """
@@ -168,7 +174,10 @@ def CylSphIntVolume(rho, eta):
     if eta == rho:
         print("Rho & Eta are Equal")
 
-    if (rho + eta > 1):
+    if eta == 0 and 0 <= rho <= 1:
+        V = 4/3 * pi - 4/3 * pi * (1 - rho**2)**(3/2)
+        return V
+    elif (rho + eta > 1):
         nu = asin(eta - rho)
         m = (1-(eta - rho)**2)/(4*rho*eta)
 
@@ -211,9 +220,11 @@ def main():
     zBot = float(sys.argv[2])
     zTop = float(sys.argv[3])
     scaling_factor = float(sys.argv[4])
-    # rFactor = 0.9997
-    rFactor = 1
+    rFactor = 0.99
+    print("rFactor: ", rFactor)
+    # rFactor = 1
     meshScalingFactor = 1e-4
+    relativeBridgeRadius = 0.2
 
     fullBed = PackedBed()
 
@@ -234,7 +245,19 @@ def main():
 
     print("R:", R)
     print("h:", h)
+    print("Cylinder Volume:", fullBed.CylinderVolume)
+    print("Packed Bed Volume:", fullBed.volume())
     print("nBeads: ", len(fullBed.beads))
+
+    # bridgeOffsetRatio = 0.95
+    bridgeOffsetRatio = sqrt(1 - relativeBridgeRadius**2)
+    bridgeTol = 0.04 * meshScalingFactor
+
+    addedBridgeVol, removedBridgeVol = bridgeVolumes(fullBed.beads, bridgeTol, relativeBridgeRadius, bridgeOffsetRatio)
+    print("Bridge Added Volume:", addedBridgeVol)
+    print("Capped Removed Volume:", removedBridgeVol)
+
+    sys.exit(0)
 
     histo([bead.r for bead in fullBed.beads], 'Full Bed')
 
@@ -275,7 +298,7 @@ def main():
     for i in range(nRegions):
         print(avg_radius[i], volRegions[i], volCylRegions[i], porosities[i])
 
-    plotter(avg_radius, porosities, shellType, 'plot.pdf')
+    plotter(avg_radius, porosities, '', 'plot.pdf')
 
 
 def volShellRegion(beads, rShells, i):
@@ -287,6 +310,38 @@ def volShellRegion(beads, rShells, i):
         volBead = volBeadSlice(bead, rShells[i], rShells[i+1])
         volShell = volShell + volBead
     return volShell
+
+def bridgeVolumes(beads, bridgeTol, relativeBridgeRadius, bridgeOffsetRatio):
+    addedBridgeVol = 0
+    removedBridgeVol = 0
+    count = 0
+    beadsCopy = beads.copy()
+    for bead1 in beads:
+        beadsCopy.remove(bead1)
+        for bead2 in beadsCopy:
+            beadDistance = bead1.distance(bead2)
+            if beadDistance < bead1.r + bead2.r + bridgeTol:
+                count = count + 1
+                bridgeRadius = relativeBridgeRadius * min(bead1.r, bead2.r)
+                intVol1 = volBridgeSlice(bead1, bridgeRadius, bridgeOffsetRatio)
+                intVol2 = volBridgeSlice(bead2, bridgeRadius, bridgeOffsetRatio)
+                addedBridgeVol = addedBridgeVol + pi * bridgeRadius**2 * (beadDistance - bridgeOffsetRatio * bead1.r - bridgeOffsetRatio * bead2.r) - intVol1 - intVol2
+                removedBridgeVol = removedBridgeVol + intVol1 + intVol2
+                ## NOTE: Some beads will be intersecting due to single precision. That's not handled here.
+    print("Number of Bridges:", count)
+    return addedBridgeVol, removedBridgeVol
+
+def volBridgeSlice(bead, bridgeRadius, offsetRatio):
+    """
+    Volume of intersection between bridge and bead
+    """
+    rho = bridgeRadius/bead.r
+    # eta = bead.pos()/bead.r ##FIXME, eta == 0
+    eta = 0
+    vol = CylSphIntVolume(rho, eta) * bead.r**3
+    ## There's no need to find the accurate internal union volume since it will be deleted to find only the extra volume added by bridges in the first place.
+    vol = vol/2 - pi * bridgeRadius**2 * offsetRatio * bead.r
+    return vol
 
 def volBeadSlice(bead, rInnerShell, rOuterShell):
     """
