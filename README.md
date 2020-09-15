@@ -89,11 +89,9 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [x] set rCylDelta after transform-scaling
 - [x] FIX: minimum bead radius is zero
 - [x] Implement Higher order mesh generation
-- [ ] Output surfs and volumes to a separate folder?
 - [ ] Bridges at the cylinder-bead interface
 - [ ] Check for memleaks. No errors. But some blocks are reachable (beads vector not deleted).
 - [ ] Write test inputs to run and verify code.
-- [ ] {!}Investigate capped meshes. Why did 400 beads take 5-10 hours? 
 - [x] Try embedded bead CP and mesh size control: not supported for HXT
 - [ ] Scrap the need for ./create.sh. create <file>.log automatically
 - [ ] Enlarged beads don't work at 0.001: Fix the rcyl assertion.
@@ -108,22 +106,33 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [x] Makefile depends on relative folder structure, fix it.
 - [ ] boost endian conversion is not available easily on JURECA: remove dependency
 - [ ] OCC parallel boolean uses up all cores
-- [ ] Update to OCC-7.4 in all systems
 - [ ] Plugin(AnalyseCurvedMesh)
 - [ ] Plugin(DiscretizationError) 
-- [ ] Improve scripts to be user friendly
-- [o] Implement porosity control: manipulate porosity by adding/removing beads
+- [X] Implement porosity control: manipulate porosity by adding/removing beads
     - [X] Removing beads
     - [ ] Adding beads
+    - [X] Improved algorithm: Deletion zones (% based? diameter based?)
 - [ ] Implement debug/release version handling?
 - [ ] it might be neater to scale bed, updatebounds, then translate bed
 - [ ] Make changes necessary for XNS Generic Implementation of Chromatography
 - [ ] Consider creating a mesh.info output with all the mesh data (lengths, volumes, quality etc) in json format
-- [ ] print exact version of gmsh and occt used
-- [ ] Checkpoint saves for 1D & 2D Meshes
+- [X] print exact version of gmsh used
+- [X] Checkpoint saves for 1D & 2D Meshes
 - [ ] Check that the output format is viable before starting the mesh
-- [ ] Output gmsh version in log file somehow
 - [ ] Improved centering algorithm for packed bed translation to origin
+- [ ] FIXME: makefile git-check/version impedes parallel build.
+- [ ] Write better documentation: Manual etc. 
+- [ ] Clean GeomInFile uses
+- [ ] Check if rectangular mesh sims run or not
+- [ ] Intuitive control & code for mesh sizing
+- [ ] Generate periodic meshes
+- [ ] More intuitive input parameters for dimensions etc. 
+    - [ ] zBot/zTop
+    - [ ] inlet/outlet
+    - [ ] nBeads
+    - [ ] Porosity Control
+- [ ] Fix GeomInFile and GeomOutFile in log output when using as input
+- [ ] Better architecture
 
 Known Issues
 
@@ -177,30 +186,13 @@ Known Issues
         - set named groups
         - meshing
 
-# Redesign
-- [ ] Check if rectangular mesh sims run or not
-
-- [X] Save Geom, Low Dim Meshes, Mesh, Fragments
-- [ ] Cleaner & More intuitive use of Save Geom (Remove all the if(saveGeom) as much as possible to streamline the code)
-- [ ] Allow Meshing with & without Container more easily
-- [X] Allow container type = Cylinder or rectangle
-- [X] Fix Named Groups for Rectangular Container
-- [ ] Generate periodic meshes
-- [X] Allow double/single precision packing data input
-- [ ] More intuitive input parameters for dimensions etc. 
-    - [ ] zBot/zTop
-    - [ ] inlet/outlet
-    - [ ] nBeads
-    - [ ] Porosity Control
-- [ ] Simpler Dry Run
-- [ ] Intuitive control & code for mesh sizing
-
 ## Notes
 - xCyl, yCyl, rCyl are modified in PackedBed::transformBeads()
 - if `nBeads > 0`, column length is not restricted
-- if `nBeads < 0`, column length AND bead packing is calculated by using zTop and zBot
+- if `nBeads < 0`, column length AND bead packing is calculated by using zTop and zBot. This is to ensure similar columns between mono/poly packings.
 - it is not possible to control the column size if nBeads is positive
 - inlet/outlet volumes are added w.r.t. zTop/zBot, not zMax/zMin.
-- Porosity control is only done by REMOVING beads. Adding beads is not yet supported. There are two methods of porosity control. Currently there is no interface to switch between the methods.
-    - Remove beads from the top (default). This method works best as it doesn't modify the packing in the bulk of the packed bed.
+- Porosity control is only done by REMOVING beads. Adding beads is not yet supported. There are three methods of porosity control. 
     - Remove beads by closest radius. This method finds the closest value of the radius to be removed, and removes it. This will be more accurate, but will also remove beads from the bulk of the packed bed. Not recommended. 
+    - Remove beads from the top end (default). This method works best as it doesn't modify the packing in the bulk of the packed bed.
+    - Remove closest beads from an end zone with length == radius_max (Best)
