@@ -127,6 +127,7 @@ void PackedBed::getBeads(Parameters * prm)
     std::cout << this->beads.size() << "/" << nBeadsMax << " beads in the selected range." << std::endl;
 
     updateBounds();
+    printBounds();
 
     std::cout << "Scaling bead radii in place... " << std::flush;
     for(std::vector<Bead*>::iterator it = beads.begin(); it != beads.end(); it++)
@@ -227,6 +228,9 @@ void PackedBed::updateBounds()
     xMax = -DBL_MAX, yMax = -DBL_MAX, zMax = -DBL_MAX;
     xMin = DBL_MAX, yMin = DBL_MAX, zMin = DBL_MAX;
     radius_avg=0;
+    radius_max= -DBL_MAX;
+    radius_min= DBL_MAX;
+
     /* vol_real_beads=0; */
     /* vol_geom_beads=0; */
 
