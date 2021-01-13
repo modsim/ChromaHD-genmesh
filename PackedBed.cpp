@@ -24,7 +24,8 @@ PackedBed::PackedBed(Parameters * prm)
     this->getBeads(prm);
 
     // transform packing data by scaling and offsetting the bed.
-    this->transformBeads(prm);
+    if (this->beads.size() != 0)
+        this->transformBeads(prm);
 
     if (prm->por_eps != DBL_MAX && prm->por_target != 0.0)
         this->fixPorosity(prm);
@@ -125,6 +126,9 @@ void PackedBed::getBeads(Parameters * prm)
     }
 
     std::cout << this->beads.size() << "/" << nBeadsMax << " beads in the selected range." << std::endl;
+
+    if (this->beads.size() < 0)
+        return
 
     updateBounds();
     printBounds();

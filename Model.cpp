@@ -317,7 +317,10 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
     // if not reading geometry
     if (prm->geomInfile.empty())
-        createNamedGroups(bv, prm->containerShape);
+    {
+        if (prm->fragment == 1)
+            createNamedGroups(bv, prm->containerShape);
+    }
     else
     {
         std::cout << "Importing geometry: " << prm->geomInfile << "... " << std::flush;
@@ -430,7 +433,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
 void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerShape)
 {
-    if(containerShape == -1)
+    if (containerShape == -1)
     {
         std::cout << ">>> Not creating Named Groups!!" << std::endl;
         return;
