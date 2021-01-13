@@ -58,84 +58,91 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 
 # Todo
 
-- [x] Number of bridges, minimum bead size
-- [x] Scale polydisperse bead meshes to smaller beads. -> set lc for individual beads.
-- [x] bounding box for beads
-- [x] Generate polydisperse beads with bridges.
-- [x] Implement Translation
-- [x] Check timings for fields vs boundary mesh sizes
-- [x] Implement PreTranslation
-- [x] Better preScalingFactor implementation
-- [x] Implement auto cylinder boundaries
-- [x] Cleaner outputs/logging.
-- [x] Improve default.in: folds should allow quick selection of kugelpackung
-- [x] Export geometry before mesh start: [ Possible ].
-- [x] Time spent on booleans
-- [x] Switch for fields vs brep meshing
-- [x] Fix poly capping on larger beads: use cones and frustums
-- [x] output git commit + state into stdout
-- [x] Switch off outputs of mesh fragments 
-- [x] Better makefile
-- [x] Check if it's possible to import meshes and modify them.
-- [x] Figure out how to calculate mesh volume for different components
-- [x] git state isn't perfect since it is dirty if default.in is changed before compile
-- [x] Allow cylinder constrained creation again(zbot, ztop)
-- [x] RCYL is calclated after bead radius modification: Change it to depend on initial packing
-- [x] Implement enlarged beads
-- [x] Save options (so that it can be reloaded and used with exported geometry?): Using logs now.
-- [-] Use OCC-fix for modified beads!!: Caused crashes
-- [-] Try volume generating: Unnecessary
-- [x] write meshes to individual folders. Including logs.
-- [x] set rCylDelta after transform-scaling
-- [x] FIX: minimum bead radius is zero
-- [x] Implement Higher order mesh generation
-- [ ] Bridges at the cylinder-bead interface
-- [ ] Check for memleaks. No errors. But some blocks are reachable (beads vector not deleted).
-- [ ] Write test inputs to run and verify code.
-- [x] Try embedded bead CP and mesh size control: not supported for HXT
-- [ ] Scrap the need for ./create.sh. create <file>.log automatically
-- [ ] Enlarged beads don't work at 0.001: Fix the rcyl assertion.
-- [ ] meshSizeMethod=0 doesn't work
-- [x] Extract mesh volume data into variables to output the mesh-scaled volume in stdout.
-- [x] Allow changing bead mesh scaling reference value: max/avg or number
-- [ ] Mesh Sensitivity
-    - [ ] Mesh.RandomFactor(3D)
-    - [ ] Mesh.ToleranceInitialDelaunay
-- [ ] clean duplicate local variables in packedbed.transform()
-- [x] Allow changing fragment output formats
-- [x] Makefile depends on relative folder structure, fix it.
-- [ ] boost endian conversion is not available easily on JURECA: remove dependency
-- [ ] OCC parallel boolean uses up all cores
-- [ ] Plugin(AnalyseCurvedMesh)
-- [ ] Plugin(DiscretizationError) 
-- [X] Implement porosity control: manipulate porosity by adding/removing beads
-    - [X] Removing beads
-    - [ ] Adding beads
-    - [X] Improved algorithm: Deletion zones (% based? diameter based?)
-- [ ] Implement debug/release version handling?
-- [ ] it might be neater to scale bed, updatebounds, then translate bed
-- [ ] Make changes necessary for XNS Generic Implementation of Chromatography
-- [ ] Consider creating a mesh.info output with all the mesh data (lengths, volumes, quality etc) in json format
-- [X] print exact version of gmsh used
-- [X] Checkpoint saves for 1D & 2D Meshes
-- [ ] Check that the output format is viable before starting the mesh
-- [ ] Improved centering algorithm for packed bed translation to origin
-- [ ] FIXME: makefile git-check/version impedes parallel build.
-- [ ] Write better documentation: Manual etc. 
-- [ ] Clean GeomInFile uses
-- [ ] Check if rectangular mesh sims run or not
-- [ ] Intuitive control & code for mesh sizing
-- [ ] Generate periodic meshes
-- [ ] More intuitive input parameters for dimensions etc. 
-    - [ ] zBot/zTop
-    - [ ] inlet/outlet
-    - [ ] nBeads
-    - [ ] Porosity Control
-- [ ] Fix GeomInFile and GeomOutFile in log output when using as input
-- [ ] Better architecture
+- [DROP] Use OCC-fix for modified beads!!: Caused crashes
+- [DROP] Try volume generating: Unnecessary
+- [DONE] Number of bridges, minimum bead size
+- [DONE] Scale polydisperse bead meshes to smaller beads. -> set lc for individual beads.
+- [DONE] bounding box for beads
+- [DONE] Generate polydisperse beads with bridges.
+- [DONE] Implement Translation
+- [DONE] Check timings for fields vs boundary mesh sizes
+- [DONE] Implement PreTranslation
+- [DONE] Better preScalingFactor implementation
+- [DONE] Implement auto cylinder boundaries
+- [DONE] Cleaner outputs/logging.
+- [DONE] Improve default.in: folds should allow quick selection of kugelpackung
+- [DONE] Export geometry before mesh start: [ Possible ].
+- [DONE] Time spent on booleans
+- [DONE] Switch for fields vs brep meshing
+- [DONE] Fix poly capping on larger beads: use cones and frustums
+- [DONE] output git commit + state into stdout
+- [DONE] Switch off outputs of mesh fragments 
+- [DONE] Better makefile
+- [DONE] Check if it's possible to import meshes and modify them.
+- [DONE] Figure out how to calculate mesh volume for different components
+- [DONE] git state isn't perfect since it is dirty if default.in is changed before compile
+- [DONE] Allow cylinder constrained creation again(zbot, ztop)
+- [DONE] RCYL is calclated after bead radius modification: Change it to depend on initial packing
+- [DONE] Implement enlarged beads
+- [DONE] Save options (so that it can be reloaded and used with exported geometry?): Using logs now.
+- [DONE] write meshes to individual folders. Including logs.
+- [DONE] set rCylDelta after transform-scaling
+- [DONE] FIX: minimum bead radius is zero
+- [DONE] Implement Higher order mesh generation
+- [DONE] Try embedded bead CP and mesh size control: not supported for HXT yet
+- [DONE] Extract mesh volume data into variables to output the mesh-scaled volume in stdout.
+- [DONE] Allow changing bead mesh scaling reference value: max/avg or number
+- [DONE] Allow changing fragment output formats
+- [DONE] Makefile depends on relative folder structure, fix it.
+- [DONE] print exact version of gmsh used
+- [DONE] Checkpoint saves for 1D & 2D Meshes
+- [DONE] Implement porosity control: manipulate porosity by adding/removing beads
+    - [DONE] Removing beads
+    - [TASK] Adding beads
+    - [DONE] Improved algorithm: Deletion zones (% based? diameter based?)
+- [TASK] Bridges at the cylinder-bead interface
+- [TASK] Check for memleaks. No errors. But some blocks are reachable (beads vector not deleted).
+- [TASK] Write test inputs to run and verify code.
+- [TASK] Scrap the need for ./create.sh. create <file>.log automatically
+- [TASK] Enlarged beads don't work at 0.001: Fix the rcyl assertion.
+- [TASK] meshSizeMethod=0 doesn't work
+- [TASK] Mesh Sensitivity
+    - [TASK] Mesh.RandomFactor(3D)
+    - [TASK] Mesh.ToleranceInitialDelaunay
+- [TASK] clean duplicate local variables in packedbed.transform()
+- [TASK] boost endian conversion is not available easily on JURECA: remove dependency
+- [TASK] OCC parallel boolean uses up all cores
+- [TASK] Plugin(AnalyseCurvedMesh)
+- [TASK] Plugin(DiscretizationError) 
+- [TASK] Implement debug/release version handling?
+- [TASK] it might be neater to scale bed, updatebounds, then translate bed
+- [TASK] Make changes necessary for XNS Generic Implementation of Chromatography
+- [TASK] Consider creating a mesh.info output with all the mesh data (lengths, volumes, quality etc) in json format
+- [TASK] Use rCyl, xyz Cyl if provided
+- [TASK] Check that the output format is viable before starting the mesh
+- [TASK] Improved centering algorithm for packed bed translation to origin
+- [TASK] makefile git-check/version impedes parallel build.
+- [TASK] Write better documentation: Manual etc. 
+- [TASK] Clean GeomInFile uses
+- [TASK] Check if rectangular mesh sims run or not
+- [TASK] Intuitive control & code for mesh sizing
+- [TASK] Generate periodic meshes
+- [TASK] More intuitive input parameters for dimensions etc. 
+    - [TASK] zBot/zTop
+    - [TASK] inlet/outlet
+    - [TASK] nBeads
+    - [TASK] Porosity Control
+- [TASK] Fix GeomInFile and GeomOutFile in log output when using as input
+- [TASK] Better architecture
+- [TASK] let genmesh run in a directory with input file and generate necessary files in the same directory. No output subdir nonsense.
+
+[PROJ: Periodic]
+    - [TASK] Create flag
+    - [TASK] copy geometry 4x
+    - [TASK] Cut with plane
+    - [TASK] Generate periodic mesh
 
 Known Issues
-
 - Netgen optimizer crashes sometimes. (After mesh size constraints were applied to surfaces)
 - Geometry.ScalingFactor doesn't work. Use preScalingFactor instead.
 - poly5 fails (beads peek out of container). Just use poly-full.
