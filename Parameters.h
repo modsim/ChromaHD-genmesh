@@ -55,6 +55,7 @@ public:
     int packingPrecision                           = 4;
     int fixPorosityMethod                          = 1;
     int containerShape                             = 0;
+    int periodic                                   = 0;
 
     double zBot                           = 0.0;
     double zTop                           = 0.0;

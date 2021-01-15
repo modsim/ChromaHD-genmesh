@@ -1,0 +1,202 @@
+# GIT STATE: d0e6ea90509c4cdd77f934a08349a1d314b016e5 (dirty!)
+Error   : Unknown number option 'General.NativeFileChooser'
+#bridgeOffsetRatio automatically calculated!
+zBot                                        0.0000000000e+00
+zTop                                        0.0000000000e+00
+rCyl                                        0.0000000000e+00
+rCylDelta                                   1.0000000000e-02
+xCyl                                        0.0000000000e+00
+yCyl                                        0.0000000000e+00
+inlet                                       1.5000000000e+00
+outlet                                      1.5000000000e+00
+nBeads                                      1
+meshSizeMethod                              1
+outputFragments                             1
+rFactor                                     9.9970000000e-01
+preScalingFactor                            1.0000000000e+00
+lc                                          0.0000000000e+00
+lc_beads                                    2.6000000000e-01
+lc_out                                      2.6000000000e-01
+refBeadRadius                               0.0000000000e+00
+refBeadSize                                 avg
+fieldThresholdMinFactor                     5.0000000000e-01
+fieldThresholdMaxFactor                     9.9000000000e-01
+bridgeTol                                   -9.9900000000e+02
+relativeBridgeRadius                        0.0000000000e+00
+bridgeOffsetRatio                           9.8000000000e-01
+booleanOperation                            0
+fragment                                    1
+Named.beadVolume                            1
+Named.interstitialVolume                    1
+Named.beadSurface                           1
+Named.outerSurface                          1
+General.NumThreads                          8
+Geometry.OCCParallel                        1
+Geometry.ScalingFactor                      1.0000000000e+00
+Geometry.Tolerance                          1.0000000000e-08
+Geometry.ToleranceBoolean                   0.0000000000e+00
+Mesh.ScalingFactor                          1.0000000000e-04
+Mesh.CharacteristicLengthExtendFromBoundary 0
+Mesh.CharacteristicLengthMin                0.0000000000e+00
+Mesh.CharacteristicLengthMax                1.0000000000e+22
+Mesh.CharacteristicLengthFromCurvature      0
+Mesh.CharacteristicLengthFromPoints         0
+Mesh.CharacteristicLengthFactor             1.0000000000e+00
+Mesh.MinimumCirclePoints                    7
+Mesh.OptimizeThreshold                      3.0000000000e-01
+Mesh.MaxNumThreads                          8
+Mesh.Smoothing                              1
+Mesh.SmoothRatio                            1.8000000000e+00
+Mesh.Algorithm                              5
+Mesh.Algorithm3D                            10
+Mesh.Optimize                               1
+Mesh.HighOrderOptimize                      0
+Mesh.ElementOrder                           1
+Mesh.OptimizeNetgen                         1
+Mesh.RefineSteps                            10
+Mesh.Generate                               3
+packing                                     packing/mono-full.xyzd
+geomInfile                                  
+geomOutfile                                 
+outpath                                     output/
+fragmentFormat                              vtk
+dryRun                                      0
+Output directory exists!
+reading packing ... done!
+
+Selecting beads in range...
+done!
+Sorting beads according to z-value... done!
+1/147456 beads in the selected range.
+Scaling bead radii in place... done!
+
+== Before Transform ==
+xCyl: 3.3488295078e+00
+yCyl: 8.2723340988e+00
+rCyl: 5.0000000000e-01
+xMax: 3.8486795078e+00
+xMin: 2.8489795078e+00
+yMax: 8.7721840988e+00
+yMin: 7.7724840988e+00
+zBot: 0.0000000000e+00
+zTop: 0.0000000000e+00
+
+Translating beads by (-3.3488295078e+00, -8.2723340988e+00, -0.0000000000e+00)... done!
+Scaling beads by 1.0000000000e+00... done!
+
+== After Transform ==
+xCyl: 0.0000000000e+00
+yCyl: 0.0000000000e+00
+rCyl: 5.1000000000e-01
+xMax: 4.9985000000e-01
+xMin: -4.9985000000e-01
+yMax: 4.9985000000e-01
+yMin: -4.9985000000e-01
+zBot: 0.0000000000e+00
+zTop: 0.0000000000e+00
+
+average bead radius: 4.9985000000e-01
+maximum bead radius: 4.9985000000e-01
+minimum bead radius: 4.9985000000e-01
+
+=== After Mesh Scaling ===
+Mesh Scaling Factor: 1.0000000000e-04
+Cylinder Radius: 5.1000000000e-05
+Cylinder Volume: 2.4513847476e-12
+Real Int Volume: 1.9277859720e-12
+Real Bead Volume: 5.2359877560e-13
+Modified Bead Volume: (without bridges) 5.2312767806e-13
+
+Bead Geometry Volume Error: 8.9973002700e-02%
+
+Column Length: 3.0000000000e-04
+
+Bed Length: 9.9970000000e-05
+zTop - zBot: 0.0000000000e+00
+Bed Cylinder Volume: 8.1688311072e-13
+Real Porosity: 3.5902852106e-01
+Modified Porosity (without bridges): 3.5960522235e-01
+
+Creating beads... done!
+Creating Bridges... done!
+Creating cylinder... done!
+Setting Background Field: Min
+Fragmenting Volumes... done!
+synchronizing... done!
+
+Number of Beads: 1
+Number of Bridges: 0
+Number of internal volumes: 1
+Info    : Boolean time: 0 s
+
+Listing Interstitial Volume... done!
+Listing Outer Surfaces... done!
+Listing Bead Volumes... done!
+Listing Bead Surfaces... done!
+Adding Physical Groups... done!
+Setting Physical Names... done!
+
+synchronizing... done!
+Info    : Meshing 1D...
+Info    : Meshing curve 2 (Circle)
+Info    : Meshing curve 5 (Line)
+Info    : Meshing curve 4 (Circle)
+Info    : Meshing curve 6 (Circle)
+Info    : Done meshing 1D (0.000766539 s)
+Info    : Meshing 2D...
+Info    : Meshing surface 4 (Plane, Delaunay)
+Info    : Meshing surface 2 (Cylinder, Delaunay)
+Info    : Meshing surface 3 (Plane, Delaunay)
+Info    : Meshing surface 1 (Sphere, Delaunay)
+Info    : Done meshing 2D (0.00880456 s)
+Info    : Meshing 3D...
+Info    : 3D Meshing 2 volumes with 1 connected components
+Info    : Creating an empty mesh with 280 vertices
+Info    : Initialization of tet. mesh
+Info    : Initialization reserved 67696 Tet.
+Info    : Delaunay of        276 vertices on   8 threads	- mesh.nvert: 4         
+Info    :   1 thrd |       276/276       -> 100.0%       	- mesh.nvert: 280       
+Info    : Delaunay done !         0 skipped
+Info    : mem. allocated: 0.00GB - mesh.ntet: 2032         - mesh.nvert: 280       
+Info    : Recovering 16 missing facet(s)
+PLC Error:  A segment and a facet intersect at point (-0.224297,-0.439401,-0.0398576).
+  Segment: [33,80] #-1 (2)
+  Facet:   [171,185,196] #1
+Info    : failed to recover constrained lines/triangles
+Info    : function failed
+Info    : function failed
+Error   : HXT 3D mesh failed
+Error   : No elements in volume 1 2 
+Info    : Done meshing 3D (0.00685681 s)
+Info    : 281 vertices 602 elements
+Error   : ------------------------------
+Error   : Mesh generation error summary
+Error   :     0 warnings
+Error   :     2 errors
+Error   : Check the full log for details
+Error   : ------------------------------
+Info    : Writing 'output//1-bead-o1-0.26/1-bead-o1-0.26.msh2'...
+Info    : Done writing 'output//1-bead-o1-0.26/1-bead-o1-0.26.msh2'
+
+Calculating mesh volumes. Note: Multiply outputs by 1.0000000000e-12
+[ Column Volume ]
+Info    : Running Plugin(MeshVolume)...
+Info    : Mesh volume (physical -1 | dimension 3): 0
+Info    : Done running Plugin(MeshVolume)
+
+[ Interstitial Volume ]
+Info    : Running Plugin(MeshVolume)...
+Info    : Mesh volume (physical 5 | dimension 3): 0
+Info    : Done running Plugin(MeshVolume)
+
+[ Bead Volume ]
+Info    : Running Plugin(MeshVolume)...
+Info    : Mesh volume (physical 6 | dimension 3): 0
+Info    : Done running Plugin(MeshVolume)
+
+Info    : Writing 'output//1-bead-o1-0.26/1-bead-o1-0.26.msh2_interstitial.vtk'...
+Info    : Done writing 'output//1-bead-o1-0.26/1-bead-o1-0.26.msh2_interstitial.vtk'
+Info    : Writing 'output//1-bead-o1-0.26/1-bead-o1-0.26.msh2_beads.vtk'...
+Info    : Done writing 'output//1-bead-o1-0.26/1-bead-o1-0.26.msh2_beads.vtk'
+Info    : Wall time: 0 s (0.000000 h)
+Info    : CPU  time: 7357.556857 s

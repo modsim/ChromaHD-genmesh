@@ -33,39 +33,21 @@ Model::~Model()
 
 }
 
-void Model::createGeometry(PackedBed * pb, Parameters * prm)
+void createBeadGeometry(std::vector<Bead *> beads, Parameters* prm, std::vector<std::pair<int, int>> &dimTagsBeads, std::vector<int> &tBeadCPs, int &count, std::vector<double> &vCount, double xoff, double yoff)
 {
-    if(prm->dryRun)
-        return;
-
-    std::vector<Bead *> beads = pb->beads;
-
-    std::vector<std::pair<int, int> > ov;
-    std::vector<std::pair<int, int> > cv;
-
-    std::vector<double> vCount;
-
-
-    double zCylBot = ( prm->zBot - prm->inlet  );
-    double zCylTop = ( prm->zTop + prm->outlet );
-    double xCyl    = prm->xCyl;
-    double yCyl    = prm->yCyl;
-    double rCyl    = prm->rCyl;
-
-    int count = 0;
-
-    int tag, ctag;
     std::cout << "Creating beads... " << std::flush;
+    int tag, ctag;
     for (std::vector<Bead *>::iterator iter = beads.begin(); iter != beads.end(); iter++ )
     {
-        double x = (*iter)->getX();
-        double y = (*iter)->getY();
+        double x = (*iter)->getX() + xoff;
+        double y = (*iter)->getY() + yoff;
         double z = (*iter)->getZ();
         double r = (*iter)->getR();
 
         if (prm->geomInfile.empty())
         {
             tag = factory::addSphere(x, y, z, r);
+            /* std::cout << tag << std::endl; */
             ctag = factory::addPoint(x, y, z, prm->lc_beads, -1);
 
             (*iter)->setTag(tag);
@@ -97,6 +79,56 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
 
     }
     std::cout << "done!" << std::endl;
+
+}
+
+void createContainerGeometry(PackedBed * pb, Parameters * prm, double xCyl, double yCyl, double rCyl, double zCylTop, double zCylBot, std::vector<std::pair<int, int>> &dimTagsCyl)
+{
+    std::cout << "Creating container... " << std::flush;
+    if (prm->geomInfile.empty())
+    {
+        if (prm->containerShape == 0)
+        {
+            std::cout << "Creating cylindrical container." << std::endl;
+            dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
+
+        }
+        else if (prm->containerShape == 1)
+        {
+            std::cout << "Creating rectangular container." << std::endl;
+            dimTagsCyl.push_back( {3, factory::addBox(pb->xMin - prm->rCylDelta,pb->yMin - prm->rCylDelta,zCylBot -prm->rCylDelta, pb->xMax - pb->xMin + prm->rCylDelta,pb->yMax - pb->yMin + prm->rCylDelta, zCylTop-zCylBot + prm->rCylDelta)});
+        }
+        else
+        {
+            std::cout << "Skipping container creation." << std::endl;
+        }
+
+    }
+
+}
+
+void Model::createGeometry(PackedBed * pb, Parameters * prm)
+{
+    if(prm->dryRun)
+        return;
+
+    std::vector<Bead *> beads = pb->beads;
+
+    std::vector<std::pair<int, int> > ov;
+    std::vector<std::pair<int, int> > cv;
+
+    std::vector<double> vCount;
+
+
+    double zCylBot = ( prm->zBot - prm->inlet  );
+    double zCylTop = ( prm->zTop + prm->outlet );
+    double xCyl    = prm->xCyl;
+    double yCyl    = prm->yCyl;
+    double rCyl    = prm->rCyl;
+
+    int count = 0;
+
+    createBeadGeometry(beads, prm, dimTagsBeads, tBeadCPs, count, vCount, 0, 0);
 
     int tagBridge;
 
@@ -201,26 +233,25 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
 
     std::cout << "done!" << std::endl;
 
-    std::cout << "Creating container... " << std::flush;
-    if (prm->geomInfile.empty())
-    {
-        if (prm->containerShape == 0)
-        {
-            std::cout << "Creating cylindrical container." << std::endl;
-            dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
+    createContainerGeometry(pb, prm, xCyl, yCyl, rCyl, zCylTop, zCylBot, dimTagsCyl);
 
-        }
-        else if (prm->containerShape == 1)
-        {
-            std::cout << "Creating rectangular container." << std::endl;
-            dimTagsCyl.push_back( {3, factory::addBox(pb->xMin - prm->rCylDelta,pb->yMin - prm->rCylDelta,zCylBot -prm->rCylDelta, pb->xMax - pb->xMin + prm->rCylDelta,pb->yMax - pb->yMin + prm->rCylDelta, zCylTop-zCylBot + prm->rCylDelta)});
-        }
-        else
-        {
-            std::cout << "Skipping container creation." << std::endl;
-        }
+
+    if (prm->periodic == 1)
+    {
+        std::cout << "Periodic meshing enabled... It is unsupported!" << std::endl;
+        createBeadGeometry(beads, prm, dimTagsBeads, tBeadCPs, count, vCount, pb->xMax-pb->xMin, 0);
+        createBeadGeometry(beads, prm, dimTagsBeads, tBeadCPs, count, vCount, 0, pb->yMax-pb->yMin);
+        createBeadGeometry(beads, prm, dimTagsBeads, tBeadCPs, count, vCount, -(pb->xMax-pb->xMin), 0);
+        createBeadGeometry(beads, prm, dimTagsBeads, tBeadCPs, count, vCount, 0, -(pb->yMax-pb->yMin));
 
     }
+
+    /* for (std::vector<std::pair<int, int>>::iterator it = dimTagsBeads.begin(); it != dimTagsBeads.end(); it++) */
+    /* { */
+    /*     std::cout << (*it).second << std::endl; */
+    /* } */
+
+    /* exit(-1); */
 
     if (prm->meshSizeMethod == 1)
     {
@@ -252,6 +283,25 @@ void Model::mesh(std::string outfile, Parameters * prm)
     std::vector<std::pair<int, int> > cv;
     std::vector<std::vector<std::pair<int, int> > > ovv;
 
+    cv = dimTagsBeads;
+
+    /* // TODO: This will create new dimtags. Ensure that it doesn't mess with anything */
+    /* std::cout << "Intersecting Volumes... " << std::flush; */
+    /* factory::intersect(dimTagsBeads, dimTagsCyl, cv, ovv, -1, true, false); */
+    /* std::cout << "done!" << std::endl; */
+
+    /* for (std::vector<std::pair<int, int>>::iterator it = dimTagsCyl.begin(); it != dimTagsCyl.end(); it++) */
+    /* { */
+    /*     std::cout << (*it).second << std::endl; */
+    /* } */
+
+    /* for (std::vector<std::pair<int, int>>::iterator it = cv.begin(); it != cv.end(); it++) */
+    /* { */
+    /*     std::cout << (*it).second << std::endl; */
+    /* } */
+
+    /* exit(-1); */
+
     long bool_start = gmsh::logger::getWallTime();
 
     if (prm->geomInfile.empty())
@@ -262,7 +312,8 @@ void Model::mesh(std::string outfile, Parameters * prm)
             if (dimTagsBridges.size() == 0) dimTagsBridges = {3, dimTagsBeads.back()};
 
             std::cout << "Fusing Beads and Bridges... " << std::flush;
-            factory::fuse(dimTagsBeads, dimTagsBridges, ov, ovv );
+            /* factory::fuse(dimTagsBeads, dimTagsBridges, ov, ovv ); */
+            factory::fuse(cv, dimTagsBridges, ov, ovv );
             std::cout << "done!" << std::endl;
         }
         else if (prm->booleanOperation == 2)
@@ -274,19 +325,22 @@ void Model::mesh(std::string outfile, Parameters * prm)
             }
 
             std::cout << "Capping Beads... " << std::flush;
-            factory::cut(dimTagsBeads, dimTagsBridges, ov, ovv );
+            /* factory::cut(dimTagsBeads, dimTagsBridges, ov, ovv ); */
+            factory::cut(cv, dimTagsBridges, ov, ovv );
             std::cout << "done!" << std::endl;
 
         }
         else
         {
-            ov = dimTagsBeads;
+            /* ov = dimTagsBeads; */
+            ov = cv;
         }
 
         // Fragment cylinder w.r.t. beads
         if (prm->fragment)
         {
-            if (ov.size() == 0) ov = dimTagsBeads;
+            /* if (ov.size() == 0) ov = dimTagsBeads; */
+            if (ov.size() == 0) ov = cv;
 
             std::cout << "Fragmenting Volumes... " << std::flush;
             factory::fragment(dimTagsCyl, ov, bv, ovv );
@@ -301,7 +355,8 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
         std::cout << std::endl;
 
-        std::cout << "Number of Beads: "            << dimTagsBeads.size()   << std::endl;
+        /* std::cout << "Number of Beads: "            << dimTagsBeads.size()   << std::endl; */
+        std::cout << "Number of Beads: "            << cv.size()   << std::endl;
         std::cout << "Number of Bridges: "          << dimTagsBridges.size() << std::endl;
         std::cout << "Number of internal volumes: " << ov.size()             << std::endl;
 
@@ -499,3 +554,4 @@ void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerS
     std::cout << "done!" << std::endl;
 
 }
+

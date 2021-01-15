@@ -152,6 +152,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "Mesh.RefineSteps")                            MeshRefineSteps                            = atoi(val.at(0).c_str());
     else if(key == "Mesh.Generate")                               MeshGenerate                               = atoi(val.at(0).c_str());
     else if(key == "dryRun")                                      dryRun                                     = atoi(val.at(0).c_str());
+    else if(key == "periodic")                                    periodic                                   = atoi(val.at(0).c_str());
 
     /* else if(key == "Named.inlet")                                 NamedInlet                                 = atoi(val.at(0).c_str()); */
     /* else if(key == "Named.outlet")                                NamedOutlet                                = atoi(val.at(0).c_str()); */
@@ -260,6 +261,7 @@ void Parameters::print()
     std::cout << "outpath                                     "<< this->outpath                                    << std::endl;
     std::cout << "fragmentFormat                              "<< this->fragmentFormat                             << std::endl;
     std::cout << "dryRun                                      "<< this->dryRun                                     << std::endl;
+    std::cout << "periodic                                    "<< this->periodic                                   << std::endl;
 
 }
 
