@@ -159,9 +159,22 @@ void PackedBed::transformBeads(Parameters * prm)
     std::cout << "== Before Transform ==" << std::endl;
     printBounds();
 
-    double offsetx = -xCyl;
-    double offsety = -yCyl;
-    double offsetz = -zBot;
+    double offsetx;
+    double offsety;
+    double offsetz;
+
+    if (prm->translateOffsets == "auto")
+    {
+        offsetx = -xCyl;
+        offsety = -yCyl;
+        offsetz = -zBot;
+    }
+    else
+    {
+        offsetx = prm->tOffX;
+        offsety = prm->tOffY;
+        offsetz = prm->tOffZ;
+    }
 
     // Use computed offset values to autoscale and translate packed bed
     // This way the bottom of the bed coincides with the x-y plane

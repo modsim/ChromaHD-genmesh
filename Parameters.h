@@ -98,8 +98,11 @@ public:
     double dx                             = 0.0;
     double dy                             = 0.0;
     double dz                             = 0.0;
+    double tOffX                          = 0.0;
+    double tOffY                          = 0.0;
+    double tOffZ                          = 0.0;
 
-
+    std::string translateOffsets;
     std::string packfile;
     std::string geomOutfile;
     std::string geomInfile;

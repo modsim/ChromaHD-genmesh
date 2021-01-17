@@ -194,6 +194,18 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
         yCyl = atof(val.at(1).c_str());
         rCyl = atof(val.at(2).c_str());
     }
+    else if (key == "translateOffsets")
+    {
+        if (val.at(0) == "auto")
+            translateOffsets = "auto";
+        else
+        {
+            tOffX = atof(val.at(0).c_str());
+            tOffY = atof(val.at(1).c_str());
+            tOffZ = atof(val.at(2).c_str());
+        }
+
+    }
 
     else if(key == "packing") packfile = val.at(0);
     else if(key == "geomInfile") geomInfile = val.at(0);
