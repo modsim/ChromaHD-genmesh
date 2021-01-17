@@ -88,20 +88,50 @@ void createContainerGeometry(PackedBed * pb, Parameters * prm, double xCyl, doub
     std::cout << "Creating container... " << std::flush;
     if (prm->geomInfile.empty())
     {
-        if (prm->containerShape == 0)
+        if (prm->autoContainment == 1)
         {
-            std::cout << "Creating cylindrical container." << std::endl;
-            dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
+
+            if (prm->containerShape == 0)
+            {
+                std::cout << "Creating cylindrical container automatically." << std::endl;
+                dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
+
+            }
+            else if (prm->containerShape == 1)
+            {
+                std::cout << "Creating rectangular container automatically." << std::endl;
+                dimTagsCyl.push_back( {3, factory::addBox(pb->xMin - prm->rCylDelta,pb->yMin - prm->rCylDelta,zCylBot -prm->rCylDelta, pb->xMax - pb->xMin + 2 * prm->rCylDelta,pb->yMax - pb->yMin + 2 * prm->rCylDelta, zCylTop-zCylBot + prm->rCylDelta)});
+            }
+            else
+            {
+                std::cout << "Skipping container creation." << std::endl;
+            }
 
         }
-        else if (prm->containerShape == 1)
+        else if (prm->autoContainment == 0)
         {
-            std::cout << "Creating rectangular container." << std::endl;
-            dimTagsCyl.push_back( {3, factory::addBox(pb->xMin - prm->rCylDelta,pb->yMin - prm->rCylDelta,zCylBot -prm->rCylDelta, pb->xMax - pb->xMin + 2 * prm->rCylDelta,pb->yMax - pb->yMin + 2 * prm->rCylDelta, zCylTop-zCylBot + prm->rCylDelta)});
+            if (prm->containerShape == 0)
+            {
+                std::cout << "Creating cylindrical container manually." << std::endl;
+                //TODO: Ensure that xCyl yCyl rCyl are immutable in prm
+                dimTagsCyl.push_back( {3, factory::addCylinder(prm->xCyl,prm->yCyl, zCylBot, 0,0,zCylTop-zCylBot, prm->rCyl) } );
+
+            }
+            else if (prm->containerShape == 1)
+            {
+                std::cout << "Creating rectangular container manually." << std::endl;
+                dimTagsCyl.push_back( {3, factory::addBox(prm->x0, prm->y0, prm->z0, prm->dx, prm->dy, prm->dz)});
+            }
+            else
+            {
+                std::cout << "Skipping container creation manually." << std::endl;
+            }
+
         }
         else
         {
-            std::cout << "Skipping container creation." << std::endl;
+            std::cout << "Invalid autoContainment value!" << std::endl;
+            exit(-1);
         }
 
     }

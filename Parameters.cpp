@@ -95,6 +95,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
 
     else if(key == "packingPrecision")                            packingPrecision                           = atoi(val.at(0).c_str());
     else if(key == "containerShape")                              containerShape                             = atoi(val.at(0).c_str());
+    else if(key == "autoContainment")                             autoContainment                            = atoi(val.at(0).c_str());
     else if(key == "zTop")                                        zTop                                       = atof(val.at(0).c_str());
     else if(key == "rCyl")                                        rCyl                                       = atof(val.at(0).c_str());
     else if(key == "rCylDelta")                                   rCylDelta                                  = atof(val.at(0).c_str());
@@ -177,6 +178,22 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
         bridgeTol = lc/10;
         booleanOperation = 2;
     }
+    else if(key == "box")
+    {
+        x0 = atof(val.at(0).c_str());
+        y0 = atof(val.at(1).c_str());
+        z0 = atof(val.at(2).c_str());
+        dx = atof(val.at(3).c_str());
+        dy = atof(val.at(4).c_str());
+        dz = atof(val.at(5).c_str());
+
+    }
+    else if (key == "cyl")
+    {
+        xCyl = atof(val.at(0).c_str());
+        yCyl = atof(val.at(1).c_str());
+        rCyl = atof(val.at(2).c_str());
+    }
 
     else if(key == "packing") packfile = val.at(0);
     else if(key == "geomInfile") geomInfile = val.at(0);
@@ -185,7 +202,6 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "refBeadSize") refBeadSize = val.at(0);
     else if(key == "fragmentFormat") fragmentFormat = val.at(0);
     else throw mixd::MixdException("Unknown keyword: " + key);
-
 
 
 }
@@ -197,6 +213,7 @@ void Parameters::print()
 
     std::cout << "packingPrecision                            "<< this->packingPrecision                           << std::endl;
     std::cout << "containerShape                              "<< this->containerShape                             << std::endl;
+    std::cout << "autoContainment                             "<< this->autoContainment                            << std::endl;
     std::cout << "zBot                                        "<< this->zBot                                       << std::endl;
     std::cout << "zTop                                        "<< this->zTop                                       << std::endl;
     std::cout << "rCyl                                        "<< this->rCyl                                       << std::endl;

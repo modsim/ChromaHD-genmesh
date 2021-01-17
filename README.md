@@ -137,10 +137,17 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [TASK] let genmesh run in a directory with input file and generate necessary files in the same directory. No output subdir nonsense.
 
 [PROJ: Periodic]
-    - [TASK] Create flag
-    - [TASK] copy geometry 4x
-    - [TASK] Cut with plane
+    - [DONE] Create flag
+    - [DONE] copy geometry 4x
+    - [DONE] Cut with plane: Intersection
+    - Fix the transform problem: 
+        - Allow forced transform parameters
+        - Allow switch for transform parameters
+        - Allow forced container geometry
     - [TASK] Generate periodic mesh
+
+[PROJ: Architecture]
+    - Comments for everything
 
 Known Issues
 - Netgen optimizer crashes sometimes. (After mesh size constraints were applied to surfaces)

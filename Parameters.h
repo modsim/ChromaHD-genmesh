@@ -56,6 +56,7 @@ public:
     int fixPorosityMethod                          = 1;
     int containerShape                             = 0;
     int periodic                                   = 0;
+    int autoContainment                            = 0;
 
     double zBot                           = 0.0;
     double zTop                           = 0.0;
@@ -91,6 +92,12 @@ public:
     double rCylDelta                      = 0.0;
     double por_target                     = 0.0;
     double por_eps                        = DBL_MAX;
+    double x0                             = 0.0;
+    double y0                             = 0.0;
+    double z0                             = 0.0;
+    double dx                             = 0.0;
+    double dy                             = 0.0;
+    double dz                             = 0.0;
 
 
     std::string packfile;
