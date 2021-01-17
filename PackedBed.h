@@ -19,6 +19,7 @@ class PackedBed {
     public:
         PackedBed();
         PackedBed(Parameters * prm);
+        PackedBed(PackedBed * pb);
         virtual ~PackedBed();
 
         void printPacking();
@@ -61,6 +62,10 @@ class PackedBed {
         void fixPorosity(Parameters * prm);
         void geometryStats(Parameters * prm);
         int findBeadWithRadius(double value, std::vector<double> vBeadRads);
+        double calculateMinDistance(std::vector<Bead *> beads);
+
+        void stackPeriodicPacking();
+        void absorb(PackedBed * pb);
 
 };
 

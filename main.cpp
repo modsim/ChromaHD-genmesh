@@ -26,20 +26,25 @@ int main(int argc, char** argv) {
 
     if (argc == 1)
     {
+        // If program is called without arguments, use default inputs and outputs
+
         infile = "default.in";
         outfile = "output.msh2";
         std::cout << "# Will store mesh in output.msh!" << std::endl;
     }
     else if (argc == 2)
     {
+        // If one argument is provided,
         infile = std::string(argv[1]);
         outfile = "output.msh2";
     }
     else
     {
+        //If both input and output files are provided as commandline arguments
         infile = std::string(argv[1]);
         outfile = std::string(argv[2]);
     }
+
     try{
 
         std::cout << std::scientific;

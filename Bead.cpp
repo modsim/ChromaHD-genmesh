@@ -43,6 +43,21 @@ double Bead::getR() const {
     return r;
 }
 
+/* double Bead::setZ(double Z) { */
+/*     this->z = Z; */
+/* } */
+
+/* double Bead::setY(double Y) { */
+/*     this->y = Y; */
+/* } */
+
+/* double Bead::setX(double X) { */
+/*     this->x = X; */
+/* } */
+
+/* double Bead::setR(double R) { */
+/*     this->r = R; */
+/* } */
 
 void Bead::translate(double offsetx, double offsety, double offsetz)
 {

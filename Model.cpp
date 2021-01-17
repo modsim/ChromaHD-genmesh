@@ -33,10 +33,14 @@ Model::~Model()
 
 }
 
+/* Function to create bead geometry.
+ * xoff, yoff are for periodic cases, to stack the bead geometries in the lateral dimensions
+ */
 void createBeadGeometry(std::vector<Bead *> beads, Parameters* prm, std::vector<std::pair<int, int>> &dimTagsBeads, std::vector<int> &tBeadCPs, int &count, std::vector<double> &vCount, double xoff, double yoff)
 {
     std::cout << "Creating beads... " << std::flush;
     int tag, ctag;
+
     for (std::vector<Bead *>::iterator iter = beads.begin(); iter != beads.end(); iter++ )
     {
         double x = (*iter)->getX() + xoff;
@@ -57,15 +61,9 @@ void createBeadGeometry(std::vector<Bead *> beads, Parameters* prm, std::vector<
             tBeadCPs.push_back(ctag);
         }
 
-        /* model::mesh::field::add("Ball", ++count); */
-        /* model::mesh::field::setNumber(count, "VIn", r/(prm->refBeadRadius) * prm->lc_beads); */
-        /* model::mesh::field::setNumber(count, "VOut", prm->lc_out); */
-        /* model::mesh::field::setNumber(count, "XCenter", x); */
-        /* model::mesh::field::setNumber(count, "YCenter", y); */
-        /* model::mesh::field::setNumber(count, "ZCenter", z); */
-        /* model::mesh::field::setNumber(count, "Radius", prm->fieldExtensionFactor * r); */
-        /* vCount.push_back(count); */
-
+        /*
+         * Distance/Threshold allows creating gradient mesh sizes within the beads
+         */
         model::mesh::field::add("Distance", ++count);
         model::mesh::field::setNumbers(count, "NodesList", {double(ctag)});
 
@@ -82,6 +80,9 @@ void createBeadGeometry(std::vector<Bead *> beads, Parameters* prm, std::vector<
 
 }
 
+/*
+ * Create container geometry
+ */
 void createContainerGeometry(PackedBed * pb, Parameters * prm, double xCyl, double yCyl, double rCyl, double zCylTop, double zCylBot, std::vector<std::pair<int, int>> &dimTagsCyl)
 {
     std::cout << "Creating container... " << std::flush;
@@ -96,7 +97,7 @@ void createContainerGeometry(PackedBed * pb, Parameters * prm, double xCyl, doub
         else if (prm->containerShape == 1)
         {
             std::cout << "Creating rectangular container." << std::endl;
-            dimTagsCyl.push_back( {3, factory::addBox(pb->xMin - prm->rCylDelta,pb->yMin - prm->rCylDelta,zCylBot -prm->rCylDelta, pb->xMax - pb->xMin + prm->rCylDelta,pb->yMax - pb->yMin + prm->rCylDelta, zCylTop-zCylBot + prm->rCylDelta)});
+            dimTagsCyl.push_back( {3, factory::addBox(pb->xMin - prm->rCylDelta,pb->yMin - prm->rCylDelta,zCylBot -prm->rCylDelta, pb->xMax - pb->xMin + 2 * prm->rCylDelta,pb->yMax - pb->yMin + 2 * prm->rCylDelta, zCylTop-zCylBot + prm->rCylDelta)});
         }
         else
         {
@@ -118,7 +119,6 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
     std::vector<std::pair<int, int> > cv;
 
     std::vector<double> vCount;
-
 
     double zCylBot = ( prm->zBot - prm->inlet  );
     double zCylTop = ( prm->zTop + prm->outlet );
@@ -235,24 +235,6 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
 
     createContainerGeometry(pb, prm, xCyl, yCyl, rCyl, zCylTop, zCylBot, dimTagsCyl);
 
-
-    if (prm->periodic == 1)
-    {
-        std::cout << "Periodic meshing enabled... It is unsupported!" << std::endl;
-        createBeadGeometry(beads, prm, dimTagsBeads, tBeadCPs, count, vCount, pb->xMax-pb->xMin, 0);
-        createBeadGeometry(beads, prm, dimTagsBeads, tBeadCPs, count, vCount, 0, pb->yMax-pb->yMin);
-        createBeadGeometry(beads, prm, dimTagsBeads, tBeadCPs, count, vCount, -(pb->xMax-pb->xMin), 0);
-        createBeadGeometry(beads, prm, dimTagsBeads, tBeadCPs, count, vCount, 0, -(pb->yMax-pb->yMin));
-
-    }
-
-    /* for (std::vector<std::pair<int, int>>::iterator it = dimTagsBeads.begin(); it != dimTagsBeads.end(); it++) */
-    /* { */
-    /*     std::cout << (*it).second << std::endl; */
-    /* } */
-
-    /* exit(-1); */
-
     if (prm->meshSizeMethod == 1)
     {
         std::string backgroundField;
@@ -283,24 +265,13 @@ void Model::mesh(std::string outfile, Parameters * prm)
     std::vector<std::pair<int, int> > cv;
     std::vector<std::vector<std::pair<int, int> > > ovv;
 
-    cv = dimTagsBeads;
+    /* cv = dimTagsBeads; */
 
-    /* // TODO: This will create new dimtags. Ensure that it doesn't mess with anything */
-    /* std::cout << "Intersecting Volumes... " << std::flush; */
-    /* factory::intersect(dimTagsBeads, dimTagsCyl, cv, ovv, -1, true, false); */
-    /* std::cout << "done!" << std::endl; */
-
-    /* for (std::vector<std::pair<int, int>>::iterator it = dimTagsCyl.begin(); it != dimTagsCyl.end(); it++) */
-    /* { */
-    /*     std::cout << (*it).second << std::endl; */
-    /* } */
-
-    /* for (std::vector<std::pair<int, int>>::iterator it = cv.begin(); it != cv.end(); it++) */
-    /* { */
-    /*     std::cout << (*it).second << std::endl; */
-    /* } */
-
-    /* exit(-1); */
+    // TODO: Use ov, bv, cv consistently.
+    // TODO: Rename ov, bv, cv to be more descriptive
+    std::cout << "Intersecting Volumes... " << std::flush;
+    factory::intersect(dimTagsBeads, dimTagsCyl, cv, ovv, -1, true, false);
+    std::cout << "done!" << std::endl;
 
     long bool_start = gmsh::logger::getWallTime();
 
