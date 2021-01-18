@@ -35,6 +35,8 @@ class Model{
         std::vector<std::pair<int, int>> dimTagsInterstitial;
 
         std::vector<int> tVBeads, tVInt, tSBeads, tSWall, tSOutlet, tSInlet;
+        std::vector<int> tXLeftWallInt, tYLeftWallInt, tZLeftWallInt, tXRightWallInt, tYRightWallInt, tZRightWallInt;
+        /* int tXLeftWallInt, tYLeftWallInt, tZLeftWallInt, tXRightWallInt, tYRightWallInt, tZRightWallInt; */
         std::vector<std::pair <int, double>> bridgeTagRadiusPairs;
 
 };

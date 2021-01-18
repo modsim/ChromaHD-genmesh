@@ -498,6 +498,8 @@ void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerS
     // bv is the vector storing dimtags after fragmentation.
     // the last entry should be the interstitial volume
     std::vector<std::pair<int,int>> cv;
+    std::vector<std::pair<int,int>> beadSurfaceDimTags;
+
     std::cout << "Listing Interstitial Volume... " << std::flush;
     tVInt.push_back(bv.back().second);
     bv.pop_back();
@@ -506,17 +508,119 @@ void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerS
     // Extract surfaces from interstitial volume
     std::cout << "Listing Outer Surfaces... " << std::flush;
     model::getBoundary({{3,tVInt[0]}}, cv, false, false, false);
+    model::getBoundary(bv, beadSurfaceDimTags, false, false, false);
     if(containerShape == 0)
     {
         tSWall = {cv[0].second};
         tSOutlet= {cv[1].second};
         tSInlet = {cv[2].second};
+
+        // NOTE: What would be the normal for a cylinder??
     }
     else if (containerShape == 1)
     {
-        tSWall = {cv[0].second, cv[1].second, cv[3].second, cv[5].second};
-        tSOutlet= {cv[2].second};
-        tSInlet = {cv[4].second};
+
+        std::vector<double> points, parametricCoord, curvatures, normals;
+        std::vector<std::pair <int, int>> dimTagsBound;
+
+        // Interstitial surfaces
+        for (std::vector<std::pair<int, int>>::iterator iter = cv.begin(); iter != cv.end(); iter++)
+        {
+            /*
+             * Get the curvatures of the surfaces,
+             * Select planar surfaces
+             * Get normals of planes to match surface position to tag
+             */
+            model::getBoundary({(*iter)}, dimTagsBound, false, false, true);
+            for (std::vector<std::pair<int, int>>::iterator iteraa = dimTagsBound.begin(); iteraa != dimTagsBound.end(); iteraa++)
+            {
+                model::getValue((*iteraa).first, (*iteraa).second, {}, points);
+            }
+            model::getParametrization((*iter).first, (*iter).second, points, parametricCoord);
+            model::getCurvature((*iter).first, (*iter).second, parametricCoord, curvatures);
+
+            //length of curvatures was always 1
+            if (curvatures[0] == 0)
+            {
+                std::cout << (*iter).second << std::endl;
+
+                model::getNormal((*iter).second, parametricCoord, normals);
+                for( std::vector<double>::iterator niter = normals.begin(); niter != normals.end(); niter++)
+                {
+                    std::cout << int(*niter) << " | ";
+                }
+
+                if (int(normals[0]) == -1)
+                    tXLeftWallInt.push_back((*iter).second);
+                else if (int(normals[1]) == -1)
+                    tYLeftWallInt.push_back((*iter).second);
+                else if (int(normals[2]) == -1)
+                    tZLeftWallInt.push_back((*iter).second);
+                else if (int(normals[0]) == 1)
+                    tXRightWallInt.push_back((*iter).second);
+                else if (int(normals[1]) == 1)
+                    tYRightWallInt.push_back((*iter).second);
+                else if (int(normals[2]) == 1)
+                    tZRightWallInt.push_back((*iter).second);
+
+                std::cout << std::endl;
+            }
+
+        }
+
+        // Bead Surfaces
+        for (std::vector<std::pair<int, int>>::iterator iter = beadSurfaceDimTags.begin(); iter != beadSurfaceDimTags.end(); iter++)
+        {
+            /*
+             * Get the curvatures of the surfaces,
+             * Select planar surfaces
+             * Get normals of planes to match surface position to tag
+             */
+            model::getBoundary({(*iter)}, dimTagsBound, false, false, true);
+            for (std::vector<std::pair<int, int>>::iterator iteraa = dimTagsBound.begin(); iteraa != dimTagsBound.end(); iteraa++)
+            {
+                model::getValue((*iteraa).first, (*iteraa).second, {}, points);
+            }
+            model::getParametrization((*iter).first, (*iter).second, points, parametricCoord);
+            model::getCurvature((*iter).first, (*iter).second, parametricCoord, curvatures);
+
+            //length of curvatures was always 1
+            if (curvatures[0] == 0)
+            {
+                std::cout << (*iter).second << std::endl;
+
+                model::getNormal((*iter).second, parametricCoord, normals);
+                for( std::vector<double>::iterator niter = normals.begin(); niter != normals.end(); niter++)
+                {
+                    std::cout << int(*niter) << " | ";
+                }
+
+                if (int(normals[0]) == -1)
+                    tXLeftWallInt.push_back((*iter).second);
+                else if (int(normals[1]) == -1)
+                    tYLeftWallInt.push_back((*iter).second);
+                else if (int(normals[2]) == -1)
+                    tZLeftWallInt.push_back((*iter).second);
+                else if (int(normals[0]) == 1)
+                    tXRightWallInt.push_back((*iter).second);
+                else if (int(normals[1]) == 1)
+                    tYRightWallInt.push_back((*iter).second);
+                else if (int(normals[2]) == 1)
+                    tZRightWallInt.push_back((*iter).second);
+
+                std::cout << std::endl;
+            }
+
+        }
+
+        tSWall.reserve(tSWall.size() + tXLeftWallInt.size() + tXRightWallInt.size() + tYLeftWallInt.size() + tYRightWallInt.size());
+        tSWall.insert(tSWall.end(), tXLeftWallInt.begin(), tXLeftWallInt.end());
+        tSWall.insert(tSWall.end(), tXRightWallInt.begin(), tXRightWallInt.end());
+        tSWall.insert(tSWall.end(), tYLeftWallInt.begin(), tYLeftWallInt.end());
+        tSWall.insert(tSWall.end(), tYRightWallInt.begin(), tYRightWallInt.end());
+
+        tSInlet =  tZLeftWallInt ;
+        tSOutlet=  tZRightWallInt ;
     }
     std::cout << "done!" << std::endl;
 
@@ -528,6 +632,7 @@ void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerS
     }
     std::cout << "done!" << std::endl;
 
+    //TODO: How would this work for periodic meshes?
     std::cout << "Listing Bead Surfaces... " << std::flush;
     model::getBoundary(bv, cv, false, false, false);
     for ( std::vector<std::pair< int , int>>::iterator it = cv.begin(); it != cv.end(); it++   )

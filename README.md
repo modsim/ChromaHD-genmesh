@@ -140,10 +140,10 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
     - [DONE] Create flag
     - [DONE] copy geometry 4x
     - [DONE] Cut with plane: Intersection
-    - Fix the transform problem: 
-        - Allow forced transform parameters
-        - Allow switch for transform parameters
-        - Allow forced container geometry
+    - [DONE] Fix the transform problem: 
+        - [DONE] Allow manual/auto transform parameters
+        - [DONE] Allow manual/auto container geometry
+    - [TASK] Implement GMSH setperiodic
     - [TASK] Generate periodic mesh
 
 [PROJ: Architecture]
