@@ -64,8 +64,7 @@ class PackedBed {
         int findBeadWithRadius(double value, std::vector<double> vBeadRads);
         double calculateMinDistance(std::vector<Bead *> beads);
 
-        void stackPeriodicPacking();
-        void absorb(PackedBed * pb);
+        void stackPeriodicPacking(Parameters * prm);
 
 };
 

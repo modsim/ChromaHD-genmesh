@@ -37,12 +37,8 @@ PackedBed::PackedBed(Parameters * prm)
     // print data to stdout
     geometryStats(prm);
 
-    std::cout << "PERIODIC" << std::endl;
     if (prm->periodic == 1)
-    {
-        std::cout << "STACKING PERIODIC PACKINGS..." << std::endl;
-        stackPeriodicPacking();
-    }
+        stackPeriodicPacking(prm);
 
     model::add("PackedBed");
 }
@@ -503,18 +499,35 @@ int PackedBed::findBeadWithRadius(double value, std::vector<double> vBeadRads)
     return index;
 }
 
-void PackedBed::stackPeriodicPacking()
+void PackedBed::stackPeriodicPacking(Parameters * prm)
 {
-    std::cout << "Stacking periodic packing in X-Y directions..." << std::endl;
-    double eps = 1e-6;  // value of tolerated overlap
+    std::cout << "Stacking periodic packing in X-Y directions..." << std::flush;
+    /* double eps = 1e-3;  // value of tolerated overlap */
+    double eps = 0;  // value of tolerated overlap
 
     std::vector<Bead *> xmBeads;
     std::vector<Bead *> xpBeads;
     std::vector<Bead *> ymBeads;
     std::vector<Bead *> ypBeads;
 
-    double xoff = (this->xMax-this->xMin); // Offset it completely... effectively stack the outer containers
-    double yoff = (this->yMax-this->yMin);
+    std::vector<Bead *> xpypBeads;
+    std::vector<Bead *> xpymBeads;
+    std::vector<Bead *> xmymBeads;
+    std::vector<Bead *> xmypBeads;
+
+    double xoff, yoff;
+
+    if (prm->autoContainment == 1)
+    {
+        xoff = (this->xMax-this->xMin); // Offset it completely... effectively stack the outer containers
+        yoff = (this->yMax-this->yMin);
+    }
+    else if (prm->autoContainment == 0)
+    {
+        xoff = (prm->dx); // Offset it completely... effectively stack the outer containers
+        yoff = (prm->dy);
+    }
+
 
     // Full copy beads with offset in the x-y directions
     for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
@@ -529,65 +542,34 @@ void PackedBed::stackPeriodicPacking()
     for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
         ymBeads.push_back( new Bead((*iter)->getX(), (*iter)->getY() - yoff, (*iter)->getZ(), (*iter)->getR()) );
 
-    // Calculate minimum distance for each cardinal packing
-    double xpMinDistance = calculateMinDistance(xpBeads);
-    double xmMinDistance = calculateMinDistance(xmBeads);
-    double ypMinDistance = calculateMinDistance(ypBeads);
-    double ymMinDistance = calculateMinDistance(ymBeads);
+    for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
+        xpypBeads.push_back( new Bead((*iter)->getX() + xoff, (*iter)->getY() + yoff, (*iter)->getZ(), (*iter)->getR()) );
 
-    while (xpMinDistance - eps > 1e-8)
-    {
-        std::cout << "looping xp... " << xpMinDistance << std::endl;
-        for (std::vector<Bead *>::iterator iter = xpBeads.begin(); iter != xpBeads.end(); iter++)
-            (*iter)->translate(-xpMinDistance + eps, 0, 0);
-        xpMinDistance = calculateMinDistance(xpBeads);
-    }
+    for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
+        xmypBeads.push_back( new Bead((*iter)->getX() - xoff, (*iter)->getY() + yoff, (*iter)->getZ(), (*iter)->getR()) );
 
-    while (xmMinDistance - eps > 1e-8)
-    {
-        std::cout << "looping xm... " << xmMinDistance << std::endl;
-        for (std::vector<Bead *>::iterator iter = xmBeads.begin(); iter != xmBeads.end(); iter++)
-            (*iter)->translate(+xmMinDistance - eps, 0, 0);
-        xmMinDistance = calculateMinDistance(xmBeads);
+    for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
+        xmymBeads.push_back( new Bead((*iter)->getX() - xoff, (*iter)->getY() - yoff, (*iter)->getZ(), (*iter)->getR()) );
 
-    }
-
-    while (ypMinDistance - eps > 1e-8)
-    {
-        std::cout << "looping yp... " << ypMinDistance << std::endl;
-        for (std::vector<Bead *>::iterator iter = ypBeads.begin(); iter != ypBeads.end(); iter++)
-            (*iter)->translate(0, -ypMinDistance + eps, 0);
-        ypMinDistance = calculateMinDistance(ypBeads);
-
-    }
-
-    while (ymMinDistance - eps > 1e-8)
-    {
-        std::cout << "looping ym... " << ymMinDistance << std::endl;
-        for (std::vector<Bead *>::iterator iter = ymBeads.begin(); iter != ymBeads.end(); iter++)
-            (*iter)->translate(0, +ymMinDistance - eps, 0);
-        ymMinDistance = calculateMinDistance(ymBeads);
-    }
-
-
-    std::cout <<
-        xpMinDistance << " | " <<
-        xmMinDistance << " | " <<
-        ypMinDistance << " | " <<
-        ymMinDistance << " | " << std::endl;
-
+    for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
+        xpymBeads.push_back( new Bead((*iter)->getX() + xoff, (*iter)->getY() - yoff, (*iter)->getZ(), (*iter)->getR()) );
 
     // Reserve space to extend this->beads vector
-    this->beads.reserve(this->beads.size() + std::distance(xpBeads.begin(), xpBeads.end()));
-    this->beads.reserve(this->beads.size() + std::distance(xmBeads.begin(), xmBeads.end()));
-    this->beads.reserve(this->beads.size() + std::distance(ypBeads.begin(), ypBeads.end()));
-    this->beads.reserve(this->beads.size() + std::distance(ymBeads.begin(), ymBeads.end()));
+    this->beads.reserve(this->beads.size() * 9);
 
     // Extend this->beads vector
     this->beads.insert(this->beads.end(), xpBeads.begin(), xpBeads.end());
     this->beads.insert(this->beads.end(), xmBeads.begin(), xmBeads.end());
     this->beads.insert(this->beads.end(), ypBeads.begin(), ypBeads.end());
     this->beads.insert(this->beads.end(), ymBeads.begin(), ymBeads.end());
+
+    this->beads.insert(this->beads.end(), xpypBeads.begin(), xpypBeads.end());
+    this->beads.insert(this->beads.end(), xmypBeads.begin(), xmypBeads.end());
+    this->beads.insert(this->beads.end(), xmymBeads.begin(), xmymBeads.end());
+    this->beads.insert(this->beads.end(), xpymBeads.begin(), xpymBeads.end());
+
+    std::cout << "done!" << std::endl;
+
 }
 
 double PackedBed::calculateMinDistance(std::vector<Bead *> _beads)

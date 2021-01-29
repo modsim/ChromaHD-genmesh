@@ -27,6 +27,11 @@ class Model{
         void mesh(std::string outfile, Parameters * prm);
         void createNamedGroups(std::vector<std::pair<int,int>> ov, int containerShape);
 
+
+        double zCylBot;
+        double zCylTop;
+        double xMax, xMin, yMax, yMin;
+
         std::vector<int> tBeads;
         std::vector<int> tBeadCPs;
         std::vector<std::pair<int, int>> dimTagsBeads;
@@ -36,8 +41,10 @@ class Model{
 
         std::vector<int> tVBeads, tVInt, tSBeads, tSWall, tSOutlet, tSInlet;
         std::vector<int> tXLeftWallInt, tYLeftWallInt, tZLeftWallInt, tXRightWallInt, tYRightWallInt, tZRightWallInt;
-        /* int tXLeftWallInt, tYLeftWallInt, tZLeftWallInt, tXRightWallInt, tYRightWallInt, tZRightWallInt; */
+        std::vector<int> tXLeftWallBead, tYLeftWallBead, tZLeftWallBead, tXRightWallBead, tYRightWallBead, tZRightWallBead;
         std::vector<std::pair <int, double>> bridgeTagRadiusPairs;
+
+        void setupPeriodicSurfaces(Parameters * prm);
 
 };
 

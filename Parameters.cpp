@@ -315,6 +315,7 @@ void Parameters::setGMSHOptions()
     gmsh::option::setNumber("Mesh.CharacteristicLengthFromCurvature", this->MeshCharacteristicLengthFromCurvature);
     gmsh::option::setNumber("Mesh.CharacteristicLengthFromPoints", this->MeshCharacteristicLengthFromPoints);
 
+
     gmsh::option::setNumber("Mesh.MinimumCirclePoints", this->MeshMinimumCirclePoints); //Default = 7
 
     gmsh::option::setNumber("Mesh.Optimize", this->MeshOptimize); //Default = 1
@@ -337,5 +338,7 @@ void Parameters::setGMSHOptions()
 
     gmsh::option::setNumber("Print.GeoLabels", 1); //Default = 1
     gmsh::option::setNumber("Print.GeoOnlyPhysicals", 1); //Default = 1
+
+    gmsh::option::setNumber("Geometry.OCCBoundsUseStl", 1);
 
 }

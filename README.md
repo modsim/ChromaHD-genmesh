@@ -135,6 +135,7 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [TASK] Fix GeomInFile and GeomOutFile in log output when using as input
 - [TASK] Better architecture
 - [TASK] let genmesh run in a directory with input file and generate necessary files in the same directory. No output subdir nonsense.
+- [TASK] Change rCyl, rCylDelta etc to rCol, rColDelta
 
 [PROJ: Periodic]
     - [DONE] Create flag

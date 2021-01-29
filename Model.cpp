@@ -33,6 +33,14 @@ Model::~Model()
 
 }
 
+void printVecPair(std::vector<std::pair<int, int>> vp)
+{
+    for (std::vector<std::pair<int,int>>::iterator iter = vp.begin(); iter != vp.end(); iter++)
+    {
+        std::cout << (*iter).first << "    " << (*iter).second << std::endl;
+    }
+}
+
 /* Function to create bead geometry.
  * xoff, yoff are for periodic cases, to stack the bead geometries in the lateral dimensions
  */
@@ -100,7 +108,7 @@ void createContainerGeometry(PackedBed * pb, Parameters * prm, double xCyl, doub
             else if (prm->containerShape == 1)
             {
                 std::cout << "Creating rectangular container automatically." << std::endl;
-                dimTagsCyl.push_back( {3, factory::addBox(pb->xMin - prm->rCylDelta,pb->yMin - prm->rCylDelta,zCylBot -prm->rCylDelta, pb->xMax - pb->xMin + 2 * prm->rCylDelta,pb->yMax - pb->yMin + 2 * prm->rCylDelta, zCylTop-zCylBot + prm->rCylDelta)});
+                dimTagsCyl.push_back( {3, factory::addBox(pb->xMin - prm->rCylDelta,pb->yMin - prm->rCylDelta,zCylBot, pb->xMax - pb->xMin + 2 * prm->rCylDelta,pb->yMax - pb->yMin + 2 * prm->rCylDelta, zCylTop-zCylBot)});
             }
             else
             {
@@ -150,8 +158,13 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
 
     std::vector<double> vCount;
 
-    double zCylBot = ( prm->zBot - prm->inlet  );
-    double zCylTop = ( prm->zTop + prm->outlet );
+    zCylBot = ( prm->zBot - prm->inlet  );
+    zCylTop = ( prm->zTop + prm->outlet );
+    xMax = pb->xMax;
+    yMax = pb->yMax;
+    xMin = pb->xMin;
+    yMin = pb->yMin;
+
     double xCyl    = prm->xCyl;
     double yCyl    = prm->yCyl;
     double rCyl    = prm->rCyl;
@@ -299,6 +312,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
 
     // TODO: Use ov, bv, cv consistently.
     // TODO: Rename ov, bv, cv to be more descriptive
+
     std::cout << "Intersecting Volumes... " << std::flush;
     factory::intersect(dimTagsBeads, dimTagsCyl, cv, ovv, -1, true, false);
     std::cout << "done!" << std::endl;
@@ -349,6 +363,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
             std::cout << "done!" << std::endl;
         }
 
+
         // Synchronize gmsh model with geometry kernel.
         std::cout << "synchronizing... " << std::flush;
         factory::synchronize();
@@ -376,6 +391,9 @@ void Model::mesh(std::string outfile, Parameters * prm)
     {
         if (prm->fragment == 1)
             createNamedGroups(bv, prm->containerShape);
+
+        if (prm->periodic == 1)
+            setupPeriodicSurfaces(prm);
     }
     else
     {
@@ -526,11 +544,11 @@ void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerS
         // Interstitial surfaces
         for (std::vector<std::pair<int, int>>::iterator iter = cv.begin(); iter != cv.end(); iter++)
         {
-            /*
-             * Get the curvatures of the surfaces,
-             * Select planar surfaces
-             * Get normals of planes to match surface position to tag
-             */
+
+            // Get the curvatures of the surfaces,
+            // Select planar surfaces
+            // Get normals of planes to match surface position to tag
+
             model::getBoundary({(*iter)}, dimTagsBound, false, false, true);
             for (std::vector<std::pair<int, int>>::iterator iteraa = dimTagsBound.begin(); iteraa != dimTagsBound.end(); iteraa++)
             {
@@ -542,13 +560,7 @@ void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerS
             //length of curvatures was always 1
             if (curvatures[0] == 0)
             {
-                std::cout << (*iter).second << std::endl;
-
                 model::getNormal((*iter).second, parametricCoord, normals);
-                for( std::vector<double>::iterator niter = normals.begin(); niter != normals.end(); niter++)
-                {
-                    std::cout << int(*niter) << " | ";
-                }
 
                 if (int(normals[0]) == -1)
                     tXLeftWallInt.push_back((*iter).second);
@@ -563,10 +575,11 @@ void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerS
                 else if (int(normals[2]) == 1)
                     tZRightWallInt.push_back((*iter).second);
 
-                std::cout << std::endl;
             }
 
         }
+
+        std::cout << "SIZE INTER: "<< tXLeftWallInt.size() << " | "<< tXRightWallInt.size() << std::endl;
 
         // Bead Surfaces
         for (std::vector<std::pair<int, int>>::iterator iter = beadSurfaceDimTags.begin(); iter != beadSurfaceDimTags.end(); iter++)
@@ -587,37 +600,42 @@ void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerS
             //length of curvatures was always 1
             if (curvatures[0] == 0)
             {
-                std::cout << (*iter).second << std::endl;
-
                 model::getNormal((*iter).second, parametricCoord, normals);
-                for( std::vector<double>::iterator niter = normals.begin(); niter != normals.end(); niter++)
-                {
-                    std::cout << int(*niter) << " | ";
-                }
+
 
                 if (int(normals[0]) == -1)
-                    tXLeftWallInt.push_back((*iter).second);
+                    tXLeftWallBead.push_back((*iter).second);
                 else if (int(normals[1]) == -1)
-                    tYLeftWallInt.push_back((*iter).second);
+                    tYLeftWallBead.push_back((*iter).second);
                 else if (int(normals[2]) == -1)
-                    tZLeftWallInt.push_back((*iter).second);
+                    tZLeftWallBead.push_back((*iter).second);
                 else if (int(normals[0]) == 1)
-                    tXRightWallInt.push_back((*iter).second);
+                    tXRightWallBead.push_back((*iter).second);
                 else if (int(normals[1]) == 1)
-                    tYRightWallInt.push_back((*iter).second);
+                    tYRightWallBead.push_back((*iter).second);
                 else if (int(normals[2]) == 1)
-                    tZRightWallInt.push_back((*iter).second);
-
-                std::cout << std::endl;
+                    tZRightWallBead.push_back((*iter).second);
             }
 
         }
 
+        /* std::cout << "SIZE BOTH X : "<< tXLeftWallInt.size() << " | "<< tXRightWallInt.size() << std::endl; */
+        /* std::cout << "SIZE BOTH Y : "<< tYLeftWallInt.size() << " | "<< tYRightWallInt.size() << std::endl; */
+
+
         tSWall.reserve(tSWall.size() + tXLeftWallInt.size() + tXRightWallInt.size() + tYLeftWallInt.size() + tYRightWallInt.size());
+
         tSWall.insert(tSWall.end(), tXLeftWallInt.begin(), tXLeftWallInt.end());
         tSWall.insert(tSWall.end(), tXRightWallInt.begin(), tXRightWallInt.end());
         tSWall.insert(tSWall.end(), tYLeftWallInt.begin(), tYLeftWallInt.end());
         tSWall.insert(tSWall.end(), tYRightWallInt.begin(), tYRightWallInt.end());
+
+        tSWall.reserve(tSWall.size() + tXLeftWallBead.size() + tXRightWallBead.size() + tYLeftWallBead.size() + tYRightWallBead.size());
+
+        tSWall.insert(tSWall.end(), tXLeftWallBead.begin(), tXLeftWallBead.end());
+        tSWall.insert(tSWall.end(), tXRightWallBead.begin(), tXRightWallBead.end());
+        tSWall.insert(tSWall.end(), tYLeftWallBead.begin(), tYLeftWallBead.end());
+        tSWall.insert(tSWall.end(), tYRightWallBead.begin(), tYRightWallBead.end());
 
         tSInlet =  tZLeftWallInt ;
         tSOutlet=  tZRightWallInt ;
@@ -657,6 +675,62 @@ void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerS
     model::setPhysicalName(2,4,"beadSurface");
     model::setPhysicalName(3,5,"interstitialVolume");
     model::setPhysicalName(3,6,"beadVolume");
+    std::cout << "done!" << std::endl;
+
+}
+
+void Model::setupPeriodicSurfaces(Parameters * prm)
+{
+    std::cout << "Setting up periodic surfaces..." << std::flush;
+
+    if (tXLeftWallInt.size() != tXRightWallInt.size())
+    {
+        std::cout << "Mismatch in number of surfaces in X planes." << std::endl;
+        exit(-1);
+    }
+    if (tYLeftWallInt.size() != tYRightWallInt.size())
+    {
+        std::cout << "Mismatch in number of surfaces in Y planes." << std::endl;
+        exit(-1);
+    }
+
+    double dx, dy, dz;
+
+    if (prm->autoContainment == 1)
+    {
+        dx = xMax - xMin + 2 * prm->rCylDelta;
+        dy = yMax - yMin + 2 * prm->rCylDelta;
+        dz = zCylTop - zCylBot;
+    }
+    else if (prm->autoContainment == 0)
+    {
+        dx = prm->dx;
+        dy = prm->dy;
+        dz = prm->dz;
+    }
+
+    std::vector<double> affineTranslationX = {1, 0, 0, dx, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+    std::vector<double> affineTranslationY = {1, 0, 0, 0, 0, 1, 0, dy, 0, 0, 1, 0, 0, 0, 0, 1};
+    std::vector<double> affineTranslationZ = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, dz, 0, 0, 0, 1};
+
+    std::cout << tXLeftWallInt.size() << "   " << tXRightWallInt.size() << std::endl;
+    std::cout << tYLeftWallInt.size() << "   " << tYRightWallInt.size() << std::endl;
+
+    std::cout << tXLeftWallBead.size() << "   " << tXRightWallBead.size() << std::endl;
+    std::cout << tYLeftWallBead.size() << "   " << tYRightWallBead.size() << std::endl;
+
+    /* std::cout << tZLeftWallInt.size() << "   " << tZRightWallInt.size() << std::endl; */
+
+    std::cout << tXLeftWallInt[0] << " | " << tXRightWallInt[0] << std::endl;
+    std::cout << tYLeftWallInt[0] << " | " << tYRightWallInt[0] << std::endl;
+
+    std::cout << tXLeftWallBead[0] << " | " << tXRightWallBead[0] << std::endl;
+    std::cout << tYLeftWallBead[0] << " | " << tYRightWallBead[0] << std::endl;
+
+    model::mesh::setPeriodic(2, tXRightWallInt, tXLeftWallInt, affineTranslationX);
+    model::mesh::setPeriodic(2, tYRightWallInt, tYLeftWallInt, affineTranslationY);
+    /* model::mesh::setPeriodic(2, tZLeftWallInt, tZRightWallInt, affineTranslationZ); */
+
     std::cout << "done!" << std::endl;
 
 }
