@@ -653,31 +653,31 @@ void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerS
     }
     std::cout << "done!" << std::endl;
 
-    /*/**/
-    /* * Remove bead surfaces that are also part of the wall*/
-    /* * from being categorized as bead surfaces.*/
-    /* * These 'tSBeads' will go on to be doubled in `gmsh2mixdv2 -d 4`*/
-    /* */*/
-    /*for (auto it : tXLeftWallBead)*/
-    /*{*/
-    /*    auto it2 = std::find(tSBeads.begin(), tSBeads.end(), it);*/
-    /*    if (it2 != tSBeads.end()) tSBeads.erase(it2);*/
-    /*}*/
-    /*for (auto it : tXRightWallInt)*/
-    /*{*/
-    /*    auto it2 = std::find(tSBeads.begin(), tSBeads.end(), it);*/
-    /*    if (it2 != tSBeads.end()) tSBeads.erase(it2);*/
-    /*}*/
-    /*for (auto it : tYLeftWallBead)*/
-    /*{*/
-    /*    auto it2 = std::find(tSBeads.begin(), tSBeads.end(), it);*/
-    /*    if (it2 != tSBeads.end()) tSBeads.erase(it2);*/
-    /*}*/
-    /*for (auto it : tYRightWallInt)*/
-    /*{*/
-    /*    auto it2 = std::find(tSBeads.begin(), tSBeads.end(), it);*/
-    /*    if (it2 != tSBeads.end()) tSBeads.erase(it2);*/
-    /*}*/
+    /*
+     * Remove bead surfaces that are also part of the wall
+     * from being categorized as bead surfaces.
+     * These 'tSBeads' will go on to be doubled in `gmsh2mixdv2 -d 4`
+     */
+    for (auto it : tXLeftWallBead)
+    {
+        auto it2 = std::find(tSBeads.begin(), tSBeads.end(), it);
+        if (it2 != tSBeads.end()) tSBeads.erase(it2);
+    }
+    for (auto it : tXRightWallInt)
+    {
+        auto it2 = std::find(tSBeads.begin(), tSBeads.end(), it);
+        if (it2 != tSBeads.end()) tSBeads.erase(it2);
+    }
+    for (auto it : tYLeftWallBead)
+    {
+        auto it2 = std::find(tSBeads.begin(), tSBeads.end(), it);
+        if (it2 != tSBeads.end()) tSBeads.erase(it2);
+    }
+    for (auto it : tYRightWallInt)
+    {
+        auto it2 = std::find(tSBeads.begin(), tSBeads.end(), it);
+        if (it2 != tSBeads.end()) tSBeads.erase(it2);
+    }
 
     std::cout << "Adding Physical Groups... " << std::flush;
     model::addPhysicalGroup(2, tSInlet , 1 );
