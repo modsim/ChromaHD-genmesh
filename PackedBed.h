@@ -30,8 +30,9 @@ class PackedBed {
         double xMax = -DBL_MAX, xMin = DBL_MAX;
         double yMax = -DBL_MAX, yMin = DBL_MAX;
         double zMax = -DBL_MAX, zMin = DBL_MAX;
-        double zBot=0, zTop=0;
+        double zTop = -DBL_MAX, zBot = DBL_MAX;
         double radius_avg=0, radius_min = DBL_MAX, radius_max = -DBL_MAX;
+        double zCylTop = 0, zCylBot = 0;
 
         double vol_real_beads = 0;
         double vol_geom_beads = 0;
@@ -56,7 +57,7 @@ class PackedBed {
         template<typename T> std::vector<double> readPacking(Parameters * prm);
         void getBeads(Parameters * prm);
         void transformBeads(Parameters * prm);
-        void updateBounds();
+        void updateBounds(Parameters * prm);
         void printBounds();
         void calcPorosity(Parameters * prm);
         void fixPorosity(Parameters * prm);

@@ -34,6 +34,7 @@ PackedBed::PackedBed(Parameters * prm)
     else
         this->calcPorosity(prm);
 
+    updateBounds(prm);
     // print data to stdout
     geometryStats(prm);
 
@@ -136,7 +137,7 @@ void PackedBed::getBeads(Parameters * prm)
     if (this->beads.size() < 0)
         return
 
-    updateBounds();
+    updateBounds(prm);
     printBounds();
 
     std::cout << "Scaling bead radii in place... " << std::flush;
@@ -148,9 +149,8 @@ void PackedBed::getBeads(Parameters * prm)
 
 void PackedBed::transformBeads(Parameters * prm)
 {
-    updateBounds();
+    updateBounds(prm);
 
-    /* std::cout << std::setprecision(4); */
     std::cout << std::endl;
     std::cout << "== Before Transform ==" << std::endl;
     printBounds();
@@ -185,9 +185,7 @@ void PackedBed::transformBeads(Parameters * prm)
         (*it)->scale(prm->preScalingFactor);
     std::cout << "done!" << std::endl << std::endl;
 
-    updateBounds();
-
-    rCyl += prm->rCylDelta;;
+    updateBounds(prm);
 
     prm->xCyl = xCyl;
     prm->yCyl = yCyl;
@@ -202,6 +200,7 @@ void PackedBed::transformBeads(Parameters * prm)
 
     assert ( rCyl >= std::max( ((xMax - xMin) / 2), ((yMax - yMin)/2) ));
 
+    //TODO: Can be moved to updateBounds
     if (prm->nBeads < 0)
     {
         // if packed bed is sliced based on zTop and zBot instead of a limit on number of beads,
@@ -209,20 +208,13 @@ void PackedBed::transformBeads(Parameters * prm)
         // this way, the zTop-zBot (and hence column length) is pre-determined by the inputs even though the packed bed's
         // actual size between different models may vary. This is helpful with generating "identical" columns of mono and poly beads.
 
-        prm->zBot += offsetz;
-        prm->zTop += offsetz;
-        prm->zBot *= prm->preScalingFactor;
-        prm->zTop *= prm->preScalingFactor;
-
-        zBot = prm->zBot;
-        zTop = prm->zTop;
+        zCylBot = (prm->zBot + offsetz) * prm->preScalingFactor - prm->inlet;
+        zCylTop = (prm->zTop + offsetz) * prm->preScalingFactor + prm->outlet;
     }
     else
     {
-        // update parameters object. This is used in the Model class to create the cylinder.
-        // FIXME: prm should ideally be immutable...
-        prm->zBot = zBot;
-        prm->zTop = zTop;
+        zCylBot = zBot - prm->inlet;
+        zCylTop = zTop + prm->outlet;
     }
 
     std::cout << "== After Transform ==" << std::endl;
@@ -245,8 +237,10 @@ void PackedBed::printPacking()
 
 }
 
-void PackedBed::updateBounds()
+void PackedBed::updateBounds(Parameters * prm)
 {
+    // NOTE: Changes zTop and zBot, will affect BED porosity calculations
+
     //reset variables
     xCyl = 0, yCyl = 0;
     xMax = -DBL_MAX, yMax = -DBL_MAX, zMax = -DBL_MAX;
@@ -254,6 +248,9 @@ void PackedBed::updateBounds()
     radius_avg=0;
     radius_max= -DBL_MAX;
     radius_min= DBL_MAX;
+
+    zBot = DBL_MAX;
+    zTop = -DBL_MAX;
 
     /* vol_real_beads=0; */
     /* vol_geom_beads=0; */
@@ -277,6 +274,14 @@ void PackedBed::updateBounds()
         if ( (z + r) > zMax ) zMax = z + r;
         if ( (z - r) < zMin ) zMin = z - r;
 
+        // Note: These are local values of zTop and zBot.
+        // Different from prm->zBot,zTop, which are used as slice coordinates and part of the zCylBot/Top calculations.
+        // Local zBot,Top are used to find bed lengths.
+        // They can be different because of porosity manipulation/control.
+        // They can be different (slightly) if nBeads > 0.
+        if ( z < zBot ) zBot = z;
+        if ( z > zTop ) zTop = z;
+
         if (r > radius_max) radius_max = r;
         if (r < radius_min) radius_min = r;
 
@@ -285,12 +290,7 @@ void PackedBed::updateBounds()
 
     xCyl = (xMax + xMin) / 2;
     yCyl = (yMax + yMin) / 2;
-    rCyl = std::max( ((xMax - xMin) / 2), ((yMax - yMin)/2) );
-
-    //Adjust zBot and zTop
-    zBot=beads.front()->getZ();
-    zTop=beads.back()->getZ();
-
+    rCyl = std::max( ((xMax - xMin) / 2), ((yMax - yMin)/2) ) + prm->rCylDelta;
 
 }
 
@@ -303,6 +303,8 @@ void PackedBed::printBounds()
     std::cout << "xMin: " << xMin << std::endl;
     std::cout << "yMax: " << yMax << std::endl;
     std::cout << "yMin: " << yMin << std::endl;
+    std::cout << "zMax: " << zMax << std::endl;
+    std::cout << "zMin: " << zMin << std::endl;
     std::cout << "zBot: " << zBot << std::endl;
     std::cout << "zTop: " << zTop << std::endl;
     std::cout << std::endl;
@@ -326,7 +328,7 @@ void PackedBed::calcPorosity(Parameters * prm)
         vol_geom_beads += PI * 4/3 * pow(r * prm->MeshScalingFactor, 3);
     }
 
-    vol_cylinder = PI * pow(rCyl * prm->MeshScalingFactor, 2) * (zTop - zBot + prm->inlet + prm->outlet) * prm->MeshScalingFactor;
+    vol_cylinder = PI * pow(rCyl * prm->MeshScalingFactor, 2) * (zCylTop - zCylBot) * prm->MeshScalingFactor;
     vol_real_int = vol_cylinder - vol_real_beads;
 
     por_real_col = vol_real_int / vol_cylinder;                         // real (ideal) packing porosity of the full column.
@@ -340,13 +342,14 @@ void PackedBed::calcPorosity(Parameters * prm)
 
     std::cout << "Real Column Porosity: " << por_real_col << std::endl;         // ideal porosity of the full column
 
-        /* std::cout << "Bed Length (zMax - zMin): " << (zMax-zMin)*prm->MeshScalingFactor << std::endl; */
-        /* std::cout << "Bed Cylinder Volume: " << vol_bed_cyl << std::endl; */
-        /* /1* std::cout << std::fixed << std::setprecision(2); *1/ */
-        /* std::cout << "Real Bed Porosity: " << por_real_bed << std::endl; */
-        /* std::cout << "Modified Bed Porosity (without bridges): " << por_geom_bed << std::endl << std::endl; */
-
     /* std::cout << "Modified Column Porosity (without bridges): " << por_geom_col << std::endl << std::endl; */
+
+    /* NOTE: zMax and zMin might change in the scenario where porosity control happens */
+    std::cout << "Bed Length (zMax - zMin): " << (zMax-zMin)*prm->MeshScalingFactor << std::endl;
+    std::cout << "Bed Cylinder Volume: " << vol_bed_cyl << std::endl;
+    std::cout << "Real Bed Porosity: " << por_real_bed << std::endl;
+    std::cout << "Modified Bed Porosity (without bridges): " << por_geom_bed << std::endl << std::endl;
+
 
 }
 
@@ -363,12 +366,14 @@ void PackedBed::geometryStats(Parameters * prm)
     std::cout << "Real Bead Volume: "    << vol_real_beads                      << std::endl;
 
     std::cout << "Modified Bead Volume: (without bridges) " << vol_geom_beads << std::endl<< std::endl;
-    /* std::cout << std::fixed << std::setprecision(2); */
     std::cout << "Bead Geometry Volume Error: " << (vol_real_beads - vol_geom_beads)/vol_real_beads*100 << "%" << std::endl << std::endl;
 
-    /* std::cout << std::scientific << std::setprecision(4); */
-    std::cout << "Column Length: " << (zTop - zBot + prm->inlet + prm->outlet) * prm->MeshScalingFactor << std::endl<<std::endl;
-    std::cout << "zTop - zBot: " << (zTop-zBot)*prm->MeshScalingFactor << std::endl;
+    std::cout << "Column Length: " << (zCylTop - zCylBot) * prm->MeshScalingFactor << std::endl<<std::endl;
+    std::cout << "zTop - zBot (given): " << (prm->zTop - prm->zBot)*prm->preScalingFactor * prm->MeshScalingFactor << std::endl;
+    std::cout << "zTop - zBot: " << (zTop - zBot)*prm->MeshScalingFactor << std::endl;
+    std::cout << "zMax - zMin: " << (zMax - zMin)*prm->MeshScalingFactor << std::endl;
+
+    // TODO: Consider adding porosity values here instead of in fix/calcporosity?
 
 }
 
@@ -483,7 +488,12 @@ void PackedBed::fixPorosity(Parameters * prm)
     std::cout << beads.size() << " beads remaining after porosity control." << std::endl;
 
     std::cout << "Porosity modification complete!" <<std::endl;
-    std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<std::endl;
+    std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<std::endl << std::endl;
+
+    updateBounds(prm);
+    calcPorosity(prm);
+    printBounds();
+
 
 }
 

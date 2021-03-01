@@ -158,8 +158,8 @@ void Model::createGeometry(PackedBed * pb, Parameters * prm)
 
     std::vector<double> vCount;
 
-    zCylBot = ( prm->zBot - prm->inlet  );
-    zCylTop = ( prm->zTop + prm->outlet );
+    zCylBot = pb->zCylBot;
+    zCylTop = pb->zCylTop;
     xMax = pb->xMax;
     yMax = pb->yMax;
     xMin = pb->xMin;

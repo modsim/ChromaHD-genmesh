@@ -102,7 +102,7 @@ public:
     double tOffY                          = 0.0;
     double tOffZ                          = 0.0;
 
-    std::string translateOffsets;
+    std::string translateOffsets = "auto";
     std::string packfile;
     std::string geomOutfile;
     std::string geomInfile;
