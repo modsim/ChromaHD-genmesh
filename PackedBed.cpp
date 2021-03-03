@@ -34,6 +34,25 @@ PackedBed::PackedBed(Parameters * prm)
     else
         this->calcPorosity(prm);
 
+    std::ofstream beadsfile;
+
+    beadsfile.open(prm->outpath + "/beads.double.xyzd", std::ios::out | std::ios::binary);
+    for (std::vector<Bead *>::iterator it = beads.begin(); it!=beads.end(); it++)
+    {
+        auto x = (*it)->x;
+        auto y = (*it)->y;
+        auto z = (*it)->z;
+        auto d = (*it)->r * 2;
+
+        beadsfile.write( reinterpret_cast<char *>(&x), sizeof(double));
+        beadsfile.write( reinterpret_cast<char *>(&y), sizeof(double));
+        beadsfile.write( reinterpret_cast<char *>(&z), sizeof(double));
+        beadsfile.write( reinterpret_cast<char *>(&d), sizeof(double));
+    }
+
+    /* writeVecToBin(beads, beadsfile); */
+    beadsfile.close();
+
     updateBounds(prm);
     // print data to stdout
     geometryStats(prm);

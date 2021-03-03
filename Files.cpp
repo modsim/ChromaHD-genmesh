@@ -33,11 +33,19 @@ void swapbytes(char *array, int nelem, int elsize) {
     delete byteb;
 }
 
-void writeIntVecToBin(std::vector<int> vec, std::ofstream& outfile)
+/* void writeIntVecToBin(std::vector<int> vec, std::ofstream& outfile) */
+/* { */
+/*     size_t size = vec.size(); */
+/*     outfile.write(reinterpret_cast<char *>(&size), sizeof(size)); */
+/*     for (std::vector<int>::iterator it = vec.begin(); it!=vec.end(); it++) outfile.write( reinterpret_cast<char *>(&*it), sizeof(int)); */
+/* } */
+
+template<typename T>
+void writeVecToBin(std::vector<T> vec, std::ofstream& outfile)
 {
     size_t size = vec.size();
     outfile.write(reinterpret_cast<char *>(&size), sizeof(size));
-    for (std::vector<int>::iterator it = vec.begin(); it!=vec.end(); it++) outfile.write( reinterpret_cast<char *>(&*it), sizeof(int));
+    for (typename std::vector<T>::iterator it = vec.begin(); it!=vec.end(); it++) outfile.write( reinterpret_cast<char *>(&*it), sizeof(T));
 }
 
 void readBinToIntVec(std::vector<int>& vec, std::ifstream& infile)

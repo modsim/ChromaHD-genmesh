@@ -13,6 +13,7 @@
 
 bool isBigEndian();
 void swapbytes(char *, int, int);
+template<typename T> void writeVecToBin(std::vector<T> vec, std::ofstream& outfile);
 void writeIntVecToBin(std::vector<int> vec, std::ofstream& outfile);
 void readBinToIntVec(std::vector<int>& vec, std::ifstream& infile);
 std::string remove_extension(const std::string& filename);
