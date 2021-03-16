@@ -676,7 +676,7 @@ void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerS
         auto it2 = std::find(tSBeads.begin(), tSBeads.end(), it);
         if (it2 != tSBeads.end()) tSBeads.erase(it2);
     }
-    for (auto it : tXRightWallInt)
+    for (auto it : tXRightWallBead)
     {
         auto it2 = std::find(tSBeads.begin(), tSBeads.end(), it);
         if (it2 != tSBeads.end()) tSBeads.erase(it2);
@@ -686,7 +686,7 @@ void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerS
         auto it2 = std::find(tSBeads.begin(), tSBeads.end(), it);
         if (it2 != tSBeads.end()) tSBeads.erase(it2);
     }
-    for (auto it : tYRightWallInt)
+    for (auto it : tYRightWallBead)
     {
         auto it2 = std::find(tSBeads.begin(), tSBeads.end(), it);
         if (it2 != tSBeads.end()) tSBeads.erase(it2);
