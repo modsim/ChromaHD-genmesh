@@ -202,6 +202,7 @@ Known Issues
         - appropriate boolean operations
         - set named groups
         - meshing
+- Periodicity is only implemented for x-y directions currently. 
 
 ## Notes
 - xCyl, yCyl, rCyl are modified in PackedBed::transformBeads()
