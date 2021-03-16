@@ -180,12 +180,14 @@ void PackedBed::transformBeads(Parameters * prm)
 
     if (prm->translateOffsets == "auto")
     {
+        std::cout << "Calculating translation offsets automatically from bounding box." << std::endl;
         offsetx = -xCyl;
         offsety = -yCyl;
         offsetz = -zBot;
     }
     else
     {
+        std::cout << "Using provided translation offsets." << std::endl;
         offsetx = prm->tOffX;
         offsety = prm->tOffY;
         offsetz = prm->tOffZ;

@@ -196,10 +196,14 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     }
     else if (key == "translateOffsets")
     {
+
         if (val.at(0) == "auto")
+        {
             translateOffsets = "auto";
+        }
         else
         {
+            translateOffsets = "manual";
             tOffX = atof(val.at(0).c_str());
             tOffY = atof(val.at(1).c_str());
             tOffZ = atof(val.at(2).c_str());
@@ -291,6 +295,7 @@ void Parameters::print()
     std::cout << "fragmentFormat                              "<< this->fragmentFormat                             << std::endl;
     std::cout << "dryRun                                      "<< this->dryRun                                     << std::endl;
     std::cout << "periodic                                    "<< this->periodic                                   << std::endl;
+    std::cout << "translateOffsets                            "<< this->translateOffsets                           << std::endl;
 
 }
 
