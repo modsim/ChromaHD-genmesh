@@ -548,15 +548,24 @@ void PackedBed::stackPeriodicPacking(Parameters * prm)
 
     double xoff, yoff;
 
-    if (prm->autoContainment == 1)
+    if (prm->periodicOffsets == "auto")
     {
-        xoff = (this->xMax-this->xMin); // Offset it completely... effectively stack the outer containers
-        yoff = (this->yMax-this->yMin);
+        if (prm->autoContainment == 1)
+        {
+            xoff = (this->xMax-this->xMin); // Offset it completely... effectively stack the outer containers
+            yoff = (this->yMax-this->yMin);
+        }
+        else if (prm->autoContainment == 0)
+        {
+            xoff = (prm->dx); // Offset it completely... effectively stack the outer containers
+            yoff = (prm->dy);
+        }
+
     }
-    else if (prm->autoContainment == 0)
+    else
     {
-        xoff = (prm->dx); // Offset it completely... effectively stack the outer containers
-        yoff = (prm->dy);
+        xoff = prm->pOffX;
+        yoff = prm->pOffY;
     }
 
 

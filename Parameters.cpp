@@ -210,6 +210,21 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
         }
 
     }
+    else if (key == "periodicOffsets")
+    {
+
+        if (val.at(0) == "auto")
+        {
+            periodicOffsets = "auto";
+        }
+        else
+        {
+            periodicOffsets = "manual";
+            pOffX = atof(val.at(0).c_str());
+            pOffY = atof(val.at(1).c_str());
+        }
+
+    }
 
     else if(key == "packing") packfile = val.at(0);
     else if(key == "geomInfile") geomInfile = val.at(0);
@@ -296,6 +311,7 @@ void Parameters::print()
     std::cout << "dryRun                                      "<< this->dryRun                                     << std::endl;
     std::cout << "periodic                                    "<< this->periodic                                   << std::endl;
     std::cout << "translateOffsets                            "<< this->translateOffsets                           << std::endl;
+    std::cout << "periodicOffsets                             "<< this->periodicOffsets                           << std::endl;
 
 }
 

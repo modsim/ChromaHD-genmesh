@@ -66,7 +66,7 @@ public:
     double inlet                          = -1.0;
     double outlet                         = -1.0;
     double rFactor                        = 1.0;
-    double lc                             = 0.0;
+    double lc                             = 0.0;        // unused
     double lc_beads                       = 0.0;
     double lc_bridge                      = 0.0;
     double lc_out                         = 0.0;
@@ -98,11 +98,14 @@ public:
     double dx                             = 0.0;
     double dy                             = 0.0;
     double dz                             = 0.0;
-    double tOffX                          = 0.0;
+    double tOffX                          = 0.0;    // translateOffsets
     double tOffY                          = 0.0;
     double tOffZ                          = 0.0;
+    double pOffX                          = 0.0;    // periodicOffsets
+    double pOffY                          = 0.0;
 
     std::string translateOffsets = "auto";
+    std::string periodicOffsets = "auto";
     std::string packfile;
     std::string geomOutfile;
     std::string geomInfile;
