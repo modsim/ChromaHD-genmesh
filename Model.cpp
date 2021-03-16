@@ -102,12 +102,25 @@ void createContainerGeometry(PackedBed * pb, Parameters * prm, double xCyl, doub
             if (prm->containerShape == 0)
             {
                 std::cout << "Creating cylindrical container automatically." << std::endl;
+                std::cout << "{xCyl, yCyl, zCylBot, zCylTop, rCyl} = " <<
+                    xCyl << ", " <<
+                    yCyl << ", " <<
+                    zCylBot << ", " <<
+                    zCylTop << ", " <<
+                    rCyl << std::endl;
                 dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
 
             }
             else if (prm->containerShape == 1)
             {
                 std::cout << "Creating rectangular container automatically." << std::endl;
+                std::cout <<
+                    "xMin: " << pb->xMin - prm->rCylDelta << "\n" <<
+                    "yMin: " << pb->yMin - prm->rCylDelta << "\n" <<
+                    "dx: " << pb->xMax - pb->xMin + 2*prm->rCylDelta << "\n" <<
+                    "dy: " << pb->yMax - pb->yMin + 2*prm->rCylDelta << "\n" <<
+                    "zMin: " << zCylBot << "\n" <<
+                    "dz: " << zCylTop - zCylBot << "\n" << std::endl;
                 dimTagsCyl.push_back( {3, factory::addBox(pb->xMin - prm->rCylDelta,pb->yMin - prm->rCylDelta,zCylBot, pb->xMax - pb->xMin + 2 * prm->rCylDelta,pb->yMax - pb->yMin + 2 * prm->rCylDelta, zCylTop-zCylBot)});
             }
             else

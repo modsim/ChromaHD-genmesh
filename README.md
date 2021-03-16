@@ -144,11 +144,12 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
     - [DONE] Fix the transform problem: 
         - [DONE] Allow manual/auto transform parameters
         - [DONE] Allow manual/auto container geometry
-    - [TASK] Implement GMSH setperiodic
-    - [TASK] Generate periodic mesh
-
-[PROJ: Architecture]
-    - Comments for everything
+    - [DONE] Implement GMSH setperiodic
+    - [DONE] Generate periodic mesh
+    - [NOTE] stacking for periodic meshes will work only for truly periodic geometries, where the beads peek out of the container limits (and essentially cross over) as generated with the packing-generator software
+    - [NOTE] Essentially, stacking offset = xmax - xmin etc. Decoupling them will allow generating periodic meshes for test cases like one bead cases that repeat.
+    - [TASK] Create a stackingOffset keyword with options = {auto | xOff yOff}. Auto => xMax- xMin. 
+    - [NOTE] periodic meshing fails for cases where there are no beads intersecting the cut planes (simple test cases)
 
 Known Issues
 - Netgen optimizer crashes sometimes. (After mesh size constraints were applied to surfaces)
@@ -158,6 +159,7 @@ Known Issues
     - It can be sidestepped by running genmesh with coarse element size, and checking if any beads are meshed AFTER the cylinder/planes & have a higher entity number.
 - A few features do not work in conjunction with HXT mesh algorithm. This is an upstream issue with GMSH.
 - Netgen optimizer might not work well with mesh field gradients: It might make the meshes too uniform somehow
+- periodic meshing fails for cases where there are no beads intersecting the cut planes (simple test cases)
 
 # Keywords in config.in
 - packing: path to packing file xyzd in single precision binary little endian format
