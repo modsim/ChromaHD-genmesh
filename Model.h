@@ -45,6 +45,7 @@ class Model{
         std::vector<std::pair <int, double>> bridgeTagRadiusPairs;
 
         void setupPeriodicSurfaces(Parameters * prm);
+        void matchPeriodicSurfaces(std::vector<int>& ltags, std::vector<int>& rtags, int per_dir, std::vector<double> affineTranslation);
 
 };
 
