@@ -43,5 +43,5 @@ git-check:
 	@echo  >>version.h
 	@echo "#endif /* VERSION_H */" >>version.h
 
-install: 
+install: build
 	cp genmesh $(PREFIX)/bin	
