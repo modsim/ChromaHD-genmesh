@@ -134,7 +134,9 @@ void createContainerGeometry(PackedBed * pb, Parameters * prm, double xCyl, doub
             if (prm->containerShape == 0)
             {
                 std::cout << "Creating cylindrical container manually." << std::endl;
-                //TODO: Ensure that xCyl yCyl rCyl are immutable in prm
+                // TODO: Currently, zcylbot depends on inlet and is not directly accessible in the "cyl" keyword
+                // But the arguments of the "box" keyword are directly used in the other case.
+                // Be consistent.
                 dimTagsCyl.push_back( {3, factory::addCylinder(prm->xCyl,prm->yCyl, zCylBot, 0,0,zCylTop-zCylBot, prm->rCyl) } );
 
             }

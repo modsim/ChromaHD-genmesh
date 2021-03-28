@@ -126,7 +126,7 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [TASK] Clean GeomInFile uses
 - [TASK] Check if rectangular mesh sims run or not
 - [TASK] Intuitive control & code for mesh sizing
-- [TASK] Generate periodic meshes
+- [DONE] Generate periodic meshes
 - [TASK] More intuitive input parameters for dimensions etc. 
     - [TASK] zBot/zTop
     - [TASK] inlet/outlet
@@ -136,6 +136,13 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [TASK] Better architecture
 - [TASK] let genmesh run in a directory with input file and generate necessary files in the same directory. No output subdir nonsense.
 - [TASK] Change rCyl, rCylDelta etc to rCol, rColDelta
+- [TASK] Implementing z-direction periodicity requires stacking in z-dir as well
+- [TASK] remove "floating" points from surface fragmented outputs etc for periodic cases
+- [TASK] Be consistent in the "box" and "cyl" keyword arguments in the input file
+- [TASK] Expose a better keyword for multithreading 
+- [TASK] Expose a better keyword for mesh dimensions ?
+- [TASK] Improve GMSH default settings
+- [TASK] Keyword cases need standardization: camelCase or snake_case or dot.case?
 
 [PROJ: Periodic]
     - [DONE] Create flag
@@ -160,6 +167,9 @@ Known Issues
 - A few features do not work in conjunction with HXT mesh algorithm. This is an upstream issue with GMSH.
 - Netgen optimizer might not work well with mesh field gradients: It might make the meshes too uniform somehow
 - periodic meshing fails for cases where there are no beads intersecting the cut planes (simple test cases)
+- periodic meshes with z-dir cuts in beads can contain floating nodes which have 0 nmat info due to not being connected to an element. 
+    - the floating nodes are found on the x/y surfaces intersecting with the z surfaces
+    - Simulation could be theoretically continued if we modify the nmat file to have non-zero values at these points
 
 # Keywords in config.in
 - packing: path to packing file xyzd in single precision binary little endian format

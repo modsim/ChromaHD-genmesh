@@ -28,20 +28,19 @@ public:
     int meshSizeMethod                             = 1;
     int outputFragments                            = 1;
     int MeshSmoothing                              = 1;
-    int GeneralNumThreads                          = 8;
+    int GeneralNumThreads                          = 0;
     int MeshCharacteristicLengthExtendFromBoundary = 1;
     int MeshCharacteristicLengthFromCurvature      = 1;
     int MeshCharacteristicLengthFromPoints         = 1;
     int GeometryOCCParallel                        = 1;
-    int MeshAlgorithm                              = 2;
-    int MeshAlgorithm3D                            = 1;
+    int MeshAlgorithm                              = 5;
+    int MeshAlgorithm3D                            = 10;
     int MeshRefineSteps                            = 10;
     int MeshOptimize                               = 1;
     int MeshHighOrderOptimize                      = 0;
     int MeshElementOrder                           = 1;
-    int MeshOptimizeNetgen                         = 0;
+    int MeshOptimizeNetgen                         = 1;
     int MeshGenerate                               = 3;
-    int beadType                                   = 0;
     int booleanOperation                           = 0;
     int fragment                                   = 1;
     int NamedBeadVolume                            = 1;
@@ -53,10 +52,10 @@ public:
     int MeshMaxNumThreads                          = 0;
     int MeshMinimumCirclePoints                    = 7;
     int packingPrecision                           = 4;
-    int fixPorosityMethod                          = 1;
+    int fixPorosityMethod                          = 2;
     int containerShape                             = 0;
     int periodic                                   = 0;
-    int autoContainment                            = 0;
+    int autoContainment                            = 1;
 
     double zBot                           = 0.0;
     double zTop                           = 0.0;
@@ -77,13 +76,13 @@ public:
     double GeometryScalingFactor          = 1.0;
     double MeshScalingFactor              = 1.0;
     double preScalingFactor               = 1.0;
-    double MeshSmoothRatio                = 1.8;
+    double MeshSmoothRatio                = 1.8;            // TODO: Why?
     double GeometryTolerance              = 1e-8;
-    double GeometryToleranceBoolean       = 0.0;
+    double GeometryToleranceBoolean       = 0.0;            // TODO: Why?
     double fieldThresholdMinFactor        = 1.00;
     double fieldThresholdMaxFactor        = 1.00;
     double MeshCharacteristicLengthFactor = 1;
-    double MeshOptimizeThreshold          = 0.3;
+    double MeshOptimizeThreshold          = 0.3;            // TODO: Why?
     double MeshCharacteristicLengthMin    = 0;
     double MeshCharacteristicLengthMax    = 1e22;
     double bridged                        = -1;
@@ -109,7 +108,7 @@ public:
     std::string packfile;
     std::string geomOutfile;
     std::string geomInfile;
-    std::string outpath="output/";
+    std::string outpath=".";
     std::string refBeadSize = "avg";
     std::string fragmentFormat = "vtk";
 
