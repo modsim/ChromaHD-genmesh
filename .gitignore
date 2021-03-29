@@ -1,4 +1,4 @@
-output/
+output*/
 logs/
 mesher
 genmesh
@@ -9,3 +9,5 @@ version.h
 *.in
 *.o
 *.out
+*.vtk
+*.msh*
