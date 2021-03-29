@@ -487,10 +487,10 @@ void Model::mesh(std::string outfile, Parameters * prm)
         {
             model::addPhysicalGroup(3,tVInt,15);
             model::setPhysicalName(3,15,"interstitialVolume");
+            gmsh::write(prm->outpath + "/" + outfile + "_interstitial_volume." + prm->fragmentFormat);
+            model::removePhysicalGroups();
         }
 
-        gmsh::write(prm->outpath + "/" + outfile + "_interstitial_volume." + prm->fragmentFormat);
-        model::removePhysicalGroups();
 
         if (prm->NamedOuterSurface)
         {
@@ -500,27 +500,41 @@ void Model::mesh(std::string outfile, Parameters * prm)
             model::setPhysicalName (2, 11       , "inlet" );
             model::setPhysicalName (2, 12       , "outlet");
             model::setPhysicalName (2, 13       , "wall"  );
+            gmsh::write(prm->outpath + "/" + outfile + "_interstitial_surfaces." + prm->fragmentFormat);
+            model::removePhysicalGroups();
+
+            model::addPhysicalGroup(2, tSInlet  , 11      );
+            model::setPhysicalName (2, 11       , "inlet" );
+            gmsh::write(prm->outpath + "/" + outfile + "_inlet_surface." + prm->fragmentFormat);
+            model::removePhysicalGroups();
+
+            model::addPhysicalGroup(2, tSOutlet , 12      );
+            model::setPhysicalName (2, 12       , "outlet");
+            gmsh::write(prm->outpath + "/" + outfile + "_outlet_surface." + prm->fragmentFormat);
+            model::removePhysicalGroups();
+
+            model::addPhysicalGroup(2, tSWall   , 13      );
+            model::setPhysicalName (2, 13       , "wall"  );
+            gmsh::write(prm->outpath + "/" + outfile + "_wall_surface." + prm->fragmentFormat);
+            model::removePhysicalGroups();
         }
 
-        gmsh::write(prm->outpath + "/" + outfile + "_interstitial_surfaces." + prm->fragmentFormat);
-        model::removePhysicalGroups();
 
         if (prm->NamedBeadVolume)
         {
             model::addPhysicalGroup(3,tVBeads,16 );
             model::setPhysicalName(3,16,"beadVolume");
+            gmsh::write(prm->outpath + "/" + outfile + "_beads_volumes." + prm->fragmentFormat);
+            model::removePhysicalGroups();
         }
 
-        gmsh::write(prm->outpath + "/" + outfile + "_beads_volumes." + prm->fragmentFormat);
-        model::removePhysicalGroups();
 
         if (prm->NamedBeadSurface)
         {
             model::addPhysicalGroup(2,tSBeads,14);
             model::setPhysicalName(2,14, "beadSurface");
+            gmsh::write(prm->outpath + "/" + outfile + "_beads_surfaces." + prm->fragmentFormat);
         }
-
-        gmsh::write(prm->outpath + "/" + outfile + "_beads_surfaces." + prm->fragmentFormat);
 
     }
 
