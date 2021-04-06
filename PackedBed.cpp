@@ -532,7 +532,7 @@ int PackedBed::findBeadWithRadius(double value, std::vector<double> vBeadRads)
 
 void PackedBed::stackPeriodicPacking(Parameters * prm)
 {
-    std::cout << "Stacking periodic packing in X-Y directions..." << std::flush;
+    std::cout << "Stacking periodic packings in " << prm->periodic << " directions..." << std::flush;
 
     /* double eps = 1e-3;  // value of tolerated overlap */
     double eps = 0;  // value of tolerated overlap
