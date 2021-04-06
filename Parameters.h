@@ -54,7 +54,6 @@ public:
     int packingPrecision                           = 4;
     int fixPorosityMethod                          = 2;
     int containerShape                             = 0;
-    int periodic                                   = 0;
     int autoContainment                            = 1;
 
     double zBot                           = 0.0;
@@ -102,15 +101,18 @@ public:
     double tOffZ                          = 0.0;
     double pOffX                          = 0.0;    // periodicOffsets
     double pOffY                          = 0.0;
+    double pOffZ                          = 0.0;
 
+    std::string periodic         = "off";
     std::string translateOffsets = "auto";
-    std::string periodicOffsets = "auto";
+    std::string periodicOffsets  = "auto";
+    std::string outpath          =".";
+    std::string refBeadSize      = "avg";
+    std::string fragmentFormat   = "vtk";
+
     std::string packfile;
     std::string geomOutfile;
     std::string geomInfile;
-    std::string outpath=".";
-    std::string refBeadSize = "avg";
-    std::string fragmentFormat = "vtk";
 
 
 private:

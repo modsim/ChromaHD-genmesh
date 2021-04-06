@@ -130,14 +130,14 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [TASK] More intuitive input parameters for dimensions etc. 
     - [TASK] zBot/zTop
     - [TASK] inlet/outlet
-    - [TASK] nBeads
+    - [DONE] nBeads
     - [TASK] Porosity Control
 - [TASK] Fix GeomInFile and GeomOutFile in log output when using as input
 - [TASK] Better architecture
-- [TASK] let genmesh run in a directory with input file and generate necessary files in the same directory. No output subdir nonsense.
+- [DONE] let genmesh run in a directory with input file and generate necessary files in the same directory. No output subdir nonsense.
 - [TASK] Change rCyl, rCylDelta etc to rCol, rColDelta
-- [TASK] Implementing z-direction periodicity requires stacking in z-dir as well
-- [TASK] remove "floating" points from surface fragmented outputs etc for periodic cases
+- [DONE] Implementing z-direction periodicity requires stacking in z-dir as well
+- [DONE] remove "floating" points from surface fragmented outputs etc for periodic cases: Somehow went away
 - [TASK] Be consistent in the "box" and "cyl" keyword arguments in the input file
 - [TASK] Expose a better keyword for multithreading 
 - [TASK] Expose a better keyword for mesh dimensions ?
@@ -157,6 +157,8 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
     - [NOTE] Essentially, stacking offset = xmax - xmin etc. Decoupling them will allow generating periodic meshes for test cases like one bead cases that repeat.
     - [DONE] Create a periodicOffset keyword with options = {auto | xOff yOff}. Auto => xMax- xMin. 
     - [NOTE] periodic meshing fails for cases where there are no beads intersecting the cut planes (simple test cases)
+    - [DONE] Implement Periodic-Z and toggle ability
+    - [DROP] Fix periodics without cut beads 
 
 Known Issues
 - Netgen optimizer crashes sometimes. (After mesh size constraints were applied to surfaces)
@@ -172,6 +174,8 @@ Known Issues
     - Simulation could be theoretically continued if we modify the nmat file to have non-zero values at these points
 
 # Keywords in config.in
+Look at parameters.h for a more up-to-date set of keywords and default values
+
 - packing: path to packing file xyzd in single precision binary little endian format
 - por_target: target value of real porosity to attain. By default, beads are removed from the top of the bed.
 - por_eps: tolerance for achieving por_target.
@@ -190,6 +194,12 @@ Known Issues
 - dryRun: <0|1>
 - reduced: multiplicative shrink factor for beads in place (rFactor)
 - bridged/capped: <double> relativeBridgeRadius, while bridgeOffsetRatio and bridgeTol are set automatically
+- autoContainment: <0|1> automatically calculate bounding box for packed bed and create container. Switch this off for periodic meshes. Off => use cyl or box keywords
+- containerShape: <0|1> cylinder or box
+- cyl: <xCyl yCyl rCyl> 
+- box: <xMin yMin zMin xDelta yDelta zDelta> 
+- translateOffsets: <auto|x y z> translate packed bed automatically or give x y z offsets
+- periodicOffsets: <auto|x y> offsets for stacking the geometry in x-y directions for periodicity
 - and other GMSH settings such as Mesh.NumThreads that are sent to GMSH.
 
 
@@ -224,3 +234,11 @@ Known Issues
     - Remove beads by closest radius. This method finds the closest value of the radius to be removed, and removes it. This will be more accurate, but will also remove beads from the bulk of the packed bed. Not recommended. 
     - Remove beads from the top end (default). This method works best as it doesn't modify the packing in the bulk of the packed bed.
     - Remove closest beads from an end zone with length == radius_max (Best)
+- For periodic meshes:
+    - `autoContainment 0`
+    - `containerShape 1`
+    - `box <coord/dimensions>`
+    - `periodicOffsets <auto | pOffX pOffY pOffZ>`
+    - mind the `translateOffsets` and actual coordinates of beads from xyzd file.
+    - Ensure that cut planes are either symmetric or far away from bead surface. Essentially, in case of "xy" periodicity, ensure that there is inlet/outlet void space at the ends of the column. 
+- periodic meshing only in the z-direction isn't available yet. Options are "xy" and "xyz" only

@@ -7,8 +7,8 @@ translateOffsets	0 0 0
 preScalingFactor	1
 
 # Periodicity
-periodic xy
-periodicOffsets 1 1
+periodic xyz
+periodicOffsets 1 1 1 
 
 ## Bead selection range
 nBeads	1
@@ -17,7 +17,7 @@ nBeads	1
 reduced	0.9997
 
 ## Container Geometry
-autoContainment	0 
+autoContainment	0
 containerShape	1 
 box -1 -1 -1 2 2 2
 

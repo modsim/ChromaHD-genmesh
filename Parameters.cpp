@@ -153,7 +153,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "Mesh.RefineSteps")                            MeshRefineSteps                            = atoi(val.at(0).c_str());
     else if(key == "Mesh.Generate")                               MeshGenerate                               = atoi(val.at(0).c_str());
     else if(key == "dryRun")                                      dryRun                                     = atoi(val.at(0).c_str());
-    else if(key == "periodic")                                    periodic                                   = atoi(val.at(0).c_str());
+    /* else if(key == "periodic")                                    periodic                                   = atoi(val.at(0).c_str()); // Convert to string, support "off/none/no" "xy" and "xyz" as values */
 
     /* else if(key == "Named.inlet")                                 NamedInlet                                 = atoi(val.at(0).c_str()); */
     /* else if(key == "Named.outlet")                                NamedOutlet                                = atoi(val.at(0).c_str()); */
@@ -210,6 +210,10 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
         }
 
     }
+    else if (key == "periodic")
+    {
+        periodic = val.at(0);
+    }
     else if (key == "periodicOffsets")
     {
 
@@ -222,6 +226,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
             periodicOffsets = "manual";
             pOffX = atof(val.at(0).c_str());
             pOffY = atof(val.at(1).c_str());
+            if (val.size() == 3) pOffZ = atof(val.at(2).c_str());
         }
 
     }
@@ -311,7 +316,7 @@ void Parameters::print()
     std::cout << "dryRun                                      "<< this->dryRun                                     << std::endl;
     std::cout << "periodic                                    "<< this->periodic                                   << std::endl;
     std::cout << "translateOffsets                            "<< this->translateOffsets                           << std::endl;
-    std::cout << "periodicOffsets                             "<< this->periodicOffsets                           << std::endl;
+    std::cout << "periodicOffsets                             "<< this->periodicOffsets                            << std::endl;
 
 }
 

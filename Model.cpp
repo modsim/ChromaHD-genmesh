@@ -17,6 +17,10 @@
 #include <fstream>
 #include <iterator>
 
+// uncomment to disable assert()
+// #define NDEBUG
+#include <cassert>
+
 #define PI 3.1415926535897932
 
 namespace model = gmsh::model;
@@ -406,7 +410,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
         if (prm->fragment == 1)
             createNamedGroups(dimTagsFragmented, prm->containerShape);
 
-        if (prm->periodic == 1)
+        if ((prm->periodic == "xy") || (prm->periodic == "xyz"))
             setupPeriodicSurfaces(prm);
     }
     else
@@ -625,14 +629,14 @@ void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerS
              * Get normals of planes to match surface position to tag
              */
             model::getBoundary({(*iter)}, dimTagsBound, false, false, true); // Get points dimtags
-            std::cout << "Getting points for " << (*iter).second << std::endl;
+            /* std::cout << "Getting points for " << (*iter).second << std::endl; */
             for (std::vector<std::pair<int, int>>::iterator iteraa = dimTagsBound.begin(); iteraa != dimTagsBound.end(); iteraa++)
             {
                 model::getValue((*iteraa).first, (*iteraa).second, {}, points); // get points coords
-                std::cout << "[" << (*iteraa).first << ", "<< (*iteraa).second << "]: " << std::flush;
-                for (auto itp = points.begin(); itp != points.end(); itp++)
-                    std::cout << *itp << "  " << std::flush;
-                std::cout << std::endl;
+                /* std::cout << "[" << (*iteraa).first << ", "<< (*iteraa).second << "]: " << std::flush; */
+                /* for (auto itp = points.begin(); itp != points.end(); itp++) */
+                /*     std::cout << *itp << "  " << std::flush; */
+                /* std::cout << std::endl; */
             }
             model::getParametrization((*iter).first, (*iter).second, points, parametricCoord);
             model::getCurvature((*iter).first, (*iter).second, parametricCoord, curvatures);
@@ -672,6 +676,9 @@ void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerS
         tSWall.insert(tSWall.end(), tYLeftWallBead.begin(), tYLeftWallBead.end());
         tSWall.insert(tSWall.end(), tYRightWallBead.begin(), tYRightWallBead.end());
 
+        // TODO: In z-periodic cases, do I want to include the cut bead surfaces as inlet/outlet?
+        // Also: How do I convert data from outlet -> inlet and provide it to xns.in?
+        // so far, rngdexp... might need to check the option to specify node-by-node dof constraint
         tSInlet =  tZLeftWallInt ;
         tSOutlet=  tZRightWallInt ;
     }
@@ -742,27 +749,12 @@ void Model::setupPeriodicSurfaces(Parameters * prm)
 {
     std::cout << "Setting up periodic surfaces..." << std::flush;
 
-    if (tXLeftWallInt.size() != tXRightWallInt.size())
-    {
-        std::cout << "Mismatch in number of interstitial surfaces in X planes." << std::endl;
-        exit(-1);
-    }
-    if (tYLeftWallInt.size() != tYRightWallInt.size())
-    {
-        std::cout << "Mismatch in number of interstitial surfaces in Y planes." << std::endl;
-        exit(-1);
-    }
-    if (tXLeftWallBead.size() != tXRightWallBead.size())
-    {
-        std::cout << "Mismatch in number of bead surfaces in X planes." << std::endl;
-        exit(-1);
-    }
-    if (tYLeftWallBead.size() != tYRightWallBead.size())
-    {
-        std::cout << "Mismatch in number of bead surfaces in Y planes." << std::endl;
-        exit(-1);
-    }
-
+    assert(tXLeftWallInt.size() == tXRightWallInt.size());
+    assert(tYLeftWallInt.size() == tYRightWallInt.size());
+    assert(tZLeftWallInt.size() == tZRightWallInt.size());
+    assert(tXLeftWallBead.size() == tXRightWallBead.size());
+    assert(tYLeftWallBead.size() == tYRightWallBead.size());
+    assert(tZLeftWallBead.size() == tZRightWallBead.size());
 
     double dx, dy, dz;
 
@@ -783,24 +775,25 @@ void Model::setupPeriodicSurfaces(Parameters * prm)
     std::vector<double> affineTranslationY = {1, 0, 0, 0, 0, 1, 0, dy, 0, 0, 1, 0, 0, 0, 0, 1};
     std::vector<double> affineTranslationZ = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, dz, 0, 0, 0, 1};
 
-    std::cout << "periodic X wall interstitial surfaces: " << tXLeftWallInt.size() << std::endl;
-    std::cout << "periodic Y wall interstitial surfaces: " << tYLeftWallInt.size() << std::endl;
+    /* std::cout << "periodic X wall interstitial surfaces: " << tXLeftWallInt.size() << std::endl; */
+    /* std::cout << "periodic Y wall interstitial surfaces: " << tYLeftWallInt.size() << std::endl; */
     /* std::cout << "periodic Z wall interstitial surfaces: " << tZLeftWallInt.size() << std::endl; */
 
     matchPeriodicSurfaces(tXLeftWallInt, tXRightWallInt, 0, affineTranslationX);
     matchPeriodicSurfaces(tYLeftWallInt, tYRightWallInt, 1, affineTranslationY);
-    /* matchPeriodicSurfaces(tZLeftWallInt, tZRightWallInt, 2, affineTranslationZ); */
+    if (prm->periodic == "xyz")
+        matchPeriodicSurfaces(tZLeftWallInt, tZRightWallInt, 2, affineTranslationZ);
 
-    std::cout << "periodic X wall bead surfaces: " << tXLeftWallBead.size() << std::endl;
-    std::cout << "periodic Y wall bead surfaces: " << tYLeftWallBead.size() << std::endl;
+    /* std::cout << "periodic X wall bead surfaces: " << tXLeftWallBead.size() << std::endl; */
+    /* std::cout << "periodic Y wall bead surfaces: " << tYLeftWallBead.size() << std::endl; */
     /* std::cout << "periodic Z wall bead surfaces: " << tZLeftWallBead.size() << std::endl; */
 
     matchPeriodicSurfaces(tXLeftWallBead, tXRightWallBead, 0, affineTranslationX);
     matchPeriodicSurfaces(tYLeftWallBead, tYRightWallBead, 1, affineTranslationY);
-    matchPeriodicSurfaces(tZLeftWallBead, tZRightWallBead, 2, affineTranslationZ);
+    if (prm->periodic == "xyz")
+        matchPeriodicSurfaces(tZLeftWallBead, tZRightWallBead, 2, affineTranslationZ);
 
     std::cout << "done!" << std::endl;
-
 }
 
 void Model::matchPeriodicSurfaces(std::vector<int>& ltags, std::vector<int>& rtags, int per_dir, std::vector<double> affineTranslation)
@@ -808,6 +801,10 @@ void Model::matchPeriodicSurfaces(std::vector<int>& ltags, std::vector<int>& rta
     /* model::mesh::setPeriodic(2, tXRightWallBead, tXLeftWallBead, affineTranslationX); */
     // Unfortunately the order of the surfaces in the vectors matters when providing them in groups to the setPeriodic function.
     // So we match the surfaces individually instead in this function.
+    // For each surface, find center of bbox. Project that along per_dir and find matching centers on either surface.
+    // If match is found, setPeriodic
+
+    std::cout << "genmesh: Matching periodic surfaces in " << per_dir << " direction..." << std::endl;
 
     double eps = 1e-10;
 
@@ -835,7 +832,7 @@ void Model::matchPeriodicSurfaces(std::vector<int>& ltags, std::vector<int>& rta
             delta = sqrt(delta);
             if (delta < eps)
             {
-                std::cout << "Matched surfaces: " << *itl << " and " << *itr  << " with delta: " << delta << std::endl;
+                /* std::cout << "Matched surfaces: " << *itl << " and " << *itr  << " with delta: " << delta << std::endl; */
 
                 /* for (auto itlc = lcenter.begin(); itlc != lcenter.end(); itlc++) */
                 /*     std::cout << *itlc << " " << std::flush; */

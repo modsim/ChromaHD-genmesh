@@ -57,7 +57,7 @@ PackedBed::PackedBed(Parameters * prm)
     // print data to stdout
     geometryStats(prm);
 
-    if (prm->periodic == 1)
+    if ((prm->periodic == "xy") || (prm->periodic == "xyz"))
         stackPeriodicPacking(prm);
 
     model::add("PackedBed");
@@ -533,6 +533,7 @@ int PackedBed::findBeadWithRadius(double value, std::vector<double> vBeadRads)
 void PackedBed::stackPeriodicPacking(Parameters * prm)
 {
     std::cout << "Stacking periodic packing in X-Y directions..." << std::flush;
+
     /* double eps = 1e-3;  // value of tolerated overlap */
     double eps = 0;  // value of tolerated overlap
 
@@ -546,19 +547,24 @@ void PackedBed::stackPeriodicPacking(Parameters * prm)
     std::vector<Bead *> xmymBeads;
     std::vector<Bead *> xmypBeads;
 
-    double xoff, yoff;
+    std::vector<Bead *> stackedBeads;
+
+    double xoff, yoff, zoff;
 
     if (prm->periodicOffsets == "auto")
     {
         if (prm->autoContainment == 1)
         {
+            std::cout << "WARNING: Using autoContainment generated bounds for stacking periodic packed beds. NOT RECOMMENDED FOR PERIODICITY." << std::endl;
             xoff = (this->xMax-this->xMin); // Offset it completely... effectively stack the outer containers
             yoff = (this->yMax-this->yMin);
+            zoff = (this->zMax-this->zMin);
         }
-        else if (prm->autoContainment == 0)
+        else if (prm->autoContainment == 0) // manual containment
         {
-            xoff = (prm->dx); // Offset it completely... effectively stack the outer containers
+            xoff = (prm->dx);               // Offset it completely using box deltas... effectively stack the outer containers
             yoff = (prm->dy);
+            zoff = (prm->dz);
         }
 
     }
@@ -566,47 +572,72 @@ void PackedBed::stackPeriodicPacking(Parameters * prm)
     {
         xoff = prm->pOffX;
         yoff = prm->pOffY;
+        zoff = prm->pOffZ;
     }
 
+    std::vector<int> offsetMultiplier = {-1, 0, 1};
+    std::vector<int> zOffsetMultiplier;
 
-    // Full copy beads with offset in the x-y directions
-    for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
-        xpBeads.push_back( new Bead((*iter)->getX() + xoff, (*iter)->getY(), (*iter)->getZ(), (*iter)->getR()) );
+    if (prm->periodic == "xyz")
+        zOffsetMultiplier = {-1, 0, 1};
+    else
+        zOffsetMultiplier = {0};
 
-    for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
-        xmBeads.push_back( new Bead((*iter)->getX() - xoff, (*iter)->getY(), (*iter)->getZ(), (*iter)->getR()) );
+    for (std::vector<int>::iterator zom = zOffsetMultiplier.begin(); zom != zOffsetMultiplier.end(); zom++)
+    {
+        for (std::vector<int>::iterator yom = offsetMultiplier.begin(); yom != offsetMultiplier.end(); yom++)
+        {
+            for (std::vector<int>::iterator xom = offsetMultiplier.begin(); xom != offsetMultiplier.end(); xom++)
+            {
+                if ( (*xom == 0) && (*yom == 0) && (*zom == 0)) continue;
+                for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
+                    stackedBeads.push_back(new Bead((*iter)->getX() + (*xom) * xoff, (*iter)->getY() + (*yom) * yoff, (*iter)->getZ() + (*zom) * zoff, (*iter)->getR()));
+            }
+        }
+    }
 
-    for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
-        ypBeads.push_back( new Bead((*iter)->getX(), (*iter)->getY() + yoff, (*iter)->getZ(), (*iter)->getR()) );
+    this->beads.reserve(this->beads.size() + stackedBeads.size());
+    this->beads.insert(this->beads.end(), stackedBeads.begin(), stackedBeads.end());
 
-    for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
-        ymBeads.push_back( new Bead((*iter)->getX(), (*iter)->getY() - yoff, (*iter)->getZ(), (*iter)->getR()) );
 
-    for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
-        xpypBeads.push_back( new Bead((*iter)->getX() + xoff, (*iter)->getY() + yoff, (*iter)->getZ(), (*iter)->getR()) );
+    /* // Full copy beads with offset in the x-y directions */
+    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
+    /*     xpBeads.push_back( new Bead((*iter)->getX() + xoff, (*iter)->getY(), (*iter)->getZ(), (*iter)->getR()) ); */
 
-    for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
-        xmypBeads.push_back( new Bead((*iter)->getX() - xoff, (*iter)->getY() + yoff, (*iter)->getZ(), (*iter)->getR()) );
+    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
+    /*     xmBeads.push_back( new Bead((*iter)->getX() - xoff, (*iter)->getY(), (*iter)->getZ(), (*iter)->getR()) ); */
 
-    for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
-        xmymBeads.push_back( new Bead((*iter)->getX() - xoff, (*iter)->getY() - yoff, (*iter)->getZ(), (*iter)->getR()) );
+    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
+    /*     ypBeads.push_back( new Bead((*iter)->getX(), (*iter)->getY() + yoff, (*iter)->getZ(), (*iter)->getR()) ); */
 
-    for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
-        xpymBeads.push_back( new Bead((*iter)->getX() + xoff, (*iter)->getY() - yoff, (*iter)->getZ(), (*iter)->getR()) );
+    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
+    /*     ymBeads.push_back( new Bead((*iter)->getX(), (*iter)->getY() - yoff, (*iter)->getZ(), (*iter)->getR()) ); */
 
-    // Reserve space to extend this->beads vector
-    this->beads.reserve(this->beads.size() * 9);
+    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
+    /*     xpypBeads.push_back( new Bead((*iter)->getX() + xoff, (*iter)->getY() + yoff, (*iter)->getZ(), (*iter)->getR()) ); */
 
-    // Extend this->beads vector
-    this->beads.insert(this->beads.end(), xpBeads.begin(), xpBeads.end());
-    this->beads.insert(this->beads.end(), xmBeads.begin(), xmBeads.end());
-    this->beads.insert(this->beads.end(), ypBeads.begin(), ypBeads.end());
-    this->beads.insert(this->beads.end(), ymBeads.begin(), ymBeads.end());
+    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
+    /*     xmypBeads.push_back( new Bead((*iter)->getX() - xoff, (*iter)->getY() + yoff, (*iter)->getZ(), (*iter)->getR()) ); */
 
-    this->beads.insert(this->beads.end(), xpypBeads.begin(), xpypBeads.end());
-    this->beads.insert(this->beads.end(), xmypBeads.begin(), xmypBeads.end());
-    this->beads.insert(this->beads.end(), xmymBeads.begin(), xmymBeads.end());
-    this->beads.insert(this->beads.end(), xpymBeads.begin(), xpymBeads.end());
+    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
+    /*     xmymBeads.push_back( new Bead((*iter)->getX() - xoff, (*iter)->getY() - yoff, (*iter)->getZ(), (*iter)->getR()) ); */
+
+    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
+    /*     xpymBeads.push_back( new Bead((*iter)->getX() + xoff, (*iter)->getY() - yoff, (*iter)->getZ(), (*iter)->getR()) ); */
+
+    /* // Reserve space to extend this->beads vector */
+    /* this->beads.reserve(this->beads.size() * 9); */
+
+    /* // Extend this->beads vector */
+    /* this->beads.insert(this->beads.end(), xpBeads.begin(), xpBeads.end()); */
+    /* this->beads.insert(this->beads.end(), xmBeads.begin(), xmBeads.end()); */
+    /* this->beads.insert(this->beads.end(), ypBeads.begin(), ypBeads.end()); */
+    /* this->beads.insert(this->beads.end(), ymBeads.begin(), ymBeads.end()); */
+
+    /* this->beads.insert(this->beads.end(), xpypBeads.begin(), xpypBeads.end()); */
+    /* this->beads.insert(this->beads.end(), xmypBeads.begin(), xmypBeads.end()); */
+    /* this->beads.insert(this->beads.end(), xmymBeads.begin(), xmymBeads.end()); */
+    /* this->beads.insert(this->beads.end(), xpymBeads.begin(), xpymBeads.end()); */
 
     std::cout << "done!" << std::endl;
 
