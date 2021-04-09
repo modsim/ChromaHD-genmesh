@@ -749,12 +749,16 @@ void Model::setupPeriodicSurfaces(Parameters * prm)
 {
     std::cout << "Setting up periodic surfaces..." << std::flush;
 
-    assert(tXLeftWallInt.size() == tXRightWallInt.size());
-    assert(tYLeftWallInt.size() == tYRightWallInt.size());
-    assert(tZLeftWallInt.size() == tZRightWallInt.size());
+    assert(tXLeftWallInt.size()  == tXRightWallInt.size());
+    assert(tYLeftWallInt.size()  == tYRightWallInt.size());
     assert(tXLeftWallBead.size() == tXRightWallBead.size());
     assert(tYLeftWallBead.size() == tYRightWallBead.size());
-    assert(tZLeftWallBead.size() == tZRightWallBead.size());
+
+    if (prm->periodic == "xyz")
+    {
+        assert(tZLeftWallInt.size()  == tZRightWallInt.size());
+        assert(tZLeftWallBead.size() == tZRightWallBead.size());
+    }
 
     double dx, dy, dz;
 
