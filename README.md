@@ -242,3 +242,31 @@ Look at parameters.h for a more up-to-date set of keywords and default values
     - mind the `translateOffsets` and actual coordinates of beads from xyzd file.
     - Ensure that cut planes are either symmetric or far away from bead surface. Essentially, in case of "xy" periodicity, ensure that there is inlet/outlet void space at the ends of the column. 
 - periodic meshing only in the z-direction isn't available yet. Options are "xy" and "xyz" only
+
+## Packing Generation
+This [Packing Generation](https://github.com/VasiliBaranov/packing-generation) tool can be used to generate periodic packings. As of this writing, this [issue](https://github.com/VasiliBaranov/packing-generation/issues/18) is still unresolved, and confined cylindrical packings don't work. 
+
+More detailed information can be found in the README of the above project, but here I'll elucidate a clear workflow to generate periodic packings. 
+
+Essentially, generating the packing involves running the program multiple times with different algorithms: FBA -> LS -> LSGD 
+
+[FBA]
+- Ensure that generation.conf and diameters.txt (optional) are in the current directory.
+- Ensure that generation.conf has Generation start: 1
+- Run FBA: `PackingGeneration.exe -fba |& tee fba.log`
+
+[LS]
+- Remove packing.nfo, optionally move/save all files to a different directory
+- Ensure that generation.conf, diameters.txt and packing.xyzd are in the current directory.
+- Ensure that generation.conf has Generation start: 0
+- Run LS: `PackingGeneration.exe -ls |& tee ls.log`
+- If every other line is a warning about mismatch in inner and outer diameter ratios, restart the whole process with modified nbeads and dimensions such that porosity is close to 0.4. (0.4-0.6)
+
+[LSGD]
+- Remove packing.nfo, optionally move/save all files to a different directory
+- Ensure that generation.conf, diameters.txt and packing.xyzd are in the current directory.
+- Ensure that generation.conf has Generation start: 0
+- Run LS: `PackingGeneration.exe -lsgd |& tee lsgd.log`
+
+[dumpy]
+- Run dumpy to scale the diameters: `dumpy --dpacking packing.xyzd --nfo packing.nfo -w packing_fixed.xyzd`. (or just scale bead diameters manually in genmesh)
