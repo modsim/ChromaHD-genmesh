@@ -38,3 +38,9 @@ git-check:
 
 install: build
 	cp genmesh $(PREFIX)/bin	
+
+test: build
+	./testRunner.sh
+
+testclean:
+	./testRunner.sh -c
