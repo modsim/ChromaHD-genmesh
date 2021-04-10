@@ -54,13 +54,11 @@ int main(int argc, char** argv) {
         create_directory(prm->outpath);
 
         PackedBed * packedBed = new PackedBed(prm);
-        Model * myColumn = new Model(prm);
+        Geometry * geom = new Geometry(prm, packedBed);
+        Model * myColumn = new Model(prm, geom);
 
         long start = gmsh::logger::getWallTime();
-
-        myColumn->createGeometry(packedBed, prm);
-        myColumn->mesh(outfile, prm);
-
+        myColumn->mesh(outfile, prm, geom);
         long duration = gmsh::logger::getWallTime() - start;
 
         gmsh::logger::write("Wall time: " + std::to_string(duration) + " s (" + std::to_string((double)duration/3600) + " h)", "info");

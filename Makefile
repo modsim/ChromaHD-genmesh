@@ -4,20 +4,13 @@ CXX := $(if $(CXX),$(CXX),g++)
 
 PREFIX=$(HOME)/local
 
-SRC=Parameters.cpp PackedBed.cpp Model.cpp Files.cpp Bead.cpp main.cpp
+SRC=Parameters.cpp PackedBed.cpp Geometry.cpp Model.cpp Files.cpp Bead.cpp main.cpp 
 OBJ=$(SRC:.cpp=.o)
 EXE=genmesh
 
+## Set GMSH_ROOT and OCCT_ROOT before running make
 INC=-I${GMSH_ROOT}/include
 LIB=-L${GMSH_ROOT}/lib -lgmsh -L${OCCT_ROOT}/lib
-
-# ifeq (IBT918, $(findstring IBT918, $(HOST)))
-# 	INC=
-# 	LIB=-lgmsh -L/usr/local/lib64
-# else
-# 	INC=-I../../../tools/gmsh/include
-# 	LIB=-L../../../tools/gmsh/lib -lgmsh -L../../../tools/occt/lib
-# endif
 
 .PHONY: all local ibt clean install
 

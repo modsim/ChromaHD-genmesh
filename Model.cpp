@@ -26,9 +26,9 @@
 namespace model = gmsh::model;
 namespace factory = gmsh::model::occ;
 
-Model::Model(Parameters * prm)
+Model::Model(Parameters * prm, Geometry * geom)
 {
-    model::add("Model");
+    /* model::add("Model"); */
 }
 
 
@@ -37,369 +37,16 @@ Model::~Model()
 
 }
 
-void printVecPair(std::vector<std::pair<int, int>> vp)
-{
-    for (std::vector<std::pair<int,int>>::iterator iter = vp.begin(); iter != vp.end(); iter++)
-    {
-        std::cout << (*iter).first << "    " << (*iter).second << std::endl;
-    }
-}
-
-/* Function to create bead geometry.
- * xoff, yoff are for periodic cases, to stack the bead geometries in the lateral dimensions
- */
-void createBeadGeometry(std::vector<Bead *> beads, Parameters* prm, std::vector<std::pair<int, int>> &dimTagsBeads, std::vector<int> &tBeadCPs, int &count, std::vector<double> &vCount, double xoff, double yoff)
-{
-    std::cout << "Creating beads... " << std::flush;
-    int tag, ctag;
-
-    for (std::vector<Bead *>::iterator iter = beads.begin(); iter != beads.end(); iter++ )
-    {
-        double x = (*iter)->getX() + xoff;
-        double y = (*iter)->getY() + yoff;
-        double z = (*iter)->getZ();
-        double r = (*iter)->getR();
-
-        if (prm->geomInfile.empty())
-        {
-            tag = factory::addSphere(x, y, z, r);
-            /* std::cout << tag << std::endl; */
-            ctag = factory::addPoint(x, y, z, prm->lc_beads, -1);
-
-            (*iter)->setTag(tag);
-            (*iter)->setCTag(ctag);
-
-            dimTagsBeads.push_back({3, tag});
-            tBeadCPs.push_back(ctag);
-        }
-
-        /*
-         * Distance/Threshold allows creating gradient mesh sizes within the beads
-         */
-        model::mesh::field::add("Distance", ++count);
-        model::mesh::field::setNumbers(count, "NodesList", {double(ctag)});
-
-        model::mesh::field::add("Threshold", ++count);
-        model::mesh::field::setNumber(count, "IField", count-1);
-        model::mesh::field::setNumber(count, "LcMin", prm->lc_beads);
-        model::mesh::field::setNumber(count, "LcMax", prm->lc_out);
-        model::mesh::field::setNumber(count, "DistMin", prm->fieldThresholdMinFactor * r);
-        model::mesh::field::setNumber(count, "DistMax", prm->fieldThresholdMaxFactor * r);
-        vCount.push_back(count);
-
-    }
-    std::cout << "done!" << std::endl;
-
-}
-
-/*
- * Create container geometry
- */
-void createContainerGeometry(PackedBed * pb, Parameters * prm, double xCyl, double yCyl, double rCyl, double zCylTop, double zCylBot, std::vector<std::pair<int, int>> &dimTagsCyl)
-{
-    std::cout << "Creating container... " << std::flush;
-    if (prm->geomInfile.empty())
-    {
-        if (prm->autoContainment == 1)
-        {
-
-            if (prm->containerShape == 0)
-            {
-                std::cout << "Creating cylindrical container automatically." << std::endl;
-                std::cout << "{xCyl, yCyl, zCylBot, zCylTop, rCyl} = " <<
-                    xCyl << ", " <<
-                    yCyl << ", " <<
-                    zCylBot << ", " <<
-                    zCylTop << ", " <<
-                    rCyl << std::endl;
-                dimTagsCyl.push_back( {3, factory::addCylinder(xCyl,yCyl, zCylBot, 0,0,zCylTop-zCylBot, rCyl) } );
-
-            }
-            else if (prm->containerShape == 1)
-            {
-                std::cout << "Creating rectangular container automatically." << std::endl;
-                std::cout <<
-                    "xMin: " << pb->xMin - prm->rCylDelta << "\n" <<
-                    "yMin: " << pb->yMin - prm->rCylDelta << "\n" <<
-                    "dx: " << pb->xMax - pb->xMin + 2*prm->rCylDelta << "\n" <<
-                    "dy: " << pb->yMax - pb->yMin + 2*prm->rCylDelta << "\n" <<
-                    "zMin: " << zCylBot << "\n" <<
-                    "dz: " << zCylTop - zCylBot << "\n" << std::endl;
-                dimTagsCyl.push_back( {3, factory::addBox(pb->xMin - prm->rCylDelta,pb->yMin - prm->rCylDelta,zCylBot, pb->xMax - pb->xMin + 2 * prm->rCylDelta,pb->yMax - pb->yMin + 2 * prm->rCylDelta, zCylTop-zCylBot)});
-            }
-            else
-            {
-                std::cout << "Skipping container creation." << std::endl;
-            }
-
-        }
-        else if (prm->autoContainment == 0)
-        {
-            if (prm->containerShape == 0)
-            {
-                std::cout << "Creating cylindrical container manually." << std::endl;
-                // TODO: Currently, zcylbot depends on inlet and is not directly accessible in the "cyl" keyword
-                // But the arguments of the "box" keyword are directly used in the other case.
-                // Be consistent.
-                dimTagsCyl.push_back( {3, factory::addCylinder(prm->xCyl,prm->yCyl, zCylBot, 0,0,zCylTop-zCylBot, prm->rCyl) } );
-
-            }
-            else if (prm->containerShape == 1)
-            {
-                std::cout << "Creating rectangular container manually." << std::endl;
-                dimTagsCyl.push_back( {3, factory::addBox(prm->x0, prm->y0, prm->z0, prm->dx, prm->dy, prm->dz)});
-            }
-            else
-            {
-                std::cout << "Skipping container creation manually." << std::endl;
-            }
-
-        }
-        else
-        {
-            std::cout << "Invalid autoContainment value!" << std::endl;
-            exit(-1);
-        }
-
-    }
-
-}
-
-void Model::createGeometry(PackedBed * pb, Parameters * prm)
-{
-    if(prm->dryRun)
-        return;
-
-    std::vector<Bead *> beads = pb->beads;
-
-    std::vector<std::pair<int, int> > ov;
-    std::vector<std::pair<int, int> > cv;
-
-    std::vector<double> vCount;
-
-    zCylBot = pb->zCylBot;
-    zCylTop = pb->zCylTop;
-    xMax = pb->xMax;
-    yMax = pb->yMax;
-    xMin = pb->xMin;
-    yMin = pb->yMin;
-
-    double xCyl    = prm->xCyl;
-    double yCyl    = prm->yCyl;
-    double rCyl    = prm->rCyl;
-
-    int count = 0;
-
-    createBeadGeometry(beads, prm, dimTagsBeads, tBeadCPs, count, vCount, 0, 0);
-
-    int tagBridge;
-
-    double dx, dy, dz;
-    double x4, y4, z4;
-    double x3, y3, z3;
-    double x2, y2, z2, r2;
-    double x1, y1, z1, r1;
-    double dx3, dy3, dz3;
-    double factor = prm->bridgeOffsetRatio;
-    double dist;
-
-    std::vector<Bead *> remBeads = beads;
-    std::cout << "Creating Bridges... " << std::flush;
-    for(std::vector<Bead *>::iterator iter = beads.begin(); iter != beads.end(); iter++)
-    {
-        remBeads.erase(remBeads.begin());
-        for(std::vector<Bead *>::iterator riter = remBeads.begin(); riter != remBeads.end(); riter++)
-        {
-
-            x1 = (*iter)->getX();
-            x2 = (*riter)->getX();
-
-            y1 = (*iter)->getY();
-            y2 = (*riter)->getY();
-
-            z1 = (*iter)->getZ();
-            z2 = (*riter)->getZ();
-
-            r1 = (*iter)->getR();
-            r2 = (*riter)->getR();
-
-            dx = x2-x1;
-            dy = y2-y1;
-            dz = z2-z1;
-
-            dist = sqrt( pow(dx, 2) + pow(dy, 2) + pow(dz, 2) );
-
-            if (dist < r1 + r2 + prm->bridgeTol)
-            {
-
-                //cylinder radius
-                double rBeadSmallest = (r1 <= r2? r1 : r2);
-                double rBridge = prm->relativeBridgeRadius * rBeadSmallest;
-                double r1Bridge = prm->relativeBridgeRadius * r1;
-                double r2Bridge = prm->relativeBridgeRadius * r2;
-
-
-                //Cylinder start point
-                x3 = x1 + factor * r1 * dx/dist;
-                y3 = y1 + factor * r1 * dy/dist;
-                z3 = z1 + factor * r1 * dz/dist;
-
-                x4 = x2 - factor * r2 * dx/dist;
-                y4 = y2 - factor * r2 * dy/dist;
-                z4 = z2 - factor * r2 * dz/dist;
-
-                //cylinder length
-                dx3 = dx * (dist - factor * (r1+r2))/dist;
-                dy3 = dy * (dist - factor * (r1+r2))/dist;
-                dz3 = dz * (dist - factor * (r1+r2))/dist;
-
-                if (prm->geomInfile.empty())
-                {
-                    if (r1 == r2)
-                        tagBridge = factory::addCylinder(x3, y3, z3, dx3, dy3, dz3, rBridge);
-                    else
-                        tagBridge = factory::addCone(x3, y3, z3, dx3, dy3, dz3, r1Bridge, r2Bridge);
-
-                    this->dimTagsBridges.push_back({3, tagBridge }) ;
-                    /* this->bridgeTagRadiusPairs.push_back({tagBridge, rBridge}); */
-                }
-
-
-                model::mesh::field::add("Frustum", ++count);
-                model::mesh::field::setNumber(count, "V1_inner", prm->lc_bridge * rBeadSmallest/(prm->refBeadRadius) );
-                model::mesh::field::setNumber(count, "V2_inner", prm->lc_bridge * rBeadSmallest/(prm->refBeadRadius) );
-                /* model::mesh::field::setNumber(count, "V1_outer", prm->lc_beads * rBeadSmallest/(radius_max) ); */
-                /* model::mesh::field::setNumber(count, "V2_outer", prm->lc_beads * rBeadSmallest/(radius_max) ); */
-                model::mesh::field::setNumber(count, "V1_outer", prm->lc_out);
-                model::mesh::field::setNumber(count, "V2_outer", prm->lc_out);
-                model::mesh::field::setNumber(count, "R1_inner", 0);
-                model::mesh::field::setNumber(count, "R2_inner", 0);
-                model::mesh::field::setNumber(count, "R1_outer", prm->fieldThresholdMaxFactor * r1Bridge);
-                model::mesh::field::setNumber(count, "R2_outer", prm->fieldThresholdMaxFactor * r2Bridge);
-
-                model::mesh::field::setNumber(count, "X1", x3);
-                model::mesh::field::setNumber(count, "Y1", y3);
-                model::mesh::field::setNumber(count, "Z1", z3);
-                model::mesh::field::setNumber(count, "X2", x4);
-                model::mesh::field::setNumber(count, "Y2", y4);
-                model::mesh::field::setNumber(count, "Z2", z4);
-                vCount.push_back(count);
-
-
-
-
-            }
-
-        }
-    }
-
-    std::cout << "done!" << std::endl;
-
-    createContainerGeometry(pb, prm, xCyl, yCyl, rCyl, zCylTop, zCylBot, dimTagsCyl);
-
-    if (prm->meshSizeMethod == 1)
-    {
-        std::string backgroundField;
-        if (prm->lc_beads > prm->lc_out)
-            backgroundField="Max";
-        else
-            backgroundField="Min";
-
-        std::cout << "Setting Background Field: " << backgroundField << std::endl;
-
-        model::mesh::field::add(backgroundField, ++count);
-        model::mesh::field::setNumbers(count, "FieldsList", vCount);
-
-        model::mesh::field::setAsBackgroundMesh(count);
-    }
-
-
-}
-
-void Model::mesh(std::string outfile, Parameters * prm)
+void Model::mesh(std::string outfile, Parameters * prm, Geometry * geom)
 {
     if(prm->dryRun)
         return;
 
     // Store dimTags and dimTagsMap
-    std::vector<std::pair<int, int> > dimTagsBeadsInside;
-    std::vector<std::pair<int, int> > dimTagsFused;
-    std::vector<std::pair<int, int> > dimTagsFragmented;
+    std::vector<std::pair<int, int> > dimTagsFragmented  = geom->dimTagsFragmented;
+
     std::vector<std::pair<int, int> > dimTagsDummy;
-
     std::vector<std::vector<std::pair<int, int> > > ovv;
-
-    // TODO: Rename ov, bv, cv to be more descriptive
-
-    std::cout << "Intersecting Volumes... " << std::flush;
-    factory::intersect(dimTagsBeads, dimTagsCyl, dimTagsBeadsInside, ovv, -1, true, false);
-    std::cout << "done!" << std::endl;
-
-    long bool_start = gmsh::logger::getWallTime();
-
-    if (prm->geomInfile.empty())
-    {
-        /* Fuse beads together (with bridges or without) */
-        if (prm->booleanOperation == 1)
-        {
-            if (dimTagsBridges.size() == 0) dimTagsBridges = {3, dimTagsBeads.back()};
-
-            std::cout << "Fusing Beads and Bridges... " << std::flush;
-            /* factory::fuse(dimTagsBeads, dimTagsBridges, ov, ovv ); */
-            factory::fuse(dimTagsBeadsInside, dimTagsBridges, dimTagsFused, ovv );
-            std::cout << "done!" << std::endl;
-        }
-        else if (prm->booleanOperation == 2)
-        {
-            if (dimTagsBridges.size() == 0)
-            {
-                std::cout << "Error: No Bridges to cut from beads" << std::endl;
-                exit(-1);
-            }
-
-            std::cout << "Capping Beads... " << std::flush;
-            /* factory::cut(dimTagsBeads, dimTagsBridges, ov, ovv ); */
-            factory::cut(dimTagsBeadsInside, dimTagsBridges, dimTagsFused, ovv );
-            std::cout << "done!" << std::endl;
-
-        }
-        else
-        {
-            /* ov = dimTagsBeads; */
-            dimTagsFused = dimTagsBeadsInside;
-        }
-
-        // Fragment cylinder w.r.t. beads
-        if (prm->fragment)
-        {
-            /* if (ov.size() == 0) ov = dimTagsBeads; */
-            if (dimTagsFused.size() == 0) dimTagsFused = dimTagsBeadsInside;
-
-            std::cout << "Fragmenting Volumes... " << std::flush;
-            factory::fragment(dimTagsCyl, dimTagsFused, dimTagsFragmented, ovv );
-            /* dimTagsInterstitial.push_back(bv.back()); */
-            std::cout << "done!" << std::endl;
-        }
-
-
-        // Synchronize gmsh model with geometry kernel.
-        std::cout << "synchronizing... " << std::flush;
-        factory::synchronize();
-        std::cout << "done!" << std::endl;
-
-        std::cout << std::endl;
-
-        /* std::cout << "Number of Beads: "            << dimTagsBeads.size()   << std::endl; */
-        std::cout << "Number of Beads: "            << dimTagsBeadsInside.size()   << std::endl;
-        std::cout << "Number of Bridges: "          << dimTagsBridges.size() << std::endl;
-        std::cout << "Number of internal volumes: " << dimTagsFused.size()             << std::endl;
-
-    }
-
-    long bool_duration = gmsh::logger::getWallTime() - bool_start;
-
-    gmsh::logger::write("Boolean time: " + std::to_string(bool_duration) + " s", "info");
-    std::cout << std::endl;
 
     // ============================
     // Named Physical Groups
@@ -411,7 +58,7 @@ void Model::mesh(std::string outfile, Parameters * prm)
             createNamedGroups(dimTagsFragmented, prm->containerShape);
 
         if ((prm->periodic == "xy") || (prm->periodic == "xyz"))
-            setupPeriodicSurfaces(prm);
+            setupPeriodicSurfaces(prm, geom);
     }
     else
     {
@@ -425,15 +72,6 @@ void Model::mesh(std::string outfile, Parameters * prm)
         std::cout << "done!" << std::endl;
 
         createNamedGroups(dimTagsFragmented, prm->containerShape);
-    }
-
-    if (prm->meshSizeMethod == 0)
-    {
-        //Set mesh size globally
-        std::cout << "Setting global mesh size... ";
-        model::getEntities(dimTagsDummy, 0);
-        model::mesh::setSize(dimTagsDummy, prm->lc_beads);
-        std:: cout << "done!" << std::endl;
     }
 
     std::cout << std::endl;
@@ -463,24 +101,11 @@ void Model::mesh(std::string outfile, Parameters * prm)
     //TODO: Separate out into a function
 
     std::cout << std::endl;
+
+    // plugin volume
     std::cout << "Calculating mesh volumes. Note: Multiply outputs by " << pow(prm->MeshScalingFactor, 3) << std::endl;
-    std::cout << "[ Column Volume ]" << std::endl;
-    gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", -1);
-    gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
-    gmsh::plugin::run("MeshVolume");
-    std::cout << std::endl;
+    meshVolumes();
 
-    std::cout << "[ Interstitial Volume ]" << std::endl;
-    gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", 5);
-    gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
-    gmsh::plugin::run("MeshVolume");
-    std::cout << std::endl;
-
-    std::cout << "[ Bead Volume ]" << std::endl;
-    gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", 6);
-    gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
-    gmsh::plugin::run("MeshVolume");
-    std::cout << std::endl;
 
     if (prm->outputFragments == 1)
     {
@@ -745,7 +370,7 @@ void Model::createNamedGroups(std::vector<std::pair<int,int>> bv, int containerS
 
 }
 
-void Model::setupPeriodicSurfaces(Parameters * prm)
+void Model::setupPeriodicSurfaces(Parameters * prm, Geometry * geom)
 {
     std::cout << "Setting up periodic surfaces..." << std::flush;
 
@@ -762,18 +387,9 @@ void Model::setupPeriodicSurfaces(Parameters * prm)
 
     double dx, dy, dz;
 
-    if (prm->autoContainment == 1)
-    {
-        dx = xMax - xMin + 2 * prm->rCylDelta;
-        dy = yMax - yMin + 2 * prm->rCylDelta;
-        dz = zCylTop - zCylBot;
-    }
-    else if (prm->autoContainment == 0)
-    {
-        dx = prm->dx;
-        dy = prm->dy;
-        dz = prm->dz;
-    }
+    dx = geom->dx;
+    dy = geom->dy;
+    dz = geom->dz;
 
     std::vector<double> affineTranslationX = {1, 0, 0, dx, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
     std::vector<double> affineTranslationY = {1, 0, 0, 0, 0, 1, 0, dy, 0, 0, 1, 0, 0, 0, 0, 1};
@@ -851,5 +467,27 @@ void Model::matchPeriodicSurfaces(std::vector<int>& ltags, std::vector<int>& rta
         }
 
     }
+
+}
+
+void Model::meshVolumes()
+{
+    std::cout << "[ Column Volume ]" << std::endl;
+    gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", -1);
+    gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
+    gmsh::plugin::run("MeshVolume");
+    std::cout << std::endl;
+
+    std::cout << "[ Interstitial Volume ]" << std::endl;
+    gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", 5);
+    gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
+    gmsh::plugin::run("MeshVolume");
+    std::cout << std::endl;
+
+    std::cout << "[ Bead Volume ]" << std::endl;
+    gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", 6);
+    gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
+    gmsh::plugin::run("MeshVolume");
+    std::cout << std::endl;
 
 }

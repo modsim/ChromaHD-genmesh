@@ -12,6 +12,7 @@
 #include "Bead.h"
 #include "Parameters.h"
 #include "PackedBed.h"
+#include "Geometry.h"
 
 #include <vector>
 #include <string>
@@ -19,32 +20,34 @@
 class Model{
     public:
         Model();
-        Model(Parameters * prm);
+        Model(Parameters * prm, Geometry * geom);
         Model(Parameters * prm, std::string geometryFile);
         virtual ~Model();
 
-        void createGeometry(PackedBed * packedBed, Parameters * prm);
-        void mesh(std::string outfile, Parameters * prm);
+        /* void createGeometry(PackedBed * packedBed, Parameters * prm); */
+        /* void mesh(std::string outfile, Parameters * prm); */
+        void mesh(std::string outfile, Parameters * prm, Geometry * geom);
         void createNamedGroups(std::vector<std::pair<int,int>> ov, int containerShape);
+        void meshVolumes();
 
 
-        double zCylBot;
-        double zCylTop;
-        double xMax, xMin, yMax, yMin;
+        /* double zCylBot; */
+        /* double zCylTop; */
+        /* double xMax, xMin, yMax, yMin; */
 
-        std::vector<int> tBeads;
-        std::vector<int> tBeadCPs;
-        std::vector<std::pair<int, int>> dimTagsBeads;
-        std::vector<std::pair<int, int>> dimTagsCyl;
-        std::vector<std::pair<int, int>> dimTagsBridges;
-        std::vector<std::pair<int, int>> dimTagsInterstitial;
+        /* std::vector<int> tBeads; */
+        /* std::vector<int> tBeadCPs; */
+        /* std::vector<std::pair<int, int>> dimTagsBeads; */
+        /* std::vector<std::pair<int, int>> dimTagsCyl; */
+        /* std::vector<std::pair<int, int>> dimTagsBridges; */
+        /* std::vector<std::pair<int, int>> dimTagsInterstitial; */
 
         std::vector<int> tVBeads, tVInt, tSBeads, tSWall, tSOutlet, tSInlet;
         std::vector<int> tXLeftWallInt, tYLeftWallInt, tZLeftWallInt, tXRightWallInt, tYRightWallInt, tZRightWallInt;
         std::vector<int> tXLeftWallBead, tYLeftWallBead, tZLeftWallBead, tXRightWallBead, tYRightWallBead, tZRightWallBead;
         std::vector<std::pair <int, double>> bridgeTagRadiusPairs;
 
-        void setupPeriodicSurfaces(Parameters * prm);
+        void setupPeriodicSurfaces(Parameters * prm, Geometry * geom);
         void matchPeriodicSurfaces(std::vector<int>& ltags, std::vector<int>& rtags, int per_dir, std::vector<double> affineTranslation);
 
 };

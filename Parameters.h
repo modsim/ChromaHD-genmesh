@@ -102,6 +102,9 @@ public:
     double pOffX                          = 0.0;    // periodicOffsets
     double pOffY                          = 0.0;
     double pOffZ                          = 0.0;
+    double periodicInlet = 0.0;
+    double periodicOutlet = 0.0;
+
 
     std::string periodic         = "off";
     std::string translateOffsets = "auto";

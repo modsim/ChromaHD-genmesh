@@ -190,9 +190,17 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     }
     else if (key == "cyl")
     {
-        xCyl = atof(val.at(0).c_str());
-        yCyl = atof(val.at(1).c_str());
-        rCyl = atof(val.at(2).c_str());
+        /* xCyl = atof(val.at(0).c_str()); */
+        /* yCyl = atof(val.at(1).c_str()); */
+        /* rCyl = atof(val.at(2).c_str()); */
+
+        x0       = atof(val.at(0).c_str());
+        y0       = atof(val.at(1).c_str());
+        z0       = atof(val.at(2).c_str());
+        dx       = atof(val.at(3).c_str());
+        dy       = atof(val.at(4).c_str());
+        dz       = atof(val.at(5).c_str());
+        rCyl     = atof(val.at(6).c_str());
     }
     else if (key == "translateOffsets")
     {
