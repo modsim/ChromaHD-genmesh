@@ -153,6 +153,9 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "Mesh.RefineSteps")                            MeshRefineSteps                            = atoi(val.at(0).c_str());
     else if(key == "Mesh.Generate")                               MeshGenerate                               = atoi(val.at(0).c_str());
     else if(key == "dryRun")                                      dryRun                                     = atoi(val.at(0).c_str());
+    else if(key == "periodicInlet")                               periodicInlet                              = atoi(val.at(0).c_str());
+    else if(key == "periodicOutlet")                              periodicOutlet                             = atoi(val.at(0).c_str());
+
     /* else if(key == "periodic")                                    periodic                                   = atoi(val.at(0).c_str()); // Convert to string, support "off/none/no" "xy" and "xyz" as values */
 
     /* else if(key == "Named.inlet")                                 NamedInlet                                 = atoi(val.at(0).c_str()); */

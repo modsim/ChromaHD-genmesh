@@ -13,6 +13,7 @@
 #include "Parameters.h"
 #include "PackedBed.h"
 
+/* #include "Data.h" */
 
 class Geometry{
     public:
@@ -34,10 +35,15 @@ class Geometry{
 
         // Store dimTags and dimTagsMap
         std::vector<std::pair<int, int> > dimTagsBeadsInside;
+        std::vector<std::pair<int, int> > dimTagsBeadsInPeriodicInlet;
+        std::vector<std::pair<int, int> > dimTagsBeadsInPeriodicOutlet;
         std::vector<std::pair<int, int> > dimTagsFused;
         std::vector<std::pair<int, int> > dimTagsFragmented;
+        std::vector<std::pair<int, int> > dimTagsFragmentedPeriodicInlet;
+        std::vector<std::pair<int, int> > dimTagsFragmentedPeriodicOutlet;
         std::vector<std::pair<int, int> > dimTagsDummy;
 
+        /* std::vector<FragmentDataStruct> vFragmentData; */
 
         void createContainer(PackedBed * pb, Parameters * prm, std::vector<std::pair<int,int>> &dimTagsContainers);
         void createPackedBed(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dimTagsBeads);

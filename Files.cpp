@@ -69,6 +69,13 @@ std::string remove_extension(const std::string& filename)
     return filename.substr(0, lastdot);
 }
 
+std::string get_extension(const std::string& filename)
+{
+    size_t lastdot = filename.find_last_of(".");
+    if (lastdot == std::string::npos) return filename;
+    return filename.substr(lastdot, std::string::npos);
+}
+
 
 void create_directory(const std::string& path)
 {

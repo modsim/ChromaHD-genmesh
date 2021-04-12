@@ -50,23 +50,27 @@ int main(int argc, char** argv) {
         std::cout << std::scientific;
         Parameters * prm = new Parameters(infile);
 
+
         prm->outpath += "/" + remove_extension(outfile);
         create_directory(prm->outpath);
 
         PackedBed * packedBed = new PackedBed(prm);
-        Geometry * geom = new Geometry(prm, packedBed);
-        Model * myColumn = new Model(prm, geom);
 
+        Geometry * geom = new Geometry(prm, packedBed);
+        Model * defaultModel = new Model(prm, geom);
         long start = gmsh::logger::getWallTime();
-        myColumn->mesh(outfile, prm, geom);
+        defaultModel->mesh(prm);
         long duration = gmsh::logger::getWallTime() - start;
 
         gmsh::logger::write("Wall time: " + std::to_string(duration) + " s (" + std::to_string((double)duration/3600) + " h)", "info");
         gmsh::logger::write("CPU  time: " + std::to_string(gmsh::logger::getCpuTime()) + " s", "info");
 
+        defaultModel->write(outfile, prm);
+
         delete prm;
         delete packedBed;
-        delete myColumn;
+        delete geom;
+        delete defaultModel;
 
     }catch(mixd::MixdException e)
     { std::cout << e.msg() << std::endl; return 1; }

@@ -46,79 +46,53 @@ Geometry::~Geometry()
 {
 }
 
-void Geometry::operate(Parameters * prm)
+// Create packed bed geometry. Basically all the beads.
+// Store dimTags in last argument
+void Geometry::createPackedBed(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dimTagsBeads)
 {
-    if (!prm->geomInfile.empty())
-        return;
+    std::cout << "Creating beads... " << std::flush;
+    int tag, ctag;
 
-    long bool_start = gmsh::logger::getWallTime();
-
-    // dimTagsMap
-    std::vector<std::vector<std::pair<int, int> > > ovv;
-
-    std::cout << "Intersecting Volumes... " << std::flush;
-    //TODO: How would this react with multiple things in containers?
-    factory::intersect(dimTagsBeads, dimTagsContainers, dimTagsBeadsInside, ovv, -1, true, false);
-    std::cout << "done!" << std::endl;
-
-    /* Fuse beads together (with bridges or without) */
-    if (prm->booleanOperation == 1)
+    for (std::vector<Bead *>::iterator iter = pb->beads.begin(); iter != pb->beads.end(); iter++ )
     {
-        if (dimTagsBridges.size() == 0) dimTagsBridges = {3, dimTagsBeads.back()};
+        double x = (*iter)->getX();
+        double y = (*iter)->getY();
+        double z = (*iter)->getZ();
+        double r = (*iter)->getR();
 
-        std::cout << "Fusing Beads and Bridges... " << std::flush;
-        /* factory::fuse(dimTagsBeads, dimTagsBridges, ov, ovv ); */
-        factory::fuse(dimTagsBeadsInside, dimTagsBridges, dimTagsFused, ovv );
-        std::cout << "done!" << std::endl;
-    }
-    else if (prm->booleanOperation == 2)
-    {
-        if (dimTagsBridges.size() == 0)
+        if (prm->geomInfile.empty())
         {
-            std::cout << "Error: No Bridges to cut from beads" << std::endl;
-            exit(-1);
+            tag = factory::addSphere(x, y, z, r);
+            /* std::cout << tag << std::endl; */
+            ctag = factory::addPoint(x, y, z, prm->lc_beads, -1);
+
+            (*iter)->setTag(tag);
+            (*iter)->setCTag(ctag);
+
+            dimTagsBeads.push_back({3, tag});
+            /* tBeadCPs.push_back(ctag); */
         }
 
-        std::cout << "Capping Beads... " << std::flush;
-        /* factory::cut(dimTagsBeads, dimTagsBridges, ov, ovv ); */
-        factory::cut(dimTagsBeadsInside, dimTagsBridges, dimTagsFused, ovv );
-        std::cout << "done!" << std::endl;
+        /*
+         * Distance/Threshold allows creating gradient mesh sizes within the beads
+         */
+        //TODO: Update to new GMSH changes
+        model::mesh::field::add("Distance", ++count);
+        model::mesh::field::setNumbers(count, "NodesList", {double(ctag)});
+
+        model::mesh::field::add("Threshold", ++count);
+        model::mesh::field::setNumber(count, "IField", count-1);
+        model::mesh::field::setNumber(count, "LcMin", prm->lc_beads);
+        model::mesh::field::setNumber(count, "LcMax", prm->lc_out);
+        model::mesh::field::setNumber(count, "DistMin", prm->fieldThresholdMinFactor * r);
+        model::mesh::field::setNumber(count, "DistMax", prm->fieldThresholdMaxFactor * r);
+        vCount.push_back(count);
 
     }
-    else
-    {
-        /* ov = dimTagsBeads; */
-        dimTagsFused = dimTagsBeadsInside;
-    }
 
-    // Fragment cylinder w.r.t. beads
-    if (prm->fragment)
-    {
-        /* if (ov.size() == 0) ov = dimTagsBeads; */
-        if (dimTagsFused.size() == 0) dimTagsFused = dimTagsBeadsInside;
-
-        std::cout << "Fragmenting Volumes... " << std::flush;
-        factory::fragment(dimTagsContainers, dimTagsFused, dimTagsFragmented, ovv );
-        /* dimTagsInterstitial.push_back(bv.back()); */
-        std::cout << "done!" << std::endl;
-    }
-
-    // Synchronize gmsh model with geometry kernel.
-    std::cout << "synchronizing... " << std::flush;
-    factory::synchronize();
     std::cout << "done!" << std::endl;
-
-    std::cout << std::endl;
-    std::cout << "Number of Geometrical Beads:            " << dimTagsBeadsInside.size() << std::endl;
-    std::cout << "Number of Geometrical Bridges:          " << dimTagsBridges.size()     << std::endl;
-    std::cout << "Number of Geometrical Internal Volumes: " << dimTagsFused.size()       << std::endl;
-
-    long bool_duration = gmsh::logger::getWallTime() - bool_start;
-
-    gmsh::logger::write("Boolean time: " + std::to_string(bool_duration) + " s", "info");
-    std::cout << std::endl;
-
 }
+
 
 void Geometry::createBridges(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dimTagsBridges)
 {
@@ -223,52 +197,7 @@ void Geometry::createBridges(PackedBed * pb, Parameters * prm, std::vector<std::
 
 }
 
-// Create packed bed geometry. Basically all the beads.
-// Store dimTags in last argument
-void Geometry::createPackedBed(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dimTagsBeads)
-{
-    std::cout << "Creating beads... " << std::flush;
-    int tag, ctag;
 
-    for (std::vector<Bead *>::iterator iter = pb->beads.begin(); iter != pb->beads.end(); iter++ )
-    {
-        double x = (*iter)->getX();
-        double y = (*iter)->getY();
-        double z = (*iter)->getZ();
-        double r = (*iter)->getR();
-
-        if (prm->geomInfile.empty())
-        {
-            tag = factory::addSphere(x, y, z, r);
-            /* std::cout << tag << std::endl; */
-            ctag = factory::addPoint(x, y, z, prm->lc_beads, -1);
-
-            (*iter)->setTag(tag);
-            (*iter)->setCTag(ctag);
-
-            dimTagsBeads.push_back({3, tag});
-            /* tBeadCPs.push_back(ctag); */
-        }
-
-        /*
-         * Distance/Threshold allows creating gradient mesh sizes within the beads
-         */
-        //TODO: Update to new GMSH changes
-        model::mesh::field::add("Distance", ++count);
-        model::mesh::field::setNumbers(count, "NodesList", {double(ctag)});
-
-        model::mesh::field::add("Threshold", ++count);
-        model::mesh::field::setNumber(count, "IField", count-1);
-        model::mesh::field::setNumber(count, "LcMin", prm->lc_beads);
-        model::mesh::field::setNumber(count, "LcMax", prm->lc_out);
-        model::mesh::field::setNumber(count, "DistMin", prm->fieldThresholdMinFactor * r);
-        model::mesh::field::setNumber(count, "DistMax", prm->fieldThresholdMaxFactor * r);
-        vCount.push_back(count);
-
-    }
-
-    std::cout << "done!" << std::endl;
-}
 
 // Creates a container (cylinder or box) for the specified packed bed
 // either automatically or using the specified "cyl" or "box" parameters
@@ -350,5 +279,109 @@ void Geometry::createContainer(PackedBed * pb, Parameters * prm, std::vector<std
             if (prm->periodicOutlet > 0)
                 dimTagsContainers.push_back({3, factory::addBox(x, y, z+dz, dx, dy, prm->periodicInlet)});
         }
+
     }
+}
+
+void Geometry::operate(Parameters * prm)
+{
+    if (!prm->geomInfile.empty())
+        return;
+
+    long bool_start = gmsh::logger::getWallTime();
+
+    // dimTagsMap
+    std::vector<std::vector<std::pair<int, int> > > ovv;
+
+    std::cout << "Intersecting Volumes... " << std::flush;
+    /* factory::intersect(dimTagsBeads, dimTagsContainers, dimTagsBeadsInside, ovv, -1, true, false); */
+
+    if (dimTagsContainers.size() == 1)
+        factory::intersect(dimTagsBeads, dimTagsContainers, dimTagsBeadsInside, ovv, -1, true, false);
+    else
+    {
+        //TODO: I should probably manually remove the unintersected beads since I don't delete them automatically
+        std::cout << dimTagsContainers.size() << std::endl;
+        factory::intersect(dimTagsBeads, {dimTagsContainers[0]}, dimTagsBeadsInside, ovv, -1, false, false);
+        std::cout << "Column DONE." << std::endl;
+        //assuming both periodicInlet and periodicOutlet are given!!!
+        factory::intersect(dimTagsBeads, {dimTagsContainers[1]}, dimTagsBeadsInPeriodicInlet, ovv, -1, false, false);
+        std::cout << "Inlet DONE" << std::endl;
+        factory::intersect(dimTagsBeads, {dimTagsContainers[2]}, dimTagsBeadsInPeriodicOutlet, ovv, -1, false, false);
+        std::cout << "Outlet DONE" << std::endl;
+    }
+    std::cout << "done!" << std::endl;
+
+    /* Fuse beads together (with bridges or without) */
+    if (prm->booleanOperation == 1)
+    {
+        if (dimTagsBridges.size() == 0) dimTagsBridges = {3, dimTagsBeads.back()};
+
+        std::cout << "Fusing Beads and Bridges... " << std::flush;
+        /* factory::fuse(dimTagsBeads, dimTagsBridges, ov, ovv ); */
+        factory::fuse(dimTagsBeadsInside, dimTagsBridges, dimTagsFused, ovv );
+        std::cout << "done!" << std::endl;
+    }
+    else if (prm->booleanOperation == 2)
+    {
+        if (dimTagsBridges.size() == 0)
+        {
+            std::cout << "Error: No Bridges to cut from beads" << std::endl;
+            exit(-1);
+        }
+
+        std::cout << "Capping Beads... " << std::flush;
+        /* factory::cut(dimTagsBeads, dimTagsBridges, ov, ovv ); */
+        factory::cut(dimTagsBeadsInside, dimTagsBridges, dimTagsFused, ovv );
+        std::cout << "done!" << std::endl;
+
+    }
+    else
+    {
+        /* ov = dimTagsBeads; */
+        dimTagsFused = dimTagsBeadsInside;
+    }
+
+    // Fragment cylinder w.r.t. beads
+    if (prm->fragment)
+    {
+        /* if (ov.size() == 0) ov = dimTagsBeads; */
+        if (dimTagsFused.size() == 0) dimTagsFused = dimTagsBeadsInside;
+
+        std::cout << "Fragmenting Volumes... " << std::flush;
+        /* factory::fragment(dimTagsContainers, dimTagsFused, dimTagsFragmented, ovv ); */
+
+        if (dimTagsContainers.size() == 1)
+            factory::fragment(dimTagsContainers, dimTagsFused, dimTagsFragmented, ovv );
+        else
+        {
+            std::cout << dimTagsContainers.size() << std::endl;
+            factory::fragment({dimTagsContainers[0]}, dimTagsFused, dimTagsFragmented, ovv );
+            std::cout << "Column DONE." << std::endl;
+            //assuming both periodicInlet and periodicOutlet are given!!!
+            factory::fragment({dimTagsContainers[1]}, dimTagsBeadsInPeriodicInlet, dimTagsFragmentedPeriodicInlet, ovv );
+            std::cout << "Inlet DONE" << std::endl;
+            factory::fragment({dimTagsContainers[2]}, dimTagsBeadsInPeriodicOutlet, dimTagsFragmentedPeriodicOutlet, ovv );
+            std::cout << "Outlet DONE" << std::endl;
+        }
+
+        /* dimTagsInterstitial.push_back(bv.back()); */
+        std::cout << "done!" << std::endl;
+    }
+
+    // Synchronize gmsh model with geometry kernel.
+    std::cout << "synchronizing... " << std::flush;
+    factory::synchronize();
+    std::cout << "done!" << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "Number of Geometrical Beads:            " << dimTagsBeadsInside.size() << std::endl;
+    std::cout << "Number of Geometrical Bridges:          " << dimTagsBridges.size()     << std::endl;
+    std::cout << "Number of Geometrical Internal Volumes: " << dimTagsFused.size()       << std::endl;
+
+    long bool_duration = gmsh::logger::getWallTime() - bool_start;
+
+    gmsh::logger::write("Boolean time: " + std::to_string(bool_duration) + " s", "info");
+    std::cout << std::endl;
+
 }

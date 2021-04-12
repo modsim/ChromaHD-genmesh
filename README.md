@@ -144,6 +144,18 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [TASK] Improve GMSH default settings
 - [TASK] Keyword cases need standardization: camelCase or snake_case or dot.case?
 
+- [TASK] Check for memory leaks again. Definitely exist.
+- [TASK] Fix geometry input and output
+- [TASK] Fix main and fragment output formats
+- [TASK] remove z cut bead surfaces from bead surfaces.
+
+[PROJ: TESTS]
+    - [TASK] Check periodic surface matches
+    - [TASK] Check geometry input and output
+    - [TASK] Mesh size methods
+    - [TASK] Visual output with paraview?
+    - [TASK] add more tests with packing-generation based packing
+
 [PROJ: Periodic]
     - [DONE] Create flag
     - [DONE] copy geometry 4x
@@ -172,6 +184,7 @@ Known Issues
 - periodic meshes with z-dir cuts in beads can contain floating nodes which have 0 nmat info due to not being connected to an element. 
     - the floating nodes are found on the x/y surfaces intersecting with the z surfaces
     - Simulation could be theoretically continued if we modify the nmat file to have non-zero values at these points
+- 2021-04-10 : gradient mesh size within beads only works if lc_beads < lc_out
 
 # Keywords in config.in
 Look at parameters.h for a more up-to-date set of keywords and default values
@@ -200,6 +213,7 @@ Look at parameters.h for a more up-to-date set of keywords and default values
 - box: <xMin yMin zMin xDelta yDelta zDelta> 
 - translateOffsets: <auto|x y z> translate packed bed automatically or give x y z offsets
 - periodicOffsets: <auto|x y> offsets for stacking the geometry in x-y directions for periodicity
+- periodicInlet and periodicOutlet: <double> length of the inlet and outlet sections of the column to be "linked" periodically to main column but generated separately. 
 - and other GMSH settings such as Mesh.NumThreads that are sent to GMSH.
 
 
@@ -214,15 +228,16 @@ Look at parameters.h for a more up-to-date set of keywords and default values
     - transforms beads (scale and offset)
     - computes new bounds
     - computes porosities
+- Geometry Class
+    - takes PackedBed 
+    - Generates geometries of beads, bridges and containers
+    - Performs necessary boolean operations
+- Column Class
+    - Takes a fragmented column dimtags
+    - Finds and names surfaces appropriately
+    - Sets periodic surfaces appropriately
 - Model class
-    - create/save/load geometry (using OCCT)
-        - create beads/bridges/cylinder
-        - create mesh fields for entities
-    - generate/save mesh 
-        - appropriate boolean operations
-        - set named groups
-        - meshing
-- Periodicity is only implemented for x-y directions currently. 
+    - Driver class that builds columns, meshes, and writes them out
 
 ## Notes
 - xCyl, yCyl, rCyl are modified in PackedBed::transformBeads()
@@ -242,6 +257,7 @@ Look at parameters.h for a more up-to-date set of keywords and default values
     - mind the `translateOffsets` and actual coordinates of beads from xyzd file.
     - Ensure that cut planes are either symmetric or far away from bead surface. Essentially, in case of "xy" periodicity, ensure that there is inlet/outlet void space at the ends of the column. 
 - periodic meshing only in the z-direction isn't available yet. Options are "xy" and "xyz" only
+- periodicInlet and periodicOutlet keywords create a periodically linked, but separate mesh for the inlet and outlet sections of the column, that are columns in their own right. 
 
 ## Packing Generation
 This [Packing Generation](https://github.com/VasiliBaranov/packing-generation) tool can be used to generate periodic packings. As of this writing, this [issue](https://github.com/VasiliBaranov/packing-generation/issues/18) is still unresolved, and confined cylindrical packings don't work. 
@@ -270,3 +286,4 @@ Essentially, generating the packing involves running the program multiple times 
 
 [dumpy]
 - Run dumpy to scale the diameters: `dumpy --dpacking packing.xyzd --nfo packing.nfo -w packing_fixed.xyzd`. (or just scale bead diameters manually in genmesh)
+

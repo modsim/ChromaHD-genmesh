@@ -4,7 +4,7 @@ CXX := $(if $(CXX),$(CXX),g++)
 
 PREFIX=$(HOME)/local
 
-SRC=Parameters.cpp PackedBed.cpp Geometry.cpp Model.cpp Files.cpp Bead.cpp main.cpp 
+SRC=Parameters.cpp PackedBed.cpp Geometry.cpp Column.cpp Model.cpp Files.cpp Tools.cpp Bead.cpp main.cpp 
 OBJ=$(SRC:.cpp=.o)
 EXE=genmesh
 
