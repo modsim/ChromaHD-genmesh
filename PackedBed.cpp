@@ -532,7 +532,7 @@ int PackedBed::findBeadWithRadius(double value, std::vector<double> vBeadRads)
 
 void PackedBed::stackPeriodicPacking(Parameters * prm)
 {
-    std::cout << "Stacking periodic packings in " << prm->periodic << " directions..." << std::flush;
+    std::cout << "Stacking periodic packings in " << prm->periodic << " directions... " << std::endl;
 
     /* double eps = 1e-3;  // value of tolerated overlap */
     double eps = 0;  // value of tolerated overlap
@@ -575,19 +575,30 @@ void PackedBed::stackPeriodicPacking(Parameters * prm)
         zoff = prm->pOffZ;
     }
 
-    std::vector<int> offsetMultiplier = {-1, 0, 1};
-    std::vector<int> zOffsetMultiplier;
+    std::vector<int> xOffsetMultiplier = {0};
+    std::vector<int> yOffsetMultiplier = {0};
+    std::vector<int> zOffsetMultiplier = {0};
 
-    if (prm->periodic == "xyz")
-        zOffsetMultiplier = {-1, 0, 1};
-    else
-        zOffsetMultiplier = {0};
+    /* if (prm->periodic == "xyz") */
+    /*     zOffsetMultiplier = {-1, 0, 1}; */
+    /* else */
+    /*     zOffsetMultiplier = {0}; */
+
+    std::size_t found;
+    found = prm->periodic.find('x');
+    if (found != std::string::npos) xOffsetMultiplier = {-1, 0, 1};
+
+    found = prm->periodic.find('y');
+    if (found != std::string::npos) yOffsetMultiplier = {-1, 0, 1};
+
+    found = prm->periodic.find('z');
+    if (found != std::string::npos) zOffsetMultiplier = {-1, 0, 1};
 
     for (std::vector<int>::iterator zom = zOffsetMultiplier.begin(); zom != zOffsetMultiplier.end(); zom++)
     {
-        for (std::vector<int>::iterator yom = offsetMultiplier.begin(); yom != offsetMultiplier.end(); yom++)
+        for (std::vector<int>::iterator yom = yOffsetMultiplier.begin(); yom != yOffsetMultiplier.end(); yom++)
         {
-            for (std::vector<int>::iterator xom = offsetMultiplier.begin(); xom != offsetMultiplier.end(); xom++)
+            for (std::vector<int>::iterator xom = xOffsetMultiplier.begin(); xom != xOffsetMultiplier.end(); xom++)
             {
                 if ( (*xom == 0) && (*yom == 0) && (*zom == 0)) continue;
                 for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++)
@@ -638,8 +649,6 @@ void PackedBed::stackPeriodicPacking(Parameters * prm)
     /* this->beads.insert(this->beads.end(), xmypBeads.begin(), xmypBeads.end()); */
     /* this->beads.insert(this->beads.end(), xmymBeads.begin(), xmymBeads.end()); */
     /* this->beads.insert(this->beads.end(), xpymBeads.begin(), xpymBeads.end()); */
-
-    std::cout << "done!" << std::endl;
 
 }
 

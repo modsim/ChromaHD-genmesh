@@ -33,6 +33,7 @@ Model::Model(Parameters * prm, Geometry * geom)
     column = Column(geom->dimTagsFragmented, prm, prm->periodic);
 
     // remove z from periodic string
+    // So that inlet/outlet sections don't have internal z periodicity.
     std::string periodicInOut = prm->periodic;
     periodicInOut.erase(std::remove(periodicInOut.begin(), periodicInOut.end(), 'z'), periodicInOut.end());
 
@@ -80,31 +81,50 @@ Model::~Model()
 }
 
 
-void Model::mesh(Parameters * prm)
+void Model::mesh(std::string outfile, Parameters * prm)
 {
+
+
+    std::cout << "========== READY ==========" << std::endl;
+    std::vector<std::pair<int,int>> dummy;
+    model::getEntities(dummy, 3);
+    std::cout << "Number of 3D objects: " << dummy.size() << std::endl;
+    model::getEntities(dummy, 2);
+    std::cout << "Number of 2D objects: " << dummy.size() << std::endl;
+    model::getEntities(dummy, 1);
+    std::cout << "Number of 1D objects: " << dummy.size() << std::endl;
+    model::getEntities(dummy, 0);
+    std::cout << "Number of 0D objects: " << dummy.size() << std::endl;
+    std::cout << "===========================" << std::endl;
+    std::cout << std::endl;
+
     if(prm->dryRun)
         return;
 
-    // For debug purposes.
-    /* for(int i=1; i<prm->MeshGenerate; i++) */
-    /* { */
-    /*     model::mesh::generate(i); */
-    /*     gmsh::write(prm->outpath + "/"+ std::to_string(i) + "D_" + outfile ); */
-    /* } */
+    std:: string basefilename = remove_extension(outfile);
+    std:: string extension = get_extension(outfile);
+
+    for(int i=1; i<prm->MeshGenerate; i++)
+    {
+        model::mesh::generate(i);
+        gmsh::write(prm->outpath + "/"+ basefilename + "_" + std::to_string(i) + "D" + extension );
+    }
 
     // Generate mesh
     model::mesh::generate(prm->MeshGenerate);
-
 
 }
 
 void Model::write(std::string outfile, Parameters * prm)
 {
-    /* // Output Full mesh */
-    /* gmsh::write(prm->outpath + "/" + outfile-); */
+    if(prm->dryRun)
+        return;
 
     std:: string basefilename = remove_extension(outfile);
     std:: string extension = get_extension(outfile);
+
+    // Output Full mesh
+    gmsh::write(prm->outpath + "/" + basefilename + "_FULL" + extension);
 
     column.write(prm->outpath, basefilename + "_column",  extension );
     column.writeFragments(prm->outpath, basefilename + "_column",  extension );

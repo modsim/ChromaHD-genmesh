@@ -13,14 +13,9 @@ namespace factory = gmsh::model::occ;
 Column::Column() {};
 Column::~Column() {};
 
-/* Column::Column(Column& _column) */
-/* { */
-/*     // simply extend this->vectors */
-/* } */
-
 Column::Column(std::vector<std::pair<int,int>> dimTagsFragmentedColumn, Parameters * prm, std::string _periodic)
 {
-    std::cout << "Creating Column...";
+    std::cout << "Creating Column... " << std::endl;
 
     std::vector<std::pair<int,int>> dimTagsBeadSurface;
     std::vector<std::pair<int,int>> dimTagsOuterSurface;
@@ -28,17 +23,18 @@ Column::Column(std::vector<std::pair<int,int>> dimTagsFragmentedColumn, Paramete
     periodic = _periodic;
     double xMax, xMin, yMax, yMin, zMax, zMin;
 
-    std::cout << "Listing Interstitial Volume... " << std::flush;
-    std::cout << dimTagsFragmentedColumn.size() << std::endl;
+    std::cout << "  > Listing Interstitial Volume... " << std::flush;
     volumes.interstitial.push_back(dimTagsFragmentedColumn.back().second);
     dimTagsFragmentedColumn.pop_back();
     std::cout << "done!" << std::endl;
 
     // Extract surfaces from interstitial volume
-    std::cout << "Listing Outer Surfaces... " << std::flush;
+    std::cout << "  > Extracting Surfaces... " << std::flush;
     model::getBoundary({{3,volumes.interstitial[0]}}, dimTagsOuterSurface, false, false, false);
     model::getBoundary(dimTagsFragmentedColumn, dimTagsBeadSurface, false, false, false);
+    std::cout << "done!" << std::endl;
 
+    std::cout << "  > Listing Bounding Surfaces... " << std::flush;
     if(prm->containerShape == 0)
     {
         surfaces.walls   = {dimTagsOuterSurface[0].second};
@@ -56,14 +52,14 @@ Column::Column(std::vector<std::pair<int,int>> dimTagsFragmentedColumn, Paramete
     std::cout << "done!" << std::endl;
 
     // The remaining entries in bv are bead volumes
-    std::cout << "Listing Bead Volumes... " << std::flush;
+    std::cout << "  > Listing Bead Volumes... " << std::flush;
     for (auto it = dimTagsFragmentedColumn.begin(); it != dimTagsFragmentedColumn.end(); it++)
     {
         volumes.beads.push_back((*it).second);
     }
     std::cout << "done!" << std::endl;
 
-    std::cout << "Listing Bead Surfaces... " << std::flush;
+    std::cout << "  > Listing Bead Surfaces... " << std::flush;
     for ( std::vector<std::pair< int , int>>::iterator it = dimTagsBeadSurface.begin(); it != dimTagsBeadSurface.end(); it++   )
     {
         surfaces.beads.push_back((*it).second);
@@ -73,12 +69,14 @@ Column::Column(std::vector<std::pair<int,int>> dimTagsFragmentedColumn, Paramete
     // Remove bead surfaces that are also part of the wall
     // from being categorized as bead surfaces.
     // These 'tSBeads' will go on to be doubled in `gmsh2mixdv2 -d 4`
+    std::cout << "  > Cleaning Bead Surfaces... " << std::flush;
     subtractTags(surfaces.beads, beadWalls.xleft);
     subtractTags(surfaces.beads, beadWalls.xright);
     subtractTags(surfaces.beads, beadWalls.yleft);
     subtractTags(surfaces.beads, beadWalls.yright);
     subtractTags(surfaces.beads, beadWalls.zleft); // if not xyz, there should be no beadWalls zleft and zright, so it's fine
     subtractTags(surfaces.beads, beadWalls.zright);
+    std::cout << "done!" << std::endl;
 
     model::getBoundingBox(
             3, volumes.interstitial[0],
@@ -95,6 +93,8 @@ Column::Column(std::vector<std::pair<int,int>> dimTagsFragmentedColumn, Paramete
         setupPeriodicSurfaces(outerWalls);
         setupPeriodicSurfaces(beadWalls);
     }
+
+    stats(); // print out info
 
 }
 
@@ -171,23 +171,32 @@ void Column::separateBoundingSurfaces(std::vector<std::pair<int, int>> dimTagsSu
 
 void Column::setupPeriodicSurfaces(Walls& tWall)
 {
-    assert(tWall.xleft.size()  == tWall.xright.size());
-    assert(tWall.yleft.size()  == tWall.yright.size());
-    if (periodic == "xyz")
-        assert(tWall.zleft.size()  == tWall.zright.size());
-
-    /* double dx = geom->dx; */
-    /* double dy = geom->dy; */
-    /* double dz = geom->dz; */
 
     std::vector<double> affineTranslationX = {1, 0, 0, dx, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
     std::vector<double> affineTranslationY = {1, 0, 0, 0, 0, 1, 0, dy, 0, 0, 1, 0, 0, 0, 0, 1};
     std::vector<double> affineTranslationZ = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, dz, 0, 0, 0, 1};
 
-    matchPeriodicSurfaces(tWall.xleft, tWall.xright, 0, affineTranslationX);
-    matchPeriodicSurfaces(tWall.yleft, tWall.yright, 1, affineTranslationY);
-    if (periodic == "xyz")
+    std::size_t found;
+    found = periodic.find('x');
+    if (found != std::string::npos)
+    {
+        assert(tWall.xleft.size()  == tWall.xright.size());
+        matchPeriodicSurfaces(tWall.xleft, tWall.xright, 0, affineTranslationX);
+    }
+
+    found = periodic.find('y');
+    if (found != std::string::npos)
+    {
+        assert(tWall.yleft.size()  == tWall.yright.size());
+        matchPeriodicSurfaces(tWall.yleft, tWall.yright, 1, affineTranslationY);
+    }
+
+    found = periodic.find('z');
+    if (found != std::string::npos)
+    {
+        assert(tWall.zleft.size()  == tWall.zright.size());
         matchPeriodicSurfaces(tWall.zleft, tWall.zright, 2, affineTranslationZ);
+    }
 
 }
 
@@ -201,7 +210,7 @@ void Column::matchPeriodicSurfaces(std::vector<int>& ltags, std::vector<int>& rt
     // For each surface, find center of bbox. Project that along per_dir and find matching centers on either surface.
     // If match is found, setPeriodic
 
-    std::cout << "genmesh: Matching periodic surfaces in " << per_dir << " direction..." << std::endl;
+    std::cout << "\n========== Matching periodic surfaces in " << per_dir << " direction... ==========" << std::endl;
 
     double eps = 1e-10;
 
@@ -244,6 +253,8 @@ void Column::matchPeriodicSurfaces(std::vector<int>& ltags, std::vector<int>& rt
         }
 
     }
+
+    std::cout << "==================================================" << std::endl << std::endl;
 
 }
 
@@ -369,4 +380,27 @@ void Column::linkPeriodicZ(Column& second)
 
     matchPeriodicSurfaces(outerWalls.zright, second.outerWalls.zleft, 2, affineTranslationZ);
     matchPeriodicSurfaces(beadWalls.zright, second.beadWalls.zleft, 2, affineTranslationZ);
+}
+
+void Column::stats()
+{
+    std::cout << "========== Column stats ==========" << std::endl
+        << "Periodic: " << periodic << std::endl
+        << "Volumes: " << std::endl
+        << "  beads: " << volumes.beads.size() << std::endl
+        << "  interstitial: " << volumes.interstitial.size() << std::endl
+        << "Surfaces: " << std::endl
+        << "  beads: " << surfaces.beads.size() << std::endl
+        << "  inlet: " << surfaces.inlet.size() << std::endl
+        << "  outlet: " << surfaces.outlet.size() << std::endl
+        << "  walls: " << surfaces.walls.size() << std::endl
+        << "outerWalls: " << std::endl
+        << "  x: " << outerWalls.xleft.size() << "  " << outerWalls.xright.size() << std::endl
+        << "  y: " << outerWalls.yleft.size() << "  " << outerWalls.yright.size() << std::endl
+        << "  z: " << outerWalls.zleft.size() << "  " << outerWalls.zright.size() << std::endl
+        << "beadWalls: " << std::endl
+        << "  x: " << beadWalls.xleft.size() << "  " << beadWalls.xright.size() << std::endl
+        << "  y: " << beadWalls.yleft.size() << "  " << beadWalls.yright.size() << std::endl
+        << "  z: " << beadWalls.zleft.size() << "  " << beadWalls.zright.size() << std::endl;
+    std::cout << "==================================" << std::endl;
 }

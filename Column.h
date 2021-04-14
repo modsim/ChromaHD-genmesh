@@ -35,8 +35,9 @@ class Column{
 
         void generateBoxSurfaces();
         void AddPhysicalGroups();
-        /* void prepareColumn(std::vector<std::pair<int,int>> dimTagsFragmentedColumn, Parameters * prm); */
         void separateBoundingSurfaces(std::vector<std::pair<int, int>> dimTagsSurfaces, Walls& tWall);
+
+        void stats();
 
         void setupPeriodicSurfaces(Walls& tWall);
         void matchPeriodicSurfaces(std::vector<int>& ltags, std::vector<int>& rtags, int per_dir, std::vector<double> affineTranslation);

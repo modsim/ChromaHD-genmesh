@@ -28,7 +28,7 @@ class Model{
 
         Column column, columnInlet, columnOutlet;
 
-        void mesh(Parameters * prm);
+        void mesh(std::string outfile, Parameters * prm);
         void write(std::string outfile, Parameters * prm);
 };
 

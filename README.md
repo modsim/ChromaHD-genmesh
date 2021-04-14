@@ -148,6 +148,7 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - [TASK] Fix geometry input and output
 - [TASK] Fix main and fragment output formats
 - [TASK] remove z cut bead surfaces from bead surfaces.
+- [TASK] Add more timing info. Print more at the end, after writes.
 
 [PROJ: TESTS]
     - [TASK] Check periodic surface matches
@@ -232,6 +233,7 @@ Look at parameters.h for a more up-to-date set of keywords and default values
     - takes PackedBed 
     - Generates geometries of beads, bridges and containers
     - Performs necessary boolean operations
+    - cleans up unnecessary entities.
 - Column Class
     - Takes a fragmented column dimtags
     - Finds and names surfaces appropriately
@@ -258,6 +260,7 @@ Look at parameters.h for a more up-to-date set of keywords and default values
     - Ensure that cut planes are either symmetric or far away from bead surface. Essentially, in case of "xy" periodicity, ensure that there is inlet/outlet void space at the ends of the column. 
 - periodic meshing only in the z-direction isn't available yet. Options are "xy" and "xyz" only
 - periodicInlet and periodicOutlet keywords create a periodically linked, but separate mesh for the inlet and outlet sections of the column, that are columns in their own right. 
+- periodicInlet and periodicOutlet sections derive periodicity from the main column, but discard z-periodicity.
 
 ## Packing Generation
 This [Packing Generation](https://github.com/VasiliBaranov/packing-generation) tool can be used to generate periodic packings. As of this writing, this [issue](https://github.com/VasiliBaranov/packing-generation/issues/18) is still unresolved, and confined cylindrical packings don't work. 
@@ -286,4 +289,5 @@ Essentially, generating the packing involves running the program multiple times 
 
 [dumpy]
 - Run dumpy to scale the diameters: `dumpy --dpacking packing.xyzd --nfo packing.nfo -w packing_fixed.xyzd`. (or just scale bead diameters manually in genmesh)
+
 
