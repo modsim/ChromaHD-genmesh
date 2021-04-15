@@ -88,13 +88,14 @@ Column::Column(std::vector<std::pair<int,int>> dimTagsFragmentedColumn, Paramete
     dy = yMax - yMin;
     dz = zMax - zMin;
 
+    stats(); // print out info, good for debugging on dryRun
+
     if (periodic == "xyz" || periodic == "xy")
     {
         setupPeriodicSurfaces(outerWalls);
         setupPeriodicSurfaces(beadWalls);
     }
 
-    stats(); // print out info, good for debugging on dryRun
 
 }
 
