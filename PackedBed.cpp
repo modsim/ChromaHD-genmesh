@@ -392,7 +392,7 @@ void PackedBed::geometryStats(Parameters * prm)
     std::cout << "Column Length: " << (zCylTop - zCylBot) * prm->MeshScalingFactor << std::endl<<std::endl;
     std::cout << "zTop - zBot (given): " << (prm->zTop - prm->zBot)*prm->preScalingFactor * prm->MeshScalingFactor << std::endl;
     std::cout << "zTop - zBot: " << (zTop - zBot)*prm->MeshScalingFactor << std::endl;
-    std::cout << "zMax - zMin: " << (zMax - zMin)*prm->MeshScalingFactor << std::endl;
+    std::cout << "zMax - zMin: " << (zMax - zMin)*prm->MeshScalingFactor << std::endl<< std::endl;;
 
     // TODO: Consider adding porosity values here instead of in fix/calcporosity?
 

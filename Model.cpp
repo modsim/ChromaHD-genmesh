@@ -40,14 +40,14 @@ Model::Model(Parameters * prm, Geometry * geom)
     if(prm->periodicInlet > 0)
     {
         columnInlet = Column(geom->dimTagsFragmentedPeriodicInlet, prm, periodicInOut);
-        std::cout << "Linking inlet and column" << std::endl;
+        std::cout << "Linking inlet and column... " << std::endl;
         columnInlet.linkPeriodicZ(column);
     }
 
     if(prm->periodicOutlet > 0)
     {
         columnOutlet = Column(geom->dimTagsFragmentedPeriodicOutlet, prm, periodicInOut);
-        std::cout << "Linking column and outlet" << std::endl;
+        std::cout << "Linking column and outlet... " << std::endl;
         column.linkPeriodicZ(columnOutlet);
     }
 
@@ -58,7 +58,7 @@ Model::Model(Parameters * prm, Geometry * geom)
     /*     std::cout << "done!" << std::endl; */
 
     /*     // Synchronize gmsh model with geometry kernel. */
-    /*     std::cout << "synchronizing... " << std::flush; */
+    /*     std::cout << "Synchronizing... " << std::flush; */
     /*     factory::synchronize(); */
     /*     std::cout << "done!" << std::endl; */
 
@@ -69,7 +69,7 @@ Model::Model(Parameters * prm, Geometry * geom)
         gmsh::write(prm->outpath + "/"+ prm->geomOutfile );
 
     // Synchronize gmsh model with geometry kernel.
-    std::cout << "synchronizing... " << std::flush;
+    std::cout << "Synchronizing... " << std::flush;
     factory::synchronize();
     std::cout << "done!" << std::endl;
 }
@@ -85,7 +85,6 @@ void Model::mesh(std::string outfile, Parameters * prm)
 {
 
 
-    std::cout << "========== READY ==========" << std::endl;
     std::vector<std::pair<int,int>> dummy;
     model::getEntities(dummy, 3);
     std::cout << "Number of 3D objects: " << dummy.size() << std::endl;
@@ -95,8 +94,6 @@ void Model::mesh(std::string outfile, Parameters * prm)
     std::cout << "Number of 1D objects: " << dummy.size() << std::endl;
     model::getEntities(dummy, 0);
     std::cout << "Number of 0D objects: " << dummy.size() << std::endl;
-    std::cout << "===========================" << std::endl;
-    std::cout << std::endl;
 
     if(prm->dryRun)
         return;
@@ -104,14 +101,40 @@ void Model::mesh(std::string outfile, Parameters * prm)
     std:: string basefilename = remove_extension(outfile);
     std:: string extension = get_extension(outfile);
 
+    long time_0 = gmsh::logger::getWallTime();
+
     for(int i=1; i<prm->MeshGenerate; i++)
     {
+
+        std::cout << "Meshing " << i << "D objects..." << std::endl;
+        long start = gmsh::logger::getWallTime();
+
         model::mesh::generate(i);
+
+        long duration = gmsh::logger::getWallTime() - start;
+
+        gmsh::logger::write("Wall time for " + std::to_string(i) + "D mesh: " + std::to_string(duration) + " s (" + std::to_string((double)duration/3600) + " h)", "info");
+        gmsh::logger::write("CPU  time for " + std::to_string(i) + "D mesh: " + std::to_string(gmsh::logger::getCpuTime()) + " s", "info");
+
         gmsh::write(prm->outpath + "/"+ basefilename + "_" + std::to_string(i) + "D" + extension );
+
+
     }
 
-    // Generate mesh
+
+    long start = gmsh::logger::getWallTime();
+
+    std::cout << "Meshing " << prm->MeshGenerate << "D objects..." << std::endl;
     model::mesh::generate(prm->MeshGenerate);
+
+    long duration = gmsh::logger::getWallTime() - start;
+
+    long durationAll = gmsh::logger::getWallTime() - time_0;
+
+    gmsh::logger::write("Wall time: " + std::to_string(duration) + " s (" + std::to_string((double)duration/3600) + " h)", "info");
+    gmsh::logger::write("CPU  time: " + std::to_string(gmsh::logger::getCpuTime()) + " s", "info");
+
+    std::cout << "Total meshing wall time: " << durationAll << "s (" << durationAll/3600 << " h)" << std::endl;
 
 }
 
@@ -126,18 +149,20 @@ void Model::write(std::string outfile, Parameters * prm)
     // Output Full mesh
     gmsh::write(prm->outpath + "/" + basefilename + "_FULL" + extension);
 
+    std::cout << "Writing main column unit..." << std::endl;
     column.write(prm->outpath, basefilename + "_column",  extension );
     column.writeFragments(prm->outpath, basefilename + "_column",  extension );
 
     if(prm->periodicInlet > 0)
     {
+        std::cout << "Writing periodic inlet unit..." << std::endl;
         columnInlet.write(prm->outpath, basefilename + "_inlet",  extension );
         columnInlet.writeFragments(prm->outpath, basefilename + "_inlet",  extension );
-
     }
 
     if(prm->periodicOutlet > 0)
     {
+        std::cout << "Writing periodic outlet unit..." << std::endl;
         columnOutlet.write(prm->outpath, basefilename + "_outlet",  extension );
         columnOutlet.writeFragments(prm->outpath, basefilename + "_outlet",  extension );
     }

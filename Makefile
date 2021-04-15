@@ -1,5 +1,5 @@
 HOST=$(shell hostname)
-FLAGS=-O3
+FLAGS=-O3 -march=native -mtune=native
 CXX := $(if $(CXX),$(CXX),g++)
 
 PREFIX=$(HOME)/local

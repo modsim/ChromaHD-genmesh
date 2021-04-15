@@ -29,6 +29,7 @@ public:
     int outputFragments                            = 1;
     int MeshSmoothing                              = 1;
     int GeneralNumThreads                          = 0;
+    int GeneralVerbosity                           = 5;
     int MeshCharacteristicLengthExtendFromBoundary = 1;
     int MeshCharacteristicLengthFromCurvature      = 1;
     int MeshCharacteristicLengthFromPoints         = 1;
@@ -107,7 +108,7 @@ public:
 
 
     std::string periodic         = "off";
-    std::string translateOffsets = "auto";
+    std::string translateOffsets = "auto"; // to maintain some backwards compatibility
     std::string periodicOffsets  = "auto";
     std::string outpath          =".";
     std::string refBeadSize      = "avg";

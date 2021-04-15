@@ -9,11 +9,8 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
-/* #include "Bead.h" */
 #include "Parameters.h"
 #include "PackedBed.h"
-
-/* #include "Data.h" */
 
 class Geometry{
     public:
@@ -43,20 +40,10 @@ class Geometry{
         std::vector<std::pair<int, int> > dimTagsFragmentedPeriodicOutlet;
         std::vector<std::pair<int, int> > dimTagsDummy;
 
-        /* std::vector<FragmentDataStruct> vFragmentData; */
-
         void createContainer(PackedBed * pb, Parameters * prm, std::vector<std::pair<int,int>> &dimTagsContainers);
         void createPackedBed(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dimTagsBeads);
         void createBridges(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dimTagsBridges);
         void operate(Parameters * prm);
-
-        /* void createBox(); */
-        /* void createCylinder(); */
-        /* void createBridges(); */
-        /* void createPackedBed(); */
-
-        /* void createInlet(); */
-        /* void createOutlet(); */
 
 };
 

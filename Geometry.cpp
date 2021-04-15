@@ -351,7 +351,7 @@ void Geometry::operate(Parameters * prm)
     }
 
     // Synchronize gmsh model with geometry kernel.
-    std::cout << "synchronizing... " << std::flush;
+    std::cout << "Synchronizing... " << std::flush;
     factory::synchronize();
     std::cout << "done!" << std::endl;
 

@@ -59,14 +59,10 @@ int main(int argc, char** argv) {
         Geometry * geom = new Geometry(prm, packedBed);
         Model * defaultModel = new Model(prm, geom);
 
-        long start = gmsh::logger::getWallTime();
 
         defaultModel->mesh(outfile, prm);
         defaultModel->write(outfile, prm);
 
-        long duration = gmsh::logger::getWallTime() - start;
-        gmsh::logger::write("Wall time: " + std::to_string(duration) + " s (" + std::to_string((double)duration/3600) + " h)", "info");
-        gmsh::logger::write("CPU  time: " + std::to_string(gmsh::logger::getCpuTime()) + " s", "info");
 
         delete prm;
         delete packedBed;

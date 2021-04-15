@@ -94,7 +94,7 @@ Column::Column(std::vector<std::pair<int,int>> dimTagsFragmentedColumn, Paramete
         setupPeriodicSurfaces(beadWalls);
     }
 
-    stats(); // print out info
+    stats(); // print out info, good for debugging on dryRun
 
 }
 
@@ -102,7 +102,7 @@ void Column::AddPhysicalGroups()
 {
     model::removePhysicalGroups();
 
-    std::cout << "Adding Physical Groups... " << std::flush;
+    std::cout << "  > Adding Physical Groups... " << std::flush;
     model::addPhysicalGroup(2, surfaces.inlet      , 1 );
     model::addPhysicalGroup(2, surfaces.outlet     , 2 );
     model::addPhysicalGroup(2, surfaces.walls      , 3 );
@@ -111,7 +111,7 @@ void Column::AddPhysicalGroups()
     model::addPhysicalGroup(3, volumes.beads       , 6 );
     std::cout << "done!" << std::endl;
 
-    std::cout << "Setting Physical Names... " << std::flush;
+    std::cout << "  > Setting Physical Names... " << std::flush;
     model::setPhysicalName(2,1,"inlet");
     model::setPhysicalName(2,2,"outlet");
     model::setPhysicalName(2,3,"wall");
@@ -210,7 +210,7 @@ void Column::matchPeriodicSurfaces(std::vector<int>& ltags, std::vector<int>& rt
     // For each surface, find center of bbox. Project that along per_dir and find matching centers on either surface.
     // If match is found, setPeriodic
 
-    std::cout << "\n========== Matching periodic surfaces in " << per_dir << " direction... ==========" << std::endl;
+    std::cout << "  > Matching periodic surfaces in " << per_dir << " direction... " << std::endl;
 
     double eps = 1e-10;
 
@@ -253,8 +253,6 @@ void Column::matchPeriodicSurfaces(std::vector<int>& ltags, std::vector<int>& rt
         }
 
     }
-
-    std::cout << "==================================================" << std::endl << std::endl;
 
 }
 
@@ -386,21 +384,21 @@ void Column::stats()
 {
     std::cout << "========== Column stats ==========" << std::endl
         << "Periodic: " << periodic << std::endl
-        << "Volumes: " << std::endl
-        << "  beads: " << volumes.beads.size() << std::endl
-        << "  interstitial: " << volumes.interstitial.size() << std::endl
-        << "Surfaces: " << std::endl
-        << "  beads: " << surfaces.beads.size() << std::endl
-        << "  inlet: " << surfaces.inlet.size() << std::endl
-        << "  outlet: " << surfaces.outlet.size() << std::endl
-        << "  walls: " << surfaces.walls.size() << std::endl
-        << "outerWalls: " << std::endl
-        << "  x: " << outerWalls.xleft.size() << "  " << outerWalls.xright.size() << std::endl
-        << "  y: " << outerWalls.yleft.size() << "  " << outerWalls.yright.size() << std::endl
-        << "  z: " << outerWalls.zleft.size() << "  " << outerWalls.zright.size() << std::endl
-        << "beadWalls: " << std::endl
-        << "  x: " << beadWalls.xleft.size() << "  " << beadWalls.xright.size() << std::endl
-        << "  y: " << beadWalls.yleft.size() << "  " << beadWalls.yright.size() << std::endl
-        << "  z: " << beadWalls.zleft.size() << "  " << beadWalls.zright.size() << std::endl;
+        << "----- Volumes -----" << std::endl
+        << "      beads       : " << volumes.beads.size() << std       ::endl
+        << "      interstitial: " << volumes.interstitial.size() << std::endl
+        << "----- Surfaces -----" << std::endl
+        << "      beads : " << surfaces.beads.size() << std ::endl
+        << "      inlet : " << surfaces.inlet.size() << std ::endl
+        << "      outlet: " << surfaces.outlet.size() << std::endl
+        << "      walls : " << surfaces.walls.size() << std ::endl
+        << "----- outerWalls -----" << std::endl
+        << "      x: " << outerWalls.xleft.size() << "  " << outerWalls.xright.size() << std::endl
+        << "      y: " << outerWalls.yleft.size() << "  " << outerWalls.yright.size() << std::endl
+        << "      z: " << outerWalls.zleft.size() << "  " << outerWalls.zright.size() << std::endl
+        << "----- beadWalls -----" << std::endl
+        << "      x: " << beadWalls.xleft.size() << "  " << beadWalls.xright.size() << std::endl
+        << "      y: " << beadWalls.yleft.size() << "  " << beadWalls.yright.size() << std::endl
+        << "      z: " << beadWalls.zleft.size() << "  " << beadWalls.zright.size() << std::endl;
     std::cout << "==================================" << std::endl;
 }

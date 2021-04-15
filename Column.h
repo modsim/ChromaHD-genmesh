@@ -8,23 +8,8 @@ class Column{
 
     public:
         Column();
-        /* Column(std::vector<std::pair<int,int>> dimTagsFragmentedColumn, Parameters * prm); */
         Column(std::vector<std::pair<int,int>> dimTagsFragmentedColumn, Parameters * prm, std::string _periodic);
         virtual ~Column();
-
-        //TODO: Consider this approach
-        // Column(std::vector<std::pair<int,int>> dimTagsFragmented);
-        // Column::prepare();
-        // Column::write(); // to handle writing all the meshes appropriately
-        // This will allow me to completely clean up the Model space, and use it as a driver for building columns.
-        // So, in Model..
-        //      Column(Main)
-        //      Column(Inlet)
-        //      Column(Outlet)
-        //      LinkColumnsPeriodic(Inlet, Main)
-        //      LinkColumnsPeriodic(Main, Outlet)
-        //      Mesh()
-        //      Write()
 
         std::string periodic;
         double dx, dy, dz;

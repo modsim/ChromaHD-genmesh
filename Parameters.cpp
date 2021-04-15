@@ -128,6 +128,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     else if(key == "Named.beadSurface")                           NamedBeadSurface                           = atoi(val.at(0).c_str());
     else if(key == "Named.outerSurface")                          NamedOuterSurface                          = atoi(val.at(0).c_str());
     else if(key == "General.NumThreads")                          GeneralNumThreads                          = atoi(val.at(0).c_str());
+    else if(key == "General.Verbosity")                           GeneralVerbosity                           = atoi(val.at(0).c_str());
     else if(key == "Geometry.OCCParallel")                        GeometryOCCParallel                        = atoi(val.at(0).c_str());
     else if(key == "Geometry.ScalingFactor")                      GeometryScalingFactor                      = atof(val.at(0).c_str());
     else if(key == "Geometry.Tolerance")                          GeometryTolerance                          = atof(val.at(0).c_str());
@@ -295,6 +296,7 @@ void Parameters::print()
     std::cout << "Named.beadSurface                           "<< this->NamedBeadSurface                           << std::endl;
     std::cout << "Named.outerSurface                          "<< this->NamedOuterSurface                          << std::endl;
     std::cout << "General.NumThreads                          "<< this->GeneralNumThreads                          << std::endl;
+    std::cout << "General.Verbosity                           "<< this->GeneralVerbosity                           << std::endl;
     std::cout << "Geometry.OCCParallel                        "<< this->GeometryOCCParallel                        << std::endl;
     std::cout << "Geometry.ScalingFactor                      "<< this->GeometryScalingFactor                      << std::endl;
     std::cout << "Geometry.Tolerance                          "<< this->GeometryTolerance                          << std::endl;
@@ -335,6 +337,7 @@ void Parameters::print()
 void Parameters::setGMSHOptions()
 {
     gmsh::option::setNumber("General.Terminal", 1);
+    gmsh::option::setNumber("General.Verbosity", this->GeneralVerbosity);
     gmsh::option::setNumber("General.NumThreads", this->GeneralNumThreads);
     gmsh::option::setNumber("Geometry.OCCParallel", this->GeometryOCCParallel);
     gmsh::option::setNumber("Geometry.ScalingFactor", this->GeometryScalingFactor);
