@@ -130,41 +130,47 @@ void Column::separateBoundingSurfaces(std::vector<std::pair<int, int>> dimTagsSu
     std::vector<double> points, parametricCoord, curvatures, normals;
     std::vector<std::pair <int, int>> dimTagsBound;
 
+    std::vector<double> nxleft = {-1, 0, 0};
+    std::vector<double> nyleft = {0, -1, 0};
+    std::vector<double> nzleft = {0, 0, -1};
+    std::vector<double> nxright = {1, 0, 0};
+    std::vector<double> nyright = {0, 1, 0};
+    std::vector<double> nzright = {0, 0, 1};
+
+    // given a list of all surfaces
     for (std::vector<std::pair<int, int>>::iterator iter = dimTagsSurfaces.begin(); iter != dimTagsSurfaces.end(); iter++)
     {
-
-        // Get the curvatures of the surfaces,
-        // Select planar surfaces
-        // Get normals of planes to match surface position to tag
-
+        //getrecursive points
         model::getBoundary({(*iter)}, dimTagsBound, false, false, true);
         for (std::vector<std::pair<int, int>>::iterator iteraa = dimTagsBound.begin(); iteraa != dimTagsBound.end(); iteraa++)
         {
+            //get points, curvatures and check normals
             model::getValue((*iteraa).first, (*iteraa).second, {}, points);
+
+            model::getParametrization((*iter).first, (*iter).second, points, parametricCoord);
+            model::getCurvature((*iter).first, (*iter).second, parametricCoord, curvatures);
+
+            //length of curvatures was always 1
+            if ((curvatures[0] == 0) && (curvatures.size() == 1))
+            {
+                model::getNormal((*iter).second, parametricCoord, normals);
+
+                if (normals == nxleft)
+                    tWall.xleft.push_back((*iter).second);
+                else if (normals == nyleft)
+                    tWall.yleft.push_back((*iter).second);
+                else if (normals == nzleft)
+                    tWall.zleft.push_back((*iter).second);
+                else if (normals == nxright)
+                    tWall.xright.push_back((*iter).second);
+                else if (normals == nyright)
+                    tWall.yright.push_back((*iter).second);
+                else if (normals == nzright)
+                    tWall.zright.push_back((*iter).second);
+
+            }
+
         }
-        model::getParametrization((*iter).first, (*iter).second, points, parametricCoord);
-        model::getCurvature((*iter).first, (*iter).second, parametricCoord, curvatures);
-
-        //length of curvatures was always 1
-        if (curvatures[0] == 0)
-        {
-            model::getNormal((*iter).second, parametricCoord, normals);
-
-            if (int(normals[0]) == -1)
-                tWall.xleft.push_back((*iter).second);
-            else if (int(normals[1]) == -1)
-                tWall.yleft.push_back((*iter).second);
-            else if (int(normals[2]) == -1)
-                tWall.zleft.push_back((*iter).second);
-            else if (int(normals[0]) == 1)
-                tWall.xright.push_back((*iter).second);
-            else if (int(normals[1]) == 1)
-                tWall.yright.push_back((*iter).second);
-            else if (int(normals[2]) == 1)
-                tWall.zright.push_back((*iter).second);
-
-        }
-
     }
 
 }
