@@ -341,6 +341,48 @@ void Column::writeFragments(std::string outpath, std::string outfile, std::strin
     model::addPhysicalGroup(2,surfaces.beads,14);
     model::setPhysicalName(2,14, "beadSurface");
     gmsh::write(outpath + "/" + outfile + "_surfaces_beads" + extension);
+    model::removePhysicalGroups();
+
+    model::addPhysicalGroup(2, outerWalls.xleft, 17      );
+    model::setPhysicalName (2, 17       , "outerWallsXL"  );
+    gmsh::write(outpath + "/" + outfile + "_outerWalls_xleft" + extension);
+    model::removePhysicalGroups();
+
+    model::addPhysicalGroup(2, outerWalls.yleft, 17      );
+    model::setPhysicalName (2, 17       , "outerWallsYL"  );
+    gmsh::write(outpath + "/" + outfile + "_outerWalls_yleft" + extension);
+    model::removePhysicalGroups();
+
+    model::addPhysicalGroup(2, outerWalls.xright, 17      );
+    model::setPhysicalName (2, 17       , "outerWallsXR"  );
+    gmsh::write(outpath + "/" + outfile + "_outerWalls_xright" + extension);
+    model::removePhysicalGroups();
+
+    model::addPhysicalGroup(2, outerWalls.yright, 17      );
+    model::setPhysicalName (2, 17       , "outerWallsYR"  );
+    gmsh::write(outpath + "/" + outfile + "_outerWalls_yright" + extension);
+    model::removePhysicalGroups();
+
+    model::addPhysicalGroup(2, beadWalls.xleft, 17      );
+    model::setPhysicalName (2, 17       , "beadWallsXL"  );
+    gmsh::write(outpath + "/" + outfile + "_beadWalls_xleft" + extension);
+    model::removePhysicalGroups();
+
+    model::addPhysicalGroup(2, beadWalls.yleft, 17      );
+    model::setPhysicalName (2, 17       , "beadWallsYL"  );
+    gmsh::write(outpath + "/" + outfile + "_beadWalls_yleft" + extension);
+    model::removePhysicalGroups();
+
+    model::addPhysicalGroup(2, beadWalls.xright, 17      );
+    model::setPhysicalName (2, 17       , "beadWallsXR"  );
+    gmsh::write(outpath + "/" + outfile + "_beadWalls_xright" + extension);
+    model::removePhysicalGroups();
+
+    model::addPhysicalGroup(2, beadWalls.yright, 17      );
+    model::setPhysicalName (2, 17       , "beadWallsYR"  );
+    gmsh::write(outpath + "/" + outfile + "_beadWalls_yright" + extension);
+    model::removePhysicalGroups();
+
 
 }
 
