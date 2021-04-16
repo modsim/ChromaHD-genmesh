@@ -287,12 +287,14 @@ void Column::generateBoxSurfaces()
     surfaces.walls.insert( surfaces.walls.end(), beadWalls.yleft.begin() , beadWalls.yleft.end()  );
     surfaces.walls.insert( surfaces.walls.end(), beadWalls.yright.begin(), beadWalls.yright.end() );
 
-    // TODO: In z-periodic cases, do I want to include the cut bead surfaces as inlet/outlet?
-    // Also: How do I convert data from outlet -> inlet and provide it to xns.in?
-    // so far, rngdexp... might need to check the option to specify node-by-node dof constraint
+    // NOTE: Might wanna expose this in the config file somehow: inoutstyle <interstitial|both>
+    surfaces.inlet.reserve(surfaces.inlet.size() + outerWalls.zleft.size() + beadWalls.zleft.size());
+    surfaces.inlet.insert(surfaces.inlet.end(), outerWalls.zleft.begin(), outerWalls.zleft.end());
+    surfaces.inlet.insert(surfaces.inlet.end(), beadWalls.zleft.begin(), beadWalls.zleft.end());
 
-    surfaces.inlet = outerWalls.zleft;
-    surfaces.outlet = outerWalls.zright;
+    surfaces.outlet.reserve(surfaces.outlet.size() + outerWalls.zright.size() + beadWalls.zright.size());
+    surfaces.outlet.insert(surfaces.outlet.end(), outerWalls.zright.begin(), outerWalls.zright.end());
+    surfaces.outlet.insert(surfaces.outlet.end(), beadWalls.zright.begin(), beadWalls.zright.end());
 
 }
 
