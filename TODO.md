@@ -105,14 +105,15 @@
 - [TASK] Improve GMSH default settings
 - [TASK] Keyword cases need standardization: camelCase or snake_case or dot.case?
 - [TASK] Plugin to check element qualities
-- [TASK] Write out bead packing and other info to files
+- [TASK] Write out bead packing info and other info to files that might be more easily readable by scripts? Issue is duplication of info at different sections of the log file. Try something like mesh.nfo?
 
-- [TASK] Check for memory leaks again. Definitely exist.
+- [DONE] Check for memory leaks again: Most are from GMSH/OCCT
 - [TASK] Fix geometry input and output
 - [TASK] Fix main and fragment output formats
 - [TASK] remove z cut bead surfaces from bead surfaces.
 - [TASK] Add more timing info. Print more at the end, after writes.
 - [TASK] consider typedeffing/classing std::vector<std::pair<int,int>>
+- [TASK] Write a bead intersection check in packed bed to ensure that stacking is valid.
 
 [PROJ: TESTS]
     - [TASK] Check periodic surface matches

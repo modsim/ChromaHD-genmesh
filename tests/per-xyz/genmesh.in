@@ -22,9 +22,9 @@ containerShape	1
 box -1 -1 -1 2 2 2
 
 ## Mesh size
-lc_beads	0.10
-lc_out	0.10
-lc_bridge	0.10
+lc_beads 	0.2
+lc_out   	0.2
+lc_bridge	0.2
 
 ## GMSH settings
 Mesh.ScalingFactor 0.0001

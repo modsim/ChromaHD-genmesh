@@ -3,7 +3,7 @@
 ## TODO: Find a way to automatically compare results with a reference
 set -e
 
-TESTS=(box-1 box-4 cyl-1 cyl-4 per-xy per-xyz per-xyz-inout)
+TESTS=(box-1 box-4 cyl-1 cyl-4 per-xy per-xyz per-xyz-inout per-xyz-inout-25)
 ROOT=$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")
 TESTDIR=$ROOT/tests
 

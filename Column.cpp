@@ -287,7 +287,7 @@ void Column::generateBoxSurfaces()
     surfaces.walls.insert( surfaces.walls.end(), beadWalls.yleft.begin() , beadWalls.yleft.end()  );
     surfaces.walls.insert( surfaces.walls.end(), beadWalls.yright.begin(), beadWalls.yright.end() );
 
-    // NOTE: Might wanna expose this in the config file somehow: inoutstyle <interstitial|both>
+    // TODO: Might wanna expose this in the config file somehow: inoutstyle <interstitial|both>
     surfaces.inlet.reserve(surfaces.inlet.size() + outerWalls.zleft.size() + beadWalls.zleft.size());
     surfaces.inlet.insert(surfaces.inlet.end(), outerWalls.zleft.begin(), outerWalls.zleft.end());
     surfaces.inlet.insert(surfaces.inlet.end(), beadWalls.zleft.begin(), beadWalls.zleft.end());
