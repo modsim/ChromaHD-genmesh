@@ -1,5 +1,6 @@
 #include "Tools.h"
 
+/* #include <iterator> */
 #include <algorithm>
 #include <iostream>
 #include <gmsh.h>
@@ -7,8 +8,6 @@
 
 namespace model = gmsh::model;
 namespace factory = gmsh::model::occ;
-
-//TODO: operator overloading on tags and dimtags to make life easier?
 
 void subtractTags(std::vector<int>& mainVec, std::vector<int>& subVec)
 {
@@ -69,7 +68,7 @@ void addDimTags(std::vector<std::pair<int,int>>& mainVec, const std::vector<std:
 
 void findSurfacesWithNormal(std::vector<std::pair<int,int>> dimTagsInput, std::vector<double> _normals, std::vector<std::pair<int,int>>& dimTagsOutput)
 {
-    //Extracts surfaces with a given normal out of the input 3D object
+    //Extracts surfaces with a given normal out of the 3D object
 
     factory::synchronize();
     std::vector<std::pair<int,int>> dimTagsInputBoundaries;
@@ -128,25 +127,42 @@ void findIfSurfaceWithNormal(std::vector<std::pair<int,int>> dimTagsInput, std::
             for (auto it3:dimTagsBound) // for every recursed "point" in the boundary surface representation
             {
                 model::getValue(it3.first, it3.second, {}, _points);
-                for (auto itp: _points)
-                    points.push_back(itp);
-            }
+                /* for (auto itp: _points) */
+                /*     points.push_back(itp); */
 
+                model::getParametrization(it2.first, it2.second, _points, parametricCoord);
+                model::getCurvature(it2.first, it2.second, parametricCoord, curvatures);
 
-
-
-            // if normal matches provided normal, push bead (3d) onto output vector
-            if (normals == _normals)
-            {
-                /* for(auto i=0; i<3; i++) */
-                /* std::cout << normals[i]  << "  " << _normals[i] << std::endl;; */
+                /* std::cout << curvatures.size() << ": "; */
+                /* for(auto ic: curvatures) */
+                /*     std::cout << ic << " "; */
                 /* std::cout << std::endl; */
-                dimTagsOutput.push_back(it);
-                // break out of surface loop and check next bead
-                break;
+
+
+                /* if ( curvatures[0] == 0 ) // if truly flat */
+                /* { */
+                    model::getNormal(it2.second, parametricCoord, normals);
+
+                    // if normal matches provided normal, push bead (3d) onto output vector
+                    if (normals == _normals)
+                    {
+                        /* for(auto i=0; i<3; i++) */
+                        /* std::cout << normals[i]  << "  " << _normals[i] << std::endl;; */
+                        /* std::cout << std::endl; */
+                        dimTagsOutput.push_back(it);
+                        // break out of surface loop and check next bead
+                        /* break; */
+                    /* } */
+
+                }
             }
+
+
+
         }
+
     }
+
 }
 
 void findCutBeads(std::vector<std::pair<int,int>> dimTagsBeads, std::vector<std::pair<int,int>> dimTagsOutput)
@@ -156,6 +172,7 @@ void findCutBeads(std::vector<std::pair<int,int>> dimTagsBeads, std::vector<std:
         // getsurfaces
         // getcurvature
         // if curvature is not 0, push dimtag
+        //
 
     factory::synchronize();
 
