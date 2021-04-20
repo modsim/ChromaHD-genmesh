@@ -8,17 +8,20 @@ Generate meshes from packing files (xyzd). Depends on OpenCASCADE (7.3) and GMSH
 2. Install GMSH with OpenCASCADE linked (v 4.4.1)
 3. Compile genmesh with GMSH linked.
 
+**NOTE: Newer versions of GMSH and OpenCASCADE are required for later versions of genmesh. Especially periodic cases**
+
 Check out `install.sh` for a template on what to do.
 
 Note: Ensure that \$LD_LIBRARY_PATH points to the OpenCASCADE libs.
-Note: Ensure that you use the same compiler version for all dependencies.
+Note: Ensure that \$GMSH_ROOT and \$OCCT_ROOT point to the respective install directories.
+Note: Ensure that you use the same compiler version for all dependencies. 
 
 ## Snippets
 ```
-freetype2, mesa/opengl dev pacakges, libXmu, libXi
+freetype2, mesa/opengl dev packages, libXmu, libXi, libfontconfig1-dev
 ./configure --enable-gcc --enable-shared --enable-threads --prefix=/home/IBT/rao/tools/tcl --enable-64bit
 ./configure --enable-gcc --enable-shared --enable-threads --prefix=/home/IBT/rao/tools/tk --enable-64bit --with-tcl=/home/IBT/rao/tools/tcl/lib
-cmake -DCMAKE_INSTALL_PREFIX=../../occt -D3RDPARTY_TCL_LIBRARY_DIR=../../tcl/lib/ -D3RDPARTY_TK_LIBRARY_DIR=../../tk/lib/ -D3RDPARTY_TK_INCLUDE_DIR=../../tk/include/ ..
+cmake -D3RDPARTY_TCL_DIR=$HOME/tools/tcl -D3RDPARTY_TK_DIR=$HOME/tools/tk -DCMAKE_INSTALL_PREFIX=/home/IBT/rao/tools/occt-7.5.0 ..
 cmake -DCMAKE_PREFIX_PATH=<path to occt install>
 ```
 
