@@ -8,6 +8,7 @@
 #include "PackedBed.h"
 #include "Parameters.h"
 #include "Files.h"
+#include "Tools.h"
 
 #include <gmsh.h>
 #include <assert.h>
@@ -579,11 +580,6 @@ void PackedBed::stackPeriodicPacking(Parameters * prm)
     std::vector<int> yOffsetMultiplier = {0};
     std::vector<int> zOffsetMultiplier = {0};
 
-    /* if (prm->periodic == "xyz") */
-    /*     zOffsetMultiplier = {-1, 0, 1}; */
-    /* else */
-    /*     zOffsetMultiplier = {0}; */
-
     std::size_t found;
     found = prm->periodic.find('x');
     if (found != std::string::npos) xOffsetMultiplier = {-1, 0, 1};
@@ -607,48 +603,26 @@ void PackedBed::stackPeriodicPacking(Parameters * prm)
         }
     }
 
-    this->beads.reserve(this->beads.size() + stackedBeads.size());
-    this->beads.insert(this->beads.end(), stackedBeads.begin(), stackedBeads.end());
+    /* this->beads.reserve(this->beads.size() + stackedBeads.size()); */
+    /* this->beads.insert(this->beads.end(), stackedBeads.begin(), stackedBeads.end()); */
 
+    std::vector<Bead *> neighbours;
 
-    /* // Full copy beads with offset in the x-y directions */
-    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
-    /*     xpBeads.push_back( new Bead((*iter)->getX() + xoff, (*iter)->getY(), (*iter)->getZ(), (*iter)->getR()) ); */
+    // push only if touching original bed
+    // NOTE: Change radius_avg -> radius_max if periodicity fails
+    double dummydx, dummydy, dummydz;
+    for(auto is:stackedBeads)
+        for(auto io:this->beads)
+            if (io->neighbour(is,radius_avg,dummydx,dummydy,dummydz))
+            {
+                neighbours.push_back(is);
+                break;
+            }
 
-    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
-    /*     xmBeads.push_back( new Bead((*iter)->getX() - xoff, (*iter)->getY(), (*iter)->getZ(), (*iter)->getR()) ); */
+    std::cout << "Found " << neighbours.size() << " neighbouring beads to original bed!" << std::endl;
 
-    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
-    /*     ypBeads.push_back( new Bead((*iter)->getX(), (*iter)->getY() + yoff, (*iter)->getZ(), (*iter)->getR()) ); */
-
-    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
-    /*     ymBeads.push_back( new Bead((*iter)->getX(), (*iter)->getY() - yoff, (*iter)->getZ(), (*iter)->getR()) ); */
-
-    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
-    /*     xpypBeads.push_back( new Bead((*iter)->getX() + xoff, (*iter)->getY() + yoff, (*iter)->getZ(), (*iter)->getR()) ); */
-
-    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
-    /*     xmypBeads.push_back( new Bead((*iter)->getX() - xoff, (*iter)->getY() + yoff, (*iter)->getZ(), (*iter)->getR()) ); */
-
-    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
-    /*     xmymBeads.push_back( new Bead((*iter)->getX() - xoff, (*iter)->getY() - yoff, (*iter)->getZ(), (*iter)->getR()) ); */
-
-    /* for (std::vector<Bead *>::iterator iter = this->beads.begin(); iter != this->beads.end(); iter++) */
-    /*     xpymBeads.push_back( new Bead((*iter)->getX() + xoff, (*iter)->getY() - yoff, (*iter)->getZ(), (*iter)->getR()) ); */
-
-    /* // Reserve space to extend this->beads vector */
-    /* this->beads.reserve(this->beads.size() * 9); */
-
-    /* // Extend this->beads vector */
-    /* this->beads.insert(this->beads.end(), xpBeads.begin(), xpBeads.end()); */
-    /* this->beads.insert(this->beads.end(), xmBeads.begin(), xmBeads.end()); */
-    /* this->beads.insert(this->beads.end(), ypBeads.begin(), ypBeads.end()); */
-    /* this->beads.insert(this->beads.end(), ymBeads.begin(), ymBeads.end()); */
-
-    /* this->beads.insert(this->beads.end(), xpypBeads.begin(), xpypBeads.end()); */
-    /* this->beads.insert(this->beads.end(), xmypBeads.begin(), xmypBeads.end()); */
-    /* this->beads.insert(this->beads.end(), xmymBeads.begin(), xmymBeads.end()); */
-    /* this->beads.insert(this->beads.end(), xpymBeads.begin(), xpymBeads.end()); */
+    this->beads.reserve(this->beads.size() + neighbours.size());
+    this->beads.insert(this->beads.end(), neighbours.begin(), neighbours.end());
 
 }
 
