@@ -2,24 +2,32 @@
 
 """
 @pre: export PYTHONPATH=$PYTHONPATH:/usr/local/lib64
+or
+@pre: export PYTHONPATH=$PYTHONPATH:/usr/local/lib
 """
 
 import gmsh
+import sys
 
 gmsh.initialize()
 
 gmsh.option.setNumber("General.Terminal", 1)
 
-gmsh.merge("../output/OB-0.03.msh2")
-gmsh.plugin.setNumber("MeshVolume", "Physical", -1)
+gmsh.merge(sys.argv[1])
+
+print("[Column]")
+gmsh.plugin.setNumber("MeshVolume", "PhysicalGroup", -1)
 gmsh.plugin.setNumber("MeshVolume", "Dimension", 3)
 gmsh.plugin.run("MeshVolume")
 
-gmsh.plugin.setNumber("MeshVolume", "Physical", 5)
+print("[Interstitial]")
+gmsh.plugin.setNumber("MeshVolume", "PhysicalGroup", 5)
 gmsh.plugin.setNumber("MeshVolume", "Dimension", 3)
 gmsh.plugin.run("MeshVolume")
 
-gmsh.plugin.setNumber("MeshVolume", "Physical", 6)
+print("[Packed Bed]")
+gmsh.plugin.setNumber("MeshVolume", "PhysicalGroup", 6)
 gmsh.plugin.setNumber("MeshVolume", "Dimension", 3)
 gmsh.plugin.run("MeshVolume")
+
 
