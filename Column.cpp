@@ -396,25 +396,29 @@ void Column::writeFragments(std::string outpath, std::string outfile, std::strin
 
 void Column::meshVolumes(Parameters * prm)
 {
+    /* std::cout << std::endl; */
     std::cout << "Calculating mesh volumes. Note: Multiply outputs by " << pow(prm->MeshScalingFactor, 3) << std::endl;
 
-    std::cout << "[ Column Volume ]" << std::endl;
-    gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", -1);
-    gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
-    gmsh::plugin::run("MeshVolume");
-    std::cout << std::endl;
+    // NOTE: This outputs the full volume of the entire model.
+    // For periodic inlet and outlets: that's the inlet+column+outlet volume
+    // Might be misleading
+    /* gmsh::logger::write("[ Column Volume ]", "info"); */
+    /* gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", -1); */
+    /* gmsh::plugin::setNumber("MeshVolume", "Dimension", 3); */
+    /* gmsh::plugin::run("MeshVolume"); */
+    /* /1* std::cout << std::endl; *1/ */
 
-    std::cout << "[ Interstitial Volume ]" << std::endl;
+    gmsh::logger::write("[ Interstitial Volume ]", "info");
     gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", 5);
     gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
     gmsh::plugin::run("MeshVolume");
-    std::cout << std::endl;
+    /* std::cout << std::endl; */
 
-    std::cout << "[ Bead Volume ]" << std::endl;
+    gmsh::logger::write("[ Bead Volume ]", "info");
     gmsh::plugin::setNumber("MeshVolume", "PhysicalGroup", 6);
     gmsh::plugin::setNumber("MeshVolume", "Dimension", 3);
     gmsh::plugin::run("MeshVolume");
-    std::cout << std::endl;
+    /* std::cout << std::endl; */
 
 }
 

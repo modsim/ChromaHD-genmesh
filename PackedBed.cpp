@@ -610,6 +610,7 @@ void PackedBed::stackPeriodicPacking(Parameters * prm)
 
     // push only if touching original bed
     // NOTE: Change radius_avg -> radius_max if periodicity fails
+    // TODO: Move into above code block, don't even construct a new bead if it isn't satisfying the condition
     double dummydx, dummydy, dummydz;
     for(auto is:stackedBeads)
         for(auto io:this->beads)

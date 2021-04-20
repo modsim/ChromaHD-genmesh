@@ -151,12 +151,14 @@ void Model::write(std::string outfile, Parameters * prm)
 
     std::cout << "Writing main column unit..." << std::endl;
     column.write(prm->outpath, basefilename + "_column",  extension );
+    column.meshVolumes(prm);
     column.writeFragments(prm->outpath, basefilename + "_column",  extension );
 
     if(prm->periodicInlet > 0)
     {
         std::cout << "Writing periodic inlet unit..." << std::endl;
         columnInlet.write(prm->outpath, basefilename + "_inlet",  extension );
+        columnInlet.meshVolumes(prm);
         columnInlet.writeFragments(prm->outpath, basefilename + "_inlet",  extension );
     }
 
@@ -164,7 +166,9 @@ void Model::write(std::string outfile, Parameters * prm)
     {
         std::cout << "Writing periodic outlet unit..." << std::endl;
         columnOutlet.write(prm->outpath, basefilename + "_outlet",  extension );
+        columnInlet.meshVolumes(prm);
         columnOutlet.writeFragments(prm->outpath, basefilename + "_outlet",  extension );
     }
+
 
 }
