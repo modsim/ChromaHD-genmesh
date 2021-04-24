@@ -337,6 +337,7 @@ void Geometry::operate(Parameters * prm)
         std::cout << "done!" << std::endl;;
 
         // TODO: Do I need this both here and after fragmentation?
+        // TODO: Parallellize
         std::cout << "  > Cleaning Model... " << std::flush;;
         factory::getEntities(dtdummy);
         subtractDimTags(dtdummy, dimTagsBeadsInside);

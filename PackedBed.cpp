@@ -603,27 +603,55 @@ void PackedBed::stackPeriodicPacking(Parameters * prm)
         }
     }
 
-    /* this->beads.reserve(this->beads.size() + stackedBeads.size()); */
-    /* this->beads.insert(this->beads.end(), stackedBeads.begin(), stackedBeads.end()); */
+    this->beads.reserve(this->beads.size() + stackedBeads.size());
+    this->beads.insert(this->beads.end(), stackedBeads.begin(), stackedBeads.end());
 
-    std::vector<Bead *> neighbours;
+    /* /1* double eps2 = radius_max + 1e-3; *1/ */
+    /* double eps2 = 0; */
+    /* double x0 = prm->x0 - eps2; */
+    /* double y0 = prm->y0 - eps2; */
+    /* double z0 = prm->z0 - eps2; */
+    /* double x1 = prm->x0 + prm->dx + eps2; */
+    /* double y1 = prm->y0 + prm->dx + eps2; */
+    /* double z1 = prm->z0 + prm->dx + eps2; */
+
+    /* std::vector<Bead *> neighbours; */
+
+    /* for(auto is:stackedBeads) */
+    /* { */
+    /*     double x = is->getX(); */
+    /*     double y = is->getY(); */
+    /*     double z = is->getZ(); */
+    /*     double r = is->getR(); */
+
+    /*     /1* if ( (x > x0 && x < x1) || (y > y0 && y < y1) || (z > z0 && z < z1 )) *1/ */
+    /*     /1*     neighbours.push_back(is); *1/ */
+
+    /*     if ( r > abs(x0 - x) || r > abs(x - x1) || r > abs(y0 - y) || r > abs(y - y1) || r > abs(z0 - z) || r > abs(z - z1) ) */
+    /*     { */
+    /*         if((x > x0-radius_max && x < x1+radius_max) || (y>y0-radius_max && y<y1+radius_max) || (z>z0-radius_max && z<z1+radius_max)) */
+    /*             neighbours.push_back(is); */
+    /*     } */
+    /* } */
+
 
     // push only if touching original bed
     // NOTE: Change radius_avg -> radius_max if periodicity fails
     // TODO: Move into above code block, don't even construct a new bead if it isn't satisfying the condition
-    double dummydx, dummydy, dummydz;
-    for(auto is:stackedBeads)
-        for(auto io:this->beads)
-            if (io->neighbour(is,radius_avg,dummydx,dummydy,dummydz))
-            {
-                neighbours.push_back(is);
-                break;
-            }
+    /* std::vector<Bead *> neighbours; */
+    /* double dummydx, dummydy, dummydz; */
+    /* for(auto is:stackedBeads) */
+    /*     for(auto io:this->beads) */
+    /*         if (io->neighbour(is,2*radius_max+1e-6,dummydx,dummydy,dummydz)) */
+    /*         { */
+    /*             neighbours.push_back(is); */
+    /*             break; */
+    /*         } */
 
-    std::cout << "Found " << neighbours.size() << " neighbouring beads to original bed!" << std::endl;
+    /* std::cout << "Found " << neighbours.size() << "/" << stackedBeads.size() << " neighbouring beads to original bed!" << std::endl; */
 
-    this->beads.reserve(this->beads.size() + neighbours.size());
-    this->beads.insert(this->beads.end(), neighbours.begin(), neighbours.end());
+    /* this->beads.reserve(this->beads.size() + neighbours.size()); */
+    /* this->beads.insert(this->beads.end(), neighbours.begin(), neighbours.end()); */
 
 }
 
