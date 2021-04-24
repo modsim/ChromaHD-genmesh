@@ -13,7 +13,7 @@ periodicInlet 2
 periodicOutlet 2
 
 ## Bead selection range
-nBeads	100
+nBeads 350
 
 ## Bead modifications
 reduced	0.9997
@@ -21,7 +21,7 @@ reduced	0.9997
 ## Container Geometry
 autoContainment	0
 containerShape	1 
-box 0 0 0 4 4 3
+box 0 0 0 4 4 4
 
 ## Mesh size
 lc_beads 	0.2
@@ -29,10 +29,9 @@ lc_out   	0.2
 lc_bridge	0.2
 
 ## GMSH settings
-General.NumThreads 8
-Mesh.MaxNumThreads 8
+General.NumThreads 0
+Mesh.MaxNumThreads 0
 Mesh.ScalingFactor 0.0001
 Mesh.Generate      3
 Mesh.Algorithm     5
 Mesh.Algorithm3D   10
-General.Verbosity 3
