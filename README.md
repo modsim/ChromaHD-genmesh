@@ -72,7 +72,13 @@ I use preScalingFactor to convert meshes to a size such that bead size = 1, cons
 - periodic meshes with z-dir cuts in beads can contain floating nodes which have 0 nmat info due to not being connected to an element. 
     - the floating nodes are found on the x/y surfaces intersecting with the z surfaces
     - Simulation could be theoretically continued if we modify the nmat file to have non-zero values at these points
-- 2021-04-10 : gradient mesh size within beads only works if lc_beads < lc_out
+- 2021-04-10: gradient mesh size within beads only works if lc_beads < lc_out
+- 2021-04-27: Periodic cases on IBT012 give warnings about point projections on surfaces. Works on local.
+    - local gmsh: e7028b3
+    - local occt: community/opencascade-7.5.0-3
+    - IBT012 gmsh: origin/master
+    - IBT012 gmsh: opencascade 7.5.0 (from the website/tar)
+    - Seems to work fine on IBT06X and IBT07X
 
 # Keywords in config.in
 Look at parameters.h for a more up-to-date set of keywords and default values
