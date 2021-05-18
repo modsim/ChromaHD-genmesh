@@ -316,12 +316,13 @@ void Column::writeFragments(std::string outpath, std::string outfile, std::strin
     gmsh::write(outpath + "/" + outfile + "_volumes_interstitial" + extension);
     model::removePhysicalGroups();
 
-    model::addPhysicalGroup(2, surfaces.inlet  , 11      );
-    model::addPhysicalGroup(2, surfaces.outlet , 12      );
-    model::addPhysicalGroup(2, surfaces.walls   , 13      );
-    model::setPhysicalName (2, 11       , "inlet" );
-    model::setPhysicalName (2, 12       , "outlet");
-    model::setPhysicalName (2, 13       , "wall"  );
+    model::addPhysicalGroup(2, surfaces.inlet  , 11 );
+    model::addPhysicalGroup(2, surfaces.outlet , 12 );
+    model::addPhysicalGroup(2, surfaces.walls  , 13 );
+    model::setPhysicalName (2, 11 , "inlet" );
+    model::setPhysicalName (2, 12 , "outlet" );
+    model::setPhysicalName (2, 13 , "wall" );
+
     gmsh::write(outpath + "/" + outfile + "_surfaces_interstitial" + extension);
     model::removePhysicalGroups();
 
@@ -348,6 +349,27 @@ void Column::writeFragments(std::string outpath, std::string outfile, std::strin
     model::addPhysicalGroup(2,surfaces.beads,14);
     model::setPhysicalName(2,14, "beadSurface");
     gmsh::write(outpath + "/" + outfile + "_surfaces_beads" + extension);
+    model::removePhysicalGroups();
+
+    // Write out meshes for xns generic
+    model::addPhysicalGroup(2,surfaces.beads,1);
+    model::addPhysicalGroup(3,volumes.beads ,2);
+    model::setPhysicalName(2 ,1            , "beadSurface");
+    model::setPhysicalName(3 ,2            , "beadVolume");
+    gmsh::write(outpath + "/" + outfile + "_generic_beads" + extension);
+    model::removePhysicalGroups();
+
+    model::addPhysicalGroup(2, surfaces.inlet      , 1);
+    model::addPhysicalGroup(2, surfaces.outlet     , 2);
+    model::addPhysicalGroup(2, surfaces.walls      , 3);
+    model::addPhysicalGroup(2, surfaces.beads      , 4);
+    model::addPhysicalGroup(3, volumes.interstitial, 5);
+    model::setPhysicalName (2, 1, "inlet" );
+    model::setPhysicalName (2, 2, "outlet" );
+    model::setPhysicalName (2, 3, "wall" );
+    model::setPhysicalName (2, 4, "beadSurface");
+    model::setPhysicalName (3, 5, "interstitialVolume");
+    gmsh::write(outpath + "/" + outfile + "_generic_interstitial" + extension);
     model::removePhysicalGroups();
 
     /* model::addPhysicalGroup(2, outerWalls.xleft, 17      ); */

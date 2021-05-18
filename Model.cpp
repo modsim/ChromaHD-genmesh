@@ -170,5 +170,4 @@ void Model::write(std::string outfile, Parameters * prm)
         columnOutlet.writeFragments(prm->outpath, basefilename + "_outlet",  extension );
     }
 
-
 }
