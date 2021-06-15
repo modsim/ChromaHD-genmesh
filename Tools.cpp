@@ -106,11 +106,10 @@ void findSurfacesWithNormal(std::vector<std::pair<int,int>> dimTagsInput, std::v
 
 void findIfSurfaceWithNormal(std::vector<std::pair<int,int>> dimTagsInput, std::vector<double> _normals, std::vector<std::pair<int,int>>& dimTagsOutput)
 {
-    //NOTE: returns list of 3d objects from input containing surfaces that point downward.
+    // NOTE: returns list of 3d objects from input containing surfaces that point in _normals direction.
+    // Useful to calculate beads with cut surfaces, for eg.
 
     factory::synchronize();
-
-    /* std::cout << "Processing " << dimTagsInput.size() << " beads!" << std::endl; */
 
     for (auto it:dimTagsInput) // for every bead
     {
@@ -127,42 +126,27 @@ void findIfSurfaceWithNormal(std::vector<std::pair<int,int>> dimTagsInput, std::
             for (auto it3:dimTagsBound) // for every recursed "point" in the boundary surface representation
             {
                 model::getValue(it3.first, it3.second, {}, _points);
-                /* for (auto itp: _points) */
-                /*     points.push_back(itp); */
 
                 model::getParametrization(it2.first, it2.second, _points, parametricCoord);
-                model::getCurvature(it2.first, it2.second, parametricCoord, curvatures);
 
+                /* model::getCurvature(it2.first, it2.second, parametricCoord, curvatures); */
                 /* std::cout << curvatures.size() << ": "; */
                 /* for(auto ic: curvatures) */
                 /*     std::cout << ic << " "; */
                 /* std::cout << std::endl; */
 
+                model::getNormal(it2.second, parametricCoord, normals);
 
-                /* if ( curvatures[0] == 0 ) // if truly flat */
-                /* { */
-                    model::getNormal(it2.second, parametricCoord, normals);
-
-                    // if normal matches provided normal, push bead (3d) onto output vector
-                    if (normals == _normals)
-                    {
-                        /* for(auto i=0; i<3; i++) */
-                        /* std::cout << normals[i]  << "  " << _normals[i] << std::endl;; */
-                        /* std::cout << std::endl; */
-                        dimTagsOutput.push_back(it);
-                        // break out of surface loop and check next bead
-                        /* break; */
-                    /* } */
-
+                // if normal matches provided normal, push bead (3d) onto output vector
+                if (normals == _normals)
+                {
+                    dimTagsOutput.push_back(it);
+                    // break out of surface loop and check next bead
+                    break;
                 }
             }
-
-
-
         }
-
     }
-
 }
 
 void findCutBeads(std::vector<std::pair<int,int>> dimTagsBeads, std::vector<std::pair<int,int>> dimTagsOutput)

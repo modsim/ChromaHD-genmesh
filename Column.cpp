@@ -142,35 +142,48 @@ void Column::separateBoundingSurfaces(std::vector<std::pair<int, int>> dimTagsSu
     {
         //getrecursive points
         model::getBoundary({(*iter)}, dimTagsBound, false, false, true);
-        for (std::vector<std::pair<int, int>>::iterator iteraa = dimTagsBound.begin(); iteraa != dimTagsBound.end(); iteraa++)
+
+        for (auto iPoint : dimTagsBound)
         {
-            //get points, curvatures and check normals
-            model::getValue((*iteraa).first, (*iteraa).second, {}, points);
+            model::getValue(iPoint.first, iPoint.second, {}, points);
 
             model::getParametrization((*iter).first, (*iter).second, points, parametricCoord);
-            model::getCurvature((*iter).first, (*iter).second, parametricCoord, curvatures);
+            /* model::getCurvature((*iter).first, (*iter).second, parametricCoord, curvatures); */
+            model::getNormal((*iter).second, parametricCoord, normals);
 
-            //length of curvatures was always 1
-            if ((curvatures[0] == 0) && (curvatures.size() == 1))
+            if (normals == nxleft)
             {
-                model::getNormal((*iter).second, parametricCoord, normals);
-
-                if (normals == nxleft)
-                    tWall.xleft.push_back((*iter).second);
-                else if (normals == nyleft)
-                    tWall.yleft.push_back((*iter).second);
-                else if (normals == nzleft)
-                    tWall.zleft.push_back((*iter).second);
-                else if (normals == nxright)
-                    tWall.xright.push_back((*iter).second);
-                else if (normals == nyright)
-                    tWall.yright.push_back((*iter).second);
-                else if (normals == nzright)
-                    tWall.zright.push_back((*iter).second);
-
+                tWall.xleft.push_back((*iter).second);
+                break;
+            }
+            else if (normals == nyleft)
+            {
+                tWall.yleft.push_back((*iter).second);
+                break;
+            }
+            else if (normals == nzleft)
+            {
+                tWall.zleft.push_back((*iter).second);
+                break;
+            }
+            else if (normals == nxright)
+            {
+                tWall.xright.push_back((*iter).second);
+                break;
+            }
+            else if (normals == nyright)
+            {
+                tWall.yright.push_back((*iter).second);
+                break;
+            }
+            else if (normals == nzright)
+            {
+                tWall.zright.push_back((*iter).second);
+                break;
             }
 
         }
+
     }
 
 }
