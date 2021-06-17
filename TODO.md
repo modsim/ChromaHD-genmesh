@@ -64,7 +64,7 @@
 - [TASK] Bridges at the cylinder-bead interface
 - [TASK] Check for memleaks. No errors. But some blocks are reachable (beads vector not deleted).
 - [TASK] Write test inputs to run and verify code.
-- [TASK] Scrap the need for ./create.sh. create <file>.log automatically
+- [DONE] Scrap the need for ./create.sh. create <file>.log automatically
 - [TASK] Enlarged beads don't work at 0.001: Fix the rcyl assertion.
 - [TASK] meshSizeMethod=0 doesn't work
 - [TASK] Mesh Sensitivity
@@ -72,7 +72,6 @@
     - [TASK] Mesh.ToleranceInitialDelaunay
 - [TASK] clean duplicate local variables in packedbed.transform()
 - [TASK] boost endian conversion is not available easily on JURECA: remove dependency
-- [TASK] OCC parallel boolean uses up all cores
 - [TASK] Plugin(AnalyseCurvedMesh)
 - [TASK] Plugin(DiscretizationError) 
 - [TASK] Implement debug/release version handling?
@@ -88,11 +87,11 @@
 - [TASK] Check if rectangular mesh sims run or not
 - [TASK] Intuitive control & code for mesh sizing
 - [DONE] Generate periodic meshes
-- [TASK] More intuitive input parameters for dimensions etc. 
-    - [TASK] zBot/zTop
-    - [TASK] inlet/outlet
+- [DONE] More intuitive input parameters for dimensions etc. 
+    - [DONE] zBot/zTop
+    - [DONE] inlet/outlet
     - [DONE] nBeads
-    - [TASK] Porosity Control
+    - [DONE] Porosity Control
 - [TASK] Fix GeomInFile and GeomOutFile in log output when using as input
 - [DONE] Better architecture
 - [DONE] let genmesh run in a directory with input file and generate necessary files in the same directory. No output subdir nonsense.
