@@ -20,4 +20,7 @@ void findUncutBeads(std::vector<std::pair<int,int>> dimTagsBeads, std::vector<st
 void findIfSurfaceWithNormal(std::vector<std::pair<int,int>> dimTagsInput, std::vector<double> _normals, std::vector<std::pair<int,int>>& dimTagsOutput);
 
 void printDimTagsMap(const std::vector<std::vector<std::pair<int,int>>>& ovv);
+
+void extractTags(const std::vector<std::pair<int,int>>& dt, std::vector<int>& tags);
+
 #endif

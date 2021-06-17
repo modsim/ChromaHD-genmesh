@@ -229,3 +229,11 @@ void printDimTagsMap(const std::vector<std::vector<std::pair<int,int>>>& ovv)
 
 }
 
+void extractTags(const std::vector<std::pair<int,int>>& dt, std::vector<int>& tags)
+{
+    for (auto it : dt)
+    {
+        tags.push_back(it.second);
+    }
+}
+
