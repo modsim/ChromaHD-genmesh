@@ -66,26 +66,26 @@ void addDimTags(std::vector<std::pair<int,int>>& mainVec, const std::vector<std:
 
 }
 
-void findSurfacesWithNormal(std::vector<std::pair<int,int>> dimTagsInput, std::vector<double> _normals, std::vector<std::pair<int,int>>& dimTagsOutput)
+void extractSurfacesWithNormal(std::vector<std::pair<int,int>> dt_input, std::vector<double> _normals, std::vector<std::pair<int,int>>& dt_output)
 {
     //Extracts surfaces with a given normal out of the 3D object
 
     factory::synchronize();
-    std::vector<std::pair<int,int>> dimTagsInputBoundaries;
-    model::getBoundary(dimTagsInput, dimTagsInputBoundaries, false, false, false);
+    std::vector<std::pair<int,int>> dt_inputBoundaries;
+    model::getBoundary(dt_input, dt_inputBoundaries, false, false, false);
 
-    for (std::vector<std::pair<int, int>>::iterator iter = dimTagsInputBoundaries.begin(); iter != dimTagsInputBoundaries.end(); iter++)
+    for (std::vector<std::pair<int, int>>::iterator iter = dt_inputBoundaries.begin(); iter != dt_inputBoundaries.end(); iter++)
     {
 
         // Get the curvatures of the surfaces,
         // Select planar surfaces
         // Get normals of planes to match surface position to tag
 
-        std::vector<std::pair<int,int>> dimTagsBound;
+        std::vector<std::pair<int,int>> dt_points;
         std::vector<double> points, parametricCoord, curvatures, normals;
 
-        model::getBoundary({(*iter)}, dimTagsBound, false, false, true);
-        for (std::vector<std::pair<int, int>>::iterator iteraa = dimTagsBound.begin(); iteraa != dimTagsBound.end(); iteraa++)
+        model::getBoundary({(*iter)}, dt_points, false, false, true);
+        for (std::vector<std::pair<int, int>>::iterator iteraa = dt_points.begin(); iteraa != dt_points.end(); iteraa++)
         {
             model::getValue((*iteraa).first, (*iteraa).second, {}, points);
         }
@@ -98,36 +98,79 @@ void findSurfacesWithNormal(std::vector<std::pair<int,int>> dimTagsInput, std::v
             model::getNormal((*iter).second, parametricCoord, normals);
 
             // NOTE: equating doubles. Might wanna be wary here
-            if (normals == _normals) dimTagsOutput.push_back({(*iter).first, (*iter).second});
+            if (normals == _normals) dt_output.push_back({(*iter).first, (*iter).second});
 
         }
     }
 }
 
-void findIfSurfaceWithNormal(std::vector<std::pair<int,int>> dimTagsInput, std::vector<double> _normals, std::vector<std::pair<int,int>>& dimTagsOutput)
+/*
+* @brief: Given dimtags of surfaces, outputs only ones with given normal
+*/
+void filterSurfacesWithNormal(std::vector<std::pair<int,int>> dt_input, std::vector<double> _normals, std::vector<std::pair<int,int>> &dt_output)
+{
+    for(auto iSurface : dt_input)
+    {
+
+        std::vector<std::pair<int,int>> dt_points;
+        std::vector<double> points, _points, parametricCoord, curvatures, normals;
+
+        model::getBoundary({iSurface}, dt_points, false, false, true);
+        for (auto iPoint:dt_points) // for every recursed "point" in the boundary surface representation
+        {
+            model::getValue(iPoint.first, iPoint.second, {}, _points);
+
+            model::getParametrization(iSurface.first, iSurface.second, _points, parametricCoord);
+
+            /* model::getCurvature(it2.first, it2.second, parametricCoord, curvatures); */
+            /* std::cout << curvatures.size() << ": "; */
+            /* for(auto ic: curvatures) */
+            /*     std::cout << ic << " "; */
+            /* std::cout << std::endl; */
+
+            model::getNormal(iSurface.second, parametricCoord, normals);
+
+            // if normal matches provided normal, push bead (3d) onto output vector
+            if (normals == _normals)
+            {
+                dt_output.push_back(iSurface);
+                // break out of surface loop and check next surface
+                break;
+            }
+        }
+    }
+
+}
+
+/*
+* @brief: Given dimtags of 3D objects, returns dimtags of objects with flat surfaces oriented along given normals
+* @input: 3D dimtags, normals
+* @output: filtered 3D dimtags
+*/
+void filterIfSurfaceWithNormal(std::vector<std::pair<int,int>> dt_input, std::vector<double> _normals, std::vector<std::pair<int,int>> &dt_output)
 {
     // NOTE: returns list of 3d objects from input containing surfaces that point in _normals direction.
     // Useful to calculate beads with cut surfaces, for eg.
 
     factory::synchronize();
 
-    for (auto it:dimTagsInput) // for every bead
+    for (auto iObject:dt_input) // for every bead
     {
-        std::vector<std::pair<int,int>> dimTagsBoundaries;
+        std::vector<std::pair<int,int>> dt_boundaries;
 
-        model::getBoundary({it}, dimTagsBoundaries, false, false, false); // get boundaries of each bead
+        model::getBoundary({iObject}, dt_boundaries, false, false, false); // get boundaries of each bead
 
-        for (auto it2:dimTagsBoundaries) // for every boundary surface
+        for (auto iSurface:dt_boundaries) // for every boundary surface
         {
-            std::vector<std::pair<int,int>> dimTagsBound;
+            std::vector<std::pair<int,int>> dt_points;
             std::vector<double> points, _points, parametricCoord, curvatures, normals;
 
-            model::getBoundary({it2}, dimTagsBound, false, false, true);
-            for (auto it3:dimTagsBound) // for every recursed "point" in the boundary surface representation
+            model::getBoundary({iSurface}, dt_points, false, false, true);
+            for (auto iPoint:dt_points) // for every recursed "point" in the boundary surface representation
             {
-                model::getValue(it3.first, it3.second, {}, _points);
+                model::getValue(iPoint.first, iPoint.second, {}, _points);
 
-                model::getParametrization(it2.first, it2.second, _points, parametricCoord);
+                model::getParametrization(iSurface.first, iSurface.second, _points, parametricCoord);
 
                 /* model::getCurvature(it2.first, it2.second, parametricCoord, curvatures); */
                 /* std::cout << curvatures.size() << ": "; */
@@ -135,12 +178,12 @@ void findIfSurfaceWithNormal(std::vector<std::pair<int,int>> dimTagsInput, std::
                 /*     std::cout << ic << " "; */
                 /* std::cout << std::endl; */
 
-                model::getNormal(it2.second, parametricCoord, normals);
+                model::getNormal(iSurface.second, parametricCoord, normals);
 
                 // if normal matches provided normal, push bead (3d) onto output vector
                 if (normals == _normals)
                 {
-                    dimTagsOutput.push_back(it);
+                    dt_output.push_back(iObject);
                     // break out of surface loop and check next bead
                     break;
                 }
@@ -149,20 +192,14 @@ void findIfSurfaceWithNormal(std::vector<std::pair<int,int>> dimTagsInput, std::
     }
 }
 
-void findCutBeads(std::vector<std::pair<int,int>> dimTagsBeads, std::vector<std::pair<int,int>> dimTagsOutput)
+void findCutBeads(std::vector<std::pair<int,int>> dt_beads, std::vector<std::pair<int,int>> dt_output)
 {
-    // synch
-    // for each
-        // getsurfaces
-        // getcurvature
-        // if curvature is not 0, push dimtag
-        //
 
     factory::synchronize();
 
-    /* std::cout << dimTagsBeads.size() << std::endl; */
+    /* std::cout << dt_beads.size() << std::endl; */
 
-    for (auto it:dimTagsBeads)
+    for (auto it:dt_beads)
     {
         std::vector<std::pair<int,int>>  dtbound;
         model::getBoundary({it}, dtbound, false, false, false);
@@ -175,26 +212,20 @@ void findCutBeads(std::vector<std::pair<int,int>> dimTagsBeads, std::vector<std:
 
 
         if (dtbound.size() > 1)
-            dimTagsOutput.push_back(it);
+            dt_output.push_back(it);
 
     }
 
 }
 
-void findUncutBeads(std::vector<std::pair<int,int>> dimTagsBeads, std::vector<std::pair<int,int>> dimTagsOutput)
+void findUncutBeads(std::vector<std::pair<int,int>> dt_beads, std::vector<std::pair<int,int>> dt_output)
 {
-    // synch
-    // for each
-        // getsurfaces
-        // getcurvature
-        // if curvature is not 0, push dimtag
-        //
 
     factory::synchronize();
 
     /* std::cout << dimTagsBeads.size() << std::endl; */
 
-    for (auto it:dimTagsBeads)
+    for (auto it:dt_beads)
     {
         std::vector<std::pair<int,int>>  dtbound;
         model::getBoundary({it}, dtbound, false, false, false);
@@ -207,7 +238,7 @@ void findUncutBeads(std::vector<std::pair<int,int>> dimTagsBeads, std::vector<st
 
 
         if (dtbound.size() == 1)
-            dimTagsOutput.push_back(it);
+            dt_output.push_back(it);
 
     }
 

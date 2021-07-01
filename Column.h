@@ -8,7 +8,7 @@ class Column{
 
     public:
         Column();
-        Column(std::vector<std::pair<int,int>> dimTagsFragmentedColumn, Parameters * prm, std::string _periodic);
+        Column(std::vector<std::pair<int,int>> dt_fragmentedColumn, Parameters * prm, std::string _periodic);
         virtual ~Column();
 
         std::string periodic;
@@ -20,7 +20,7 @@ class Column{
 
         void generateBoxSurfaces();
         void AddPhysicalGroups();
-        void separateBoundingSurfaces(std::vector<std::pair<int, int>> dimTagsSurfaces, Walls& tWall);
+        void separateBoundingSurfaces(std::vector<std::pair<int, int>> dt_surfaces, Walls& tWall);
 
         void stats();
 

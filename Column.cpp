@@ -13,39 +13,39 @@ namespace factory = gmsh::model::occ;
 Column::Column() {};
 Column::~Column() {};
 
-Column::Column(std::vector<std::pair<int,int>> dimTagsFragmentedColumn, Parameters * prm, std::string _periodic)
+Column::Column(std::vector<std::pair<int,int>> dt_fragmentedColumn, Parameters * prm, std::string _periodic)
 {
     std::cout << "Creating Column... " << std::endl;
 
-    std::vector<std::pair<int,int>> dimTagsBeadSurface;
-    std::vector<std::pair<int,int>> dimTagsOuterSurface;
+    std::vector<std::pair<int,int>> dt_beadSurface;
+    std::vector<std::pair<int,int>> dt_outerSurface;
 
     periodic = _periodic;
     double xMax, xMin, yMax, yMin, zMax, zMin;
 
     std::cout << "  > Listing Interstitial Volume... " << std::flush;
-    volumes.interstitial.push_back(dimTagsFragmentedColumn.back().second);
-    dimTagsFragmentedColumn.pop_back();
+    volumes.interstitial.push_back(dt_fragmentedColumn.back().second);
+    dt_fragmentedColumn.pop_back();
     std::cout << "done!" << std::endl;
 
     // Extract surfaces from interstitial volume
     std::cout << "  > Extracting Surfaces... " << std::flush;
-    model::getBoundary({{3,volumes.interstitial[0]}}, dimTagsOuterSurface, false, false, false);
-    model::getBoundary(dimTagsFragmentedColumn, dimTagsBeadSurface, false, false, false);
+    model::getBoundary({{3,volumes.interstitial[0]}}, dt_outerSurface, false, false, false);
+    model::getBoundary(dt_fragmentedColumn, dt_beadSurface, false, false, false);
     std::cout << "done!" << std::endl;
 
     std::cout << "  > Listing Bounding Surfaces... " << std::flush;
     if(prm->containerShape == 0)
     {
-        surfaces.walls   = {dimTagsOuterSurface[0].second};
-        surfaces.outlet  = {dimTagsOuterSurface[1].second};
-        surfaces.inlet   = {dimTagsOuterSurface[2].second};
+        surfaces.walls   = {dt_outerSurface[0].second};
+        surfaces.outlet  = {dt_outerSurface[1].second};
+        surfaces.inlet   = {dt_outerSurface[2].second};
         // NOTE: What would be the normal for a cylinder wall??
     }
     else if (prm->containerShape == 1)
     {
-        separateBoundingSurfaces(dimTagsOuterSurface, outerWalls);
-        separateBoundingSurfaces(dimTagsBeadSurface, beadWalls);
+        separateBoundingSurfaces(dt_outerSurface, outerWalls);
+        separateBoundingSurfaces(dt_beadSurface, beadWalls);
 
         generateBoxSurfaces();
     }
@@ -53,14 +53,14 @@ Column::Column(std::vector<std::pair<int,int>> dimTagsFragmentedColumn, Paramete
 
     // The remaining entries in bv are bead volumes
     std::cout << "  > Listing Bead Volumes... " << std::flush;
-    for (auto it = dimTagsFragmentedColumn.begin(); it != dimTagsFragmentedColumn.end(); it++)
+    for (auto it = dt_fragmentedColumn.begin(); it != dt_fragmentedColumn.end(); it++)
     {
         volumes.beads.push_back((*it).second);
     }
     std::cout << "done!" << std::endl;
 
     std::cout << "  > Listing Bead Surfaces... " << std::flush;
-    for ( std::vector<std::pair< int , int>>::iterator it = dimTagsBeadSurface.begin(); it != dimTagsBeadSurface.end(); it++   )
+    for ( std::vector<std::pair< int , int>>::iterator it = dt_beadSurface.begin(); it != dt_beadSurface.end(); it++   )
     {
         surfaces.beads.push_back((*it).second);
     }
@@ -124,11 +124,11 @@ void Column::AddPhysicalGroups()
 }
 
 
-void Column::separateBoundingSurfaces(std::vector<std::pair<int, int>> dimTagsSurfaces, Walls& tWall)
+void Column::separateBoundingSurfaces(std::vector<std::pair<int, int>> dt_surfaces, Walls& tWall)
 {
 
     std::vector<double> points, parametricCoord, curvatures, normals;
-    std::vector<std::pair <int, int>> dimTagsBound;
+    std::vector<std::pair <int, int>> dt_boundary;
 
     std::vector<double> nxleft = {-1, 0, 0};
     std::vector<double> nyleft = {0, -1, 0};
@@ -138,12 +138,12 @@ void Column::separateBoundingSurfaces(std::vector<std::pair<int, int>> dimTagsSu
     std::vector<double> nzright = {0, 0, 1};
 
     // given a list of all surfaces
-    for (std::vector<std::pair<int, int>>::iterator iter = dimTagsSurfaces.begin(); iter != dimTagsSurfaces.end(); iter++)
+    for (std::vector<std::pair<int, int>>::iterator iter = dt_surfaces.begin(); iter != dt_surfaces.end(); iter++)
     {
         //getrecursive points
-        model::getBoundary({(*iter)}, dimTagsBound, false, false, true);
+        model::getBoundary({(*iter)}, dt_boundary, false, false, true);
 
-        for (auto iPoint : dimTagsBound)
+        for (auto iPoint : dt_boundary)
         {
             model::getValue(iPoint.first, iPoint.second, {}, points);
 

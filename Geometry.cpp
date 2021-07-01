@@ -7,9 +7,9 @@ namespace model = gmsh::model;
 
 Geometry::Geometry(Parameters * prm, PackedBed * pb)
 {
-    createPackedBed(pb, prm, dimTagsBeads);
-    createBridges(pb, prm, dimTagsBridges);
-    createContainer(pb, prm, dimTagsContainers);
+    createPackedBed(pb, prm, dt_beads);
+    createBridges(pb, prm, dt_bridges);
+    createContainer(pb, prm, dt_containers);
     operate(prm);
 
     // TODO: Move to Model
@@ -31,8 +31,8 @@ Geometry::Geometry(Parameters * prm, PackedBed * pb)
     {
         //Set mesh size globally
         std::cout << "Setting global mesh size... ";
-        model::getEntities(dimTagsDummy, 0);
-        model::mesh::setSize(dimTagsDummy, prm->lc_beads);
+        model::getEntities(dt_dummy, 0);
+        model::mesh::setSize(dt_dummy, prm->lc_beads);
         std:: cout << "done!" << std::endl;
     }
 
@@ -45,7 +45,7 @@ Geometry::~Geometry()
 
 // Create packed bed geometry. Basically all the beads.
 // Store dimTags in last argument
-void Geometry::createPackedBed(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dimTagsBeads)
+void Geometry::createPackedBed(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dt_beads)
 {
     std::cout << "Creating beads... " << std::flush;
     int tag, ctag;
@@ -66,7 +66,7 @@ void Geometry::createPackedBed(PackedBed * pb, Parameters * prm, std::vector<std
             (*iter)->setTag(tag);
             (*iter)->setCTag(ctag);
 
-            dimTagsBeads.push_back({3, tag});
+            dt_beads.push_back({3, tag});
         }
 
         /*
@@ -90,7 +90,7 @@ void Geometry::createPackedBed(PackedBed * pb, Parameters * prm, std::vector<std
 }
 
 
-void Geometry::createBridges(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dimTagsBridges)
+void Geometry::createBridges(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dt_bridges)
 {
     int tagBridge;
 
@@ -160,7 +160,7 @@ void Geometry::createBridges(PackedBed * pb, Parameters * prm, std::vector<std::
                     else
                         tagBridge = factory::addCone(x3, y3, z3, dx3, dy3, dz3, r1Bridge, r2Bridge);
 
-                    this->dimTagsBridges.push_back({3, tagBridge }) ;
+                    this->dt_bridges.push_back({3, tagBridge }) ;
                     /* this->bridgeTagRadiusPairs.push_back({tagBridge, rBridge}); */
                 }
 
@@ -202,13 +202,8 @@ void Geometry::createBridges(PackedBed * pb, Parameters * prm, std::vector<std::
 // Adds the dimtag of the new geometry to the last argument.
 // Generating the additional container for the inlet or outlet periodic special case should be done outside
 
-void Geometry::createContainer(PackedBed * pb, Parameters * prm, std::vector<std::pair<int,int>> &dimTagsContainers)
+void Geometry::createContainer(PackedBed * pb, Parameters * prm, std::vector<std::pair<int,int>> &dt_containers)
 {
-
-    /* double x = 0, dx = 0; */
-    /* double y = 0, dy = 0; */
-    /* double z = 0, dz = 0; */
-    /* double r = 0; */
 
     if (prm->containerShape == 0)
     {
@@ -233,7 +228,7 @@ void Geometry::createContainer(PackedBed * pb, Parameters * prm, std::vector<std
             dx << " " << dy << " " << dz << " " <<
             R << std::endl;;
 
-        dimTagsContainers.push_back({3, factory::addCylinder(x, y, z, dx, dy, dz, R)});
+        dt_containers.push_back({3, factory::addCylinder(x, y, z, dx, dy, dz, R)});
 
         // TODO: if periodic == "z"
     }
@@ -262,20 +257,20 @@ void Geometry::createContainer(PackedBed * pb, Parameters * prm, std::vector<std
             dx << " " << dy << " " << dz << std::endl;
         std::cout << std::setprecision(10);
 
-        dimTagsContainers.push_back( {3, factory::addBox(x, y, z, dx, dy, dz)});
+        dt_containers.push_back( {3, factory::addBox(x, y, z, dx, dy, dz)});
 
         // NOTE: You can have periodicInlet and Outlet sections without ANY periodicity.
         // PeriodicInlet and Outlet only necessitate periodic linking which will happen no matter what
         //TODO: Rename these? Make the first ones a plane instead?
         if (prm->periodicInlet > 0)
         {
-            dimTagsContainers.push_back({3, factory::addBox(x - dx, y - dy, z - prm->periodicInlet, 3*dx, 3*dy, prm->periodicInlet)});
-            dimTagsContainers.push_back({3, factory::addBox(x, y, z - prm->periodicInlet, dx, dy, prm->periodicInlet)});
+            dt_containers.push_back({3, factory::addBox(x - dx, y - dy, z - prm->periodicInlet, 3*dx, 3*dy, prm->periodicInlet)});
+            dt_containers.push_back({3, factory::addBox(x, y, z - prm->periodicInlet, dx, dy, prm->periodicInlet)});
         }
         if (prm->periodicOutlet > 0)
         {
-            dimTagsContainers.push_back({3, factory::addBox(x - dx, y - dy, z+dz, 3*dx, 3*dy, prm->periodicOutlet)});
-            dimTagsContainers.push_back({3, factory::addBox(x, y, z+dz, dx, dy, prm->periodicInlet)});
+            dt_containers.push_back({3, factory::addBox(x - dx, y - dy, z+dz, 3*dx, 3*dy, prm->periodicOutlet)});
+            dt_containers.push_back({3, factory::addBox(x, y, z+dz, dx, dy, prm->periodicInlet)});
         }
 
     }
@@ -292,18 +287,17 @@ void Geometry::operate(Parameters * prm)
     std::vector<std::vector<std::pair<int, int> > > ovv;
 
     std::cout << "Intersecting Volumes... " << std::endl;
-    /* factory::intersect(dimTagsBeads, dimTagsContainers, dimTagsBeadsInside, ovv, -1, true, false); */
 
-    if (dimTagsContainers.size() == 1)
-        factory::intersect(dimTagsBeads, dimTagsContainers, dimTagsBeadsInside, ovv, -1, true, false);
+    if (dt_containers.size() == 1)
+        factory::intersect(dt_beads, dt_containers, dt_beadsInside, ovv, -1, true, false);
     else
     {
         std::cout << "  > Preparing Column Geometries... " << std::flush;;
-        factory::intersect(dimTagsBeads, {dimTagsContainers[0]}, dimTagsBeadsInside, ovv, -1, false, false);
+        factory::intersect(dt_beads, {dt_containers[0]}, dt_beadsInside, ovv, -1, false, false);
         std::cout << "done!" << std::endl;;
 
         //assuming both periodicInlet and periodicOutlet are given!!!
-        std::vector<std::pair<int,int>> dimTagsBeadsInlet, dimTagsBeadsOutlet, dtdummy;
+        std::vector<std::pair<int,int>> dt_beadsInlet, dt_beadsOutlet, dt_dummy;
 
         // NOTE:
         // Possible fixes to this mess:
@@ -325,28 +319,28 @@ void Geometry::operate(Parameters * prm)
 
 
         std::cout << "  > Preparing Inlet Geometries... " << std::flush;;
-        factory::intersect(dimTagsBeads, {dimTagsContainers[1]}, dimTagsBeadsInPeriodicInlet, ovv, -1, false, false);
-        findIfSurfaceWithNormal(dimTagsBeadsInPeriodicInlet, {0,0,1}, dimTagsBeadsInlet);
-        factory::intersect(dimTagsBeadsInlet, {dimTagsContainers[2]}, dimTagsBeadsInPeriodicInlet, ovv, -1, false, false);
+        factory::intersect(dt_beads, {dt_containers[1]}, dt_beadsInPeriodicInlet, ovv, -1, false, false);
+        filterIfSurfaceWithNormal(dt_beadsInPeriodicInlet, {0,0,1}, dt_beadsInlet);
+        factory::intersect(dt_beadsInlet, {dt_containers[2]}, dt_beadsInPeriodicInlet, ovv, -1, false, false);
         std::cout << "done!" << std::endl;
 
         std::cout << "  > Preparing Outlet Geometries... " << std::flush;;
-        factory::intersect(dimTagsBeads, {dimTagsContainers[3]}, dimTagsBeadsInPeriodicOutlet, ovv, -1, false, false);
-        findIfSurfaceWithNormal(dimTagsBeadsInPeriodicOutlet, {0,0,-1}, dimTagsBeadsOutlet);
-        factory::intersect(dimTagsBeadsOutlet, {dimTagsContainers[4]}, dimTagsBeadsInPeriodicOutlet, ovv, -1, false, false);
+        factory::intersect(dt_beads, {dt_containers[3]}, dt_beadsInPeriodicOutlet, ovv, -1, false, false);
+        filterIfSurfaceWithNormal(dt_beadsInPeriodicOutlet, {0,0,-1}, dt_beadsOutlet);
+        factory::intersect(dt_beadsOutlet, {dt_containers[4]}, dt_beadsInPeriodicOutlet, ovv, -1, false, false);
         std::cout << "done!" << std::endl;;
 
         // TODO: Do I need this both here and after fragmentation?
         // TODO: Parallellize
         std::cout << "  > Cleaning Model... " << std::flush;;
-        factory::getEntities(dtdummy);
-        subtractDimTags(dtdummy, dimTagsBeadsInside);
-        subtractDimTags(dtdummy, dimTagsBeadsInPeriodicInlet);
-        subtractDimTags(dtdummy, dimTagsBeadsInPeriodicOutlet);
-        subtractDimTags(dtdummy, {dimTagsContainers[0]});
-        subtractDimTags(dtdummy, {dimTagsContainers[2]});
-        subtractDimTags(dtdummy, {dimTagsContainers[4]});
-        factory::remove(dtdummy, true);
+        factory::getEntities(dt_dummy);
+        subtractDimTags(dt_dummy, dt_beadsInside);
+        subtractDimTags(dt_dummy, dt_beadsInPeriodicInlet);
+        subtractDimTags(dt_dummy, dt_beadsInPeriodicOutlet);
+        subtractDimTags(dt_dummy, {dt_containers[0]});
+        subtractDimTags(dt_dummy, {dt_containers[2]});
+        subtractDimTags(dt_dummy, {dt_containers[4]});
+        factory::remove(dt_dummy, true);
         std::cout << "done!" << std::endl;
 
     }
@@ -359,15 +353,15 @@ void Geometry::operate(Parameters * prm)
     /* Fuse beads together (with bridges or without) */
     if (prm->booleanOperation == 1)
     {
-        if (dimTagsBridges.size() == 0) dimTagsBridges = {3, dimTagsBeads.back()};
+        if (dt_bridges.size() == 0) dt_bridges = {3, dt_beads.back()};
 
         std::cout << "Fusing Beads and Bridges... " << std::flush;
-        factory::fuse(dimTagsBeadsInside, dimTagsBridges, dimTagsFused, ovv );
+        factory::fuse(dt_beadsInside, dt_bridges, dt_fused, ovv );
         std::cout << "done!" << std::endl;
     }
     else if (prm->booleanOperation == 2)
     {
-        if (dimTagsBridges.size() == 0)
+        if (dt_bridges.size() == 0)
         {
             std::cout << "Error: No Bridges to cut from beads" << std::endl;
             exit(-1);
@@ -375,39 +369,39 @@ void Geometry::operate(Parameters * prm)
 
         std::cout << "Capping Beads... " << std::flush;
         /* factory::cut(dimTagsBeads, dimTagsBridges, ov, ovv ); */
-        factory::cut(dimTagsBeadsInside, dimTagsBridges, dimTagsFused, ovv );
+        factory::cut(dt_beadsInside, dt_bridges, dt_fused, ovv );
         std::cout << "done!" << std::endl;
 
     }
     else
     {
         /* ov = dimTagsBeads; */
-        dimTagsFused = dimTagsBeadsInside;
+        dt_fused = dt_beadsInside;
     }
 
     // Fragment cylinder w.r.t. beads
     if (prm->fragment)
     {
-        if (dimTagsFused.size() == 0) dimTagsFused = dimTagsBeadsInside;
+        if (dt_fused.size() == 0) dt_fused = dt_beadsInside;
 
         std::cout << "Fragmenting Volumes..." << std::endl;
-        /* factory::fragment(dimTagsContainers, dimTagsFused, dimTagsFragmented, ovv ); */
+        /* factory::fragment(dimTagsContainers, dt_fused, dimTagsFragmented, ovv ); */
 
         //TODO: don't use dimtagsfused here?
-        if (dimTagsContainers.size() == 1)
-            factory::fragment(dimTagsContainers, dimTagsFused, dimTagsFragmented, ovv );
+        if (dt_containers.size() == 1)
+            factory::fragment(dt_containers, dt_fused, dt_fragmented, ovv );
         else
         {
             std::cout << "  > Fragmenting Column... " << std::flush;
-            factory::fragment({dimTagsContainers[0]}, dimTagsFused, dimTagsFragmented, ovv );
+            factory::fragment({dt_containers[0]}, dt_fused, dt_fragmented, ovv );
             std::cout << "done!" << std::endl;
 
             //NOTE: assuming both periodicInlet and periodicOutlet are given!!!
             std::cout << "  > Fragmenting Inlet..." << std::flush;
-            factory::fragment({dimTagsContainers[2]}, dimTagsBeadsInPeriodicInlet, dimTagsFragmentedPeriodicInlet, ovv );
+            factory::fragment({dt_containers[2]}, dt_beadsInPeriodicInlet, dt_fragmentedPeriodicInlet, ovv );
             std::cout << "done!" << std::endl;
             std::cout << "  > Fragmenting Outlet..." << std::flush;
-            factory::fragment({dimTagsContainers[4]}, dimTagsBeadsInPeriodicOutlet, dimTagsFragmentedPeriodicOutlet, ovv );
+            factory::fragment({dt_containers[4]}, dt_beadsInPeriodicOutlet, dt_fragmentedPeriodicOutlet, ovv );
             std::cout << "done!" << std::endl;
 
             // have to do this because I can't delete the beads directly during/after intersection as with simpler cases.
@@ -415,9 +409,9 @@ void Geometry::operate(Parameters * prm)
             std::cout << "  > Cleaning Model..." << std::flush;;
             std::vector<std::pair<int,int>> dtdummy;
             factory::getEntities(dtdummy);
-            subtractDimTags(dtdummy, dimTagsFragmented);
-            subtractDimTags(dtdummy, dimTagsFragmentedPeriodicInlet);
-            subtractDimTags(dtdummy, dimTagsFragmentedPeriodicOutlet);
+            subtractDimTags(dtdummy, dt_fragmented);
+            subtractDimTags(dtdummy, dt_fragmentedPeriodicInlet);
+            subtractDimTags(dtdummy, dt_fragmentedPeriodicOutlet);
             factory::remove(dtdummy,true);
             std::cout << "done!" << std::endl;
 
@@ -430,9 +424,9 @@ void Geometry::operate(Parameters * prm)
     factory::synchronize();
     std::cout << "done!" << std::endl;
 
-    std::cout << "Number of Geometrical Beads:            " << dimTagsBeadsInside.size() << std::endl;
-    std::cout << "Number of Geometrical Bridges:          " << dimTagsBridges.size()     << std::endl;
-    std::cout << "Number of Geometrical Internal Volumes: " << dimTagsFused.size()       << std::endl;
+    std::cout << "Number of Geometrical Beads:            " << dt_beadsInside.size() << std::endl;
+    std::cout << "Number of Geometrical Bridges:          " << dt_bridges.size()     << std::endl;
+    std::cout << "Number of Geometrical Internal Volumes: " << dt_fused.size()       << std::endl;
 
     long bool_duration = gmsh::logger::getWallTime() - bool_start;
 

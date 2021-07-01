@@ -30,7 +30,7 @@ namespace factory = gmsh::model::occ;
 
 Model::Model(Parameters * prm, Geometry * geom)
 {
-    column = Column(geom->dimTagsFragmented, prm, prm->periodic);
+    column = Column(geom->dt_fragmented, prm, prm->periodic);
 
     // remove z from periodic string
     // So that inlet/outlet sections don't have internal z periodicity.
@@ -39,14 +39,14 @@ Model::Model(Parameters * prm, Geometry * geom)
 
     if(prm->periodicInlet > 0)
     {
-        columnInlet = Column(geom->dimTagsFragmentedPeriodicInlet, prm, periodicInOut);
+        columnInlet = Column(geom->dt_fragmentedPeriodicInlet, prm, periodicInOut);
         std::cout << "Linking inlet and column... " << std::endl;
         columnInlet.linkPeriodicZ(column);
     }
 
     if(prm->periodicOutlet > 0)
     {
-        columnOutlet = Column(geom->dimTagsFragmentedPeriodicOutlet, prm, periodicInOut);
+        columnOutlet = Column(geom->dt_fragmentedPeriodicOutlet, prm, periodicInOut);
         std::cout << "Linking column and outlet... " << std::endl;
         column.linkPeriodicZ(columnOutlet);
     }
@@ -54,7 +54,7 @@ Model::Model(Parameters * prm, Geometry * geom)
     // TODO: re-implement
     /* if geometry is imported instead: */
     /*     std::cout << "Importing geometry: " << prm->geomInfile << "... " << std::flush; */
-    /*     factory::importShapes("geometries/" + prm->geomInfile, dimTagsFragmented); */
+    /*     factory::importShapes("geometries/" + prm->geomInfile, dt_fragmented); */
     /*     std::cout << "done!" << std::endl; */
 
     /*     // Synchronize gmsh model with geometry kernel. */
@@ -62,7 +62,7 @@ Model::Model(Parameters * prm, Geometry * geom)
     /*     factory::synchronize(); */
     /*     std::cout << "done!" << std::endl; */
 
-    /*     createNamedGroups(dimTagsFragmented, prm->containerShape); */
+    /*     createNamedGroups(dt_fragmented, prm->containerShape); */
 
     //if write geometry
     if(!prm->geomOutfile.empty())

@@ -25,24 +25,23 @@ class Geometry{
 
         std::vector<int> tBeads;
         std::vector<int> tBeadCPs;
-        std::vector<std::pair<int, int>> dimTagsBeads;
-        std::vector<std::pair<int, int>> dimTagsContainers;
-        std::vector<std::pair<int, int>> dimTagsBridges;
-        std::vector<std::pair<int, int>> dimTagsInterstitial;
+        std::vector<std::pair<int, int>> dt_beads;
+        std::vector<std::pair<int, int>> dt_containers;
+        std::vector<std::pair<int, int>> dt_bridges;
 
         // Store dimTags and dimTagsMap
-        std::vector<std::pair<int, int> > dimTagsBeadsInside;
-        std::vector<std::pair<int, int> > dimTagsBeadsInPeriodicInlet;
-        std::vector<std::pair<int, int> > dimTagsBeadsInPeriodicOutlet;
-        std::vector<std::pair<int, int> > dimTagsFused;
-        std::vector<std::pair<int, int> > dimTagsFragmented;
-        std::vector<std::pair<int, int> > dimTagsFragmentedPeriodicInlet;
-        std::vector<std::pair<int, int> > dimTagsFragmentedPeriodicOutlet;
-        std::vector<std::pair<int, int> > dimTagsDummy;
+        std::vector<std::pair<int, int> > dt_beadsInside;
+        std::vector<std::pair<int, int> > dt_beadsInPeriodicInlet;
+        std::vector<std::pair<int, int> > dt_beadsInPeriodicOutlet;
+        std::vector<std::pair<int, int> > dt_fused;
+        std::vector<std::pair<int, int> > dt_fragmented;
+        std::vector<std::pair<int, int> > dt_fragmentedPeriodicInlet;
+        std::vector<std::pair<int, int> > dt_fragmentedPeriodicOutlet;
+        std::vector<std::pair<int, int> > dt_dummy;
 
-        void createContainer(PackedBed * pb, Parameters * prm, std::vector<std::pair<int,int>> &dimTagsContainers);
-        void createPackedBed(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dimTagsBeads);
-        void createBridges(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dimTagsBridges);
+        void createContainer(PackedBed * pb, Parameters * prm, std::vector<std::pair<int,int>> &dt_containers);
+        void createPackedBed(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dt_beads);
+        void createBridges(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dt_bridges);
         void operate(Parameters * prm);
 
 };

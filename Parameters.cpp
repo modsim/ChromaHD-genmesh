@@ -224,6 +224,7 @@ void Parameters::decide (const std::string & key, const std::vector<std::string>
     }
     else if (key == "periodic")
     {
+        // Can take xy, xyz
         periodic = val.at(0);
     }
     else if (key == "periodicOffsets")
