@@ -5,12 +5,18 @@
 namespace factory = gmsh::model::occ;
 namespace model = gmsh::model;
 
+#include "Data.h"
+#include <numeric> // ::accumulate
+
 Geometry::Geometry(Parameters * prm, PackedBed * pb)
 {
     createPackedBed(pb, prm, dt_beads);
     createBridges(pb, prm, dt_bridges);
     createContainer(pb, prm, dt_containers);
     operate(prm);
+
+    // New method
+    /* generate(prm); */
 
     // TODO: Move to Model
     if (prm->meshSizeMethod == 1)
@@ -431,5 +437,185 @@ void Geometry::operate(Parameters * prm)
     long bool_duration = gmsh::logger::getWallTime() - bool_start;
 
     gmsh::logger::write("Boolean time: " + std::to_string(bool_duration) + " s", "info");
+
+}
+
+void Geometry::generate(Parameters * prm)
+{
+    if (!prm->geomInfile.empty())
+        return;
+
+    factory::synchronize();
+
+    std::vector<std::pair<int,int>> dt_containerSurfaces, dt_beadSurfaces;
+    std::vector<int> t_containerSurfaces, t_beadSurfaces, t_shells;
+    std::vector<int> t_beadVolumes;
+    int t_interstitialVolume;
+
+    model::getBoundary(dt_containers, dt_containerSurfaces);
+    model::getBoundary(dt_beads, dt_beadSurfaces);
+
+    //TODO: Check bounding boxes for collisions and other stuff
+
+    if (prm->periodic == "off")
+    {
+        extractTags(dt_containerSurfaces, t_containerSurfaces);
+        extractTags(dt_beadSurfaces, t_beadSurfaces);
+
+        t_shells.push_back(model::geo::addSurfaceLoop(t_containerSurfaces));
+        for (auto it : t_beadSurfaces)
+        {
+            int t_beadShell = model::geo::addSurfaceLoop({it});
+            t_shells.push_back(t_beadShell);
+        }
+
+        t_interstitialVolume = model::geo::addVolume(t_shells);
+
+        t_shells.erase(t_shells.begin());
+
+        for (auto it : t_shells)
+            t_beadVolumes.push_back(model::geo::addVolume({it}));
+
+        factory::remove(dt_containers);
+        factory::remove(dt_beads);
+
+        factory::synchronize();
+        model::geo::synchronize();
+
+        // ------------
+
+        Surfaces surfaces;
+        Volumes volumes;
+
+        std::vector<std::pair<int,int>> dt_points;
+        std::vector<double> points, parametricCoord, curvatures, normals;
+
+        std::vector<double> nzleft = {0, 0, -1};
+        std::vector<double> nzright= {0, 0, 1};
+
+        for (auto iSurface: dt_containerSurfaces)
+        {
+            model::getBoundary({iSurface}, dt_points, false, false, true);
+            for (auto iPoint: dt_points)
+            {
+                model::getValue(iPoint.first, iPoint.second, {}, points);
+                model::getParametrization(iSurface.first, iSurface.second, points, parametricCoord);
+                model::getCurvature(iSurface.first, iSurface.second, parametricCoord, curvatures);
+
+                if (std::accumulate(curvatures.begin(), curvatures.end(), 0) > 0)
+                {
+                    surfaces.walls.push_back(iSurface.second);
+                    break;
+                }
+
+                model::getNormal(iSurface.second, parametricCoord, normals);
+
+                if (normals == nzleft)
+                {
+                    surfaces.inlet.push_back(iSurface.second);
+                    break;
+                }
+                else if (normals == nzright)
+                {
+                    surfaces.outlet.push_back(iSurface.second);
+                    break;
+                }
+            }
+        }
+
+        surfaces.beads = t_beadSurfaces;
+        volumes.beads = t_beadVolumes;
+        volumes.interstitial.push_back(t_interstitialVolume);
+
+        model::addPhysicalGroup(2, surfaces.inlet      , 1 );
+        model::addPhysicalGroup(2, surfaces.outlet     , 2 );
+        model::addPhysicalGroup(2, surfaces.walls      , 3 );
+        model::addPhysicalGroup(2, surfaces.beads      , 4 );
+        model::addPhysicalGroup(3, volumes.interstitial, 5 );
+        model::addPhysicalGroup(3, volumes.beads       , 6 );
+
+        model::setPhysicalName(2,1,"inlet");
+        model::setPhysicalName(2,2,"outlet");
+        model::setPhysicalName(2,3,"wall");
+        model::setPhysicalName(2,4,"beadSurface");
+        model::setPhysicalName(3,5,"interstitialVolume");
+        model::setPhysicalName(3,6,"beadVolume");
+
+        model::mesh::generate(3);
+
+        gmsh::write("output_new.vtk");
+
+        exit(0);
+
+    }
+    else
+    {
+
+        std::vector<std::vector<std::pair<int,int>>> dtm_fragmented;
+        std::vector<std::pair<int,int>> dt_fragmented, dt_EntitiesInBox;
+        std::vector<int> t_EntitiesInBox;
+
+        double xmin, ymin, zmin;
+        double xmax, ymax, zmax;
+
+        extractTags(dt_containerSurfaces, t_containerSurfaces);
+        extractTags(dt_beadSurfaces, t_beadSurfaces);
+
+        factory::fragment(dt_containerSurfaces, dt_beadSurfaces, dt_fragmented, dtm_fragmented);
+
+        factory::getBoundingBox(3, dt_containers[0].second, xmin, ymin, zmin, xmax,ymax,zmax);
+
+        double eps = 1e-3;
+        Surfaces surfaces;
+        Volumes volumes;
+
+        factory::getEntitiesInBoundingBox(xmin-eps, ymin-eps, zmin-eps, xmax+eps, ymax+eps, zmax+eps, dt_EntitiesInBox, 2);
+
+        std::vector<std::pair<int,int>> dt_points;
+        std::vector<double> points, parametricCoord, curvatures, normals;
+
+        std::vector<double> nzleft = {0, 0, -1};
+        std::vector<double> nzright= {0, 0, 1};
+
+        for (auto iSurface : dt_EntitiesInBox)
+        {
+            model::getBoundary({iSurface}, dt_points, false, false, true);
+            for (auto iPoint: dt_points)
+            {
+                model::getValue(iPoint.first, iPoint.second, {}, points);
+                model::getParametrization(iSurface.first, iSurface.second, points, parametricCoord);
+                model::getCurvature(iSurface.first, iSurface.second, parametricCoord, curvatures);
+
+                if (std::accumulate(curvatures.begin(), curvatures.end(), 0) > 0)
+                {
+                    surfaces.beads.push_back(iSurface.second);
+                    // TODO:
+                    // if complete sphere: continue. How to check? (Positive curvature at all points?)
+                        // gettype, getprinciplecurvature, parameterization, parametrizationbounds, derivative, secondderivative, classifysurfaces, computehomology
+                        // getadjacencies
+                    // if not, put it in list(cut-bead-inner) (later use this for surface loop)
+                    break;
+                }
+
+                model::getNormal(iSurface.second, parametricCoord, normals);
+
+                // TODO:
+                // If bbox is same as any wall bbox: list(interstitial-bound)
+                // If bbox is smaller: Add to list(cut-bead-walls)
+
+                if      (normals == nzleft)  { surfaces.inlet.push_back(iSurface.second); break; }
+                else if (normals == nzright) { surfaces.outlet.push_back(iSurface.second); break; }
+
+            }
+
+        }
+
+        //TODO:
+        // loopOuter = cut-bead-walls + interstitial-bounds
+        // wholeBeads = whole beads surfaces
+        // cut beads = cut beads-inner + cut beads-walls //NOTE: How to match these?, just a fuse?, assuming you get closed indiv. surfaces, each can be surflooped
+
+
+    }
 
 }

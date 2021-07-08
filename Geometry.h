@@ -43,6 +43,7 @@ class Geometry{
         void createPackedBed(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dt_beads);
         void createBridges(PackedBed * pb, Parameters * prm, std::vector<std::pair<int, int>> &dt_bridges);
         void operate(Parameters * prm);
+        void generate(Parameters * prm);
 
 };
 
