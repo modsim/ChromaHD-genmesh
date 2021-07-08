@@ -381,5 +381,7 @@ void Parameters::setGMSHOptions()
     gmsh::option::setNumber("Print.GeoOnlyPhysicals", 1); //Default = 1
 
     gmsh::option::setNumber("Geometry.OCCBoundsUseStl", 1);
+    /* gmsh::option::setNumber( "Mesh.StlAngularDeflection" , 0.08 ); */
+    /* gmsh::option::setNumber( "Mesh.StlLinearDeflection" , 0.0005); */
 
 }
