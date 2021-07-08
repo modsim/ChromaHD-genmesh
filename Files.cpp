@@ -16,7 +16,7 @@ bool isBigEndian() {
 // swap bytes according to machine's endianness
 
 void swapbytes(char *array, int nelem, int elsize) {
-    register int sizet, sizem, i, j;
+    int sizet, sizem, i, j;
     char *bytea, *byteb;
     sizet = elsize;
     sizem = sizet - 1;
